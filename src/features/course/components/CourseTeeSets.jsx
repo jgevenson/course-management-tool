@@ -76,8 +76,9 @@ export default function CourseTeeSets({ tees, onAddTee, onUpdateTee, onRemoveTee
               className="rounded-lg border border-slate-600 bg-slate-900/50 p-4 grid grid-cols-1 lg:grid-cols-12 gap-3 items-end"
             >
               <div className="lg:col-span-3">
-                <label className="block text-xs font-medium text-slate-500 mb-1">Name</label>
+                <label htmlFor={`tee-name-${tee.id}`} className="block text-xs font-medium text-slate-500 mb-1">Name</label>
                 <input
+                  id={`tee-name-${tee.id}`}
                   type="text"
                   defaultValue={tee.name}
                   key={`name-${tee.id}-${tee.name}`}
@@ -90,8 +91,9 @@ export default function CourseTeeSets({ tees, onAddTee, onUpdateTee, onRemoveTee
                 />
               </div>
               <div className="lg:col-span-2">
-                <label className="block text-xs font-medium text-slate-500 mb-1">Color / label</label>
+                <label htmlFor={`tee-color-${tee.id}`} className="block text-xs font-medium text-slate-500 mb-1">Color / label</label>
                 <input
+                  id={`tee-color-${tee.id}`}
                   type="text"
                   defaultValue={tee.color_label ?? ''}
                   key={`color-${tee.id}-${tee.color_label ?? ''}`}
@@ -105,8 +107,9 @@ export default function CourseTeeSets({ tees, onAddTee, onUpdateTee, onRemoveTee
                 />
               </div>
               <div className="lg:col-span-2">
-                <label className="block text-xs font-medium text-slate-500 mb-1">Rating</label>
+                <label htmlFor={`tee-rating-${tee.id}`} className="block text-xs font-medium text-slate-500 mb-1">Rating</label>
                 <input
+                  id={`tee-rating-${tee.id}`}
                   type="number"
                   step="0.1"
                   defaultValue={tee.rating ?? ''}
@@ -121,8 +124,9 @@ export default function CourseTeeSets({ tees, onAddTee, onUpdateTee, onRemoveTee
                 />
               </div>
               <div className="lg:col-span-2">
-                <label className="block text-xs font-medium text-slate-500 mb-1">Slope</label>
+                <label htmlFor={`tee-slope-${tee.id}`} className="block text-xs font-medium text-slate-500 mb-1">Slope</label>
                 <input
+                  id={`tee-slope-${tee.id}`}
                   type="number"
                   step="1"
                   defaultValue={tee.slope ?? ''}

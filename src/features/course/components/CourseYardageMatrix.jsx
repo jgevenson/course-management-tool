@@ -99,6 +99,7 @@ export default function CourseYardageMatrix({ holes, tees, yardages, onSaveYarda
                           max={999}
                           value={yardageDraft[k] ?? ''}
                           onChange={(e) => setYardCell(h.id, t.id, e.target.value)}
+                          aria-label={`Hole ${h.hole_number} ${t.name} yardage`}
                           className="w-full min-w-[72px] px-2 py-1.5 bg-slate-900 border border-slate-600 rounded text-slate-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                         />
                       </td>
