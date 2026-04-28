@@ -1,7 +1,7 @@
 // AI assisted development
 import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
-import DigitalBagPanel from '../components/DigitalBagPanel'
+import DigitalBagPanel from '../features/bag/components/DigitalBagPanel'
 
 export default function Profile({ session }) {
   const [username, setUsername] = useState('')

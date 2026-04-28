@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../supabaseClient'
-import { searchOSMCourses, fetchCourseDetailsFromOverpass, parseOSMDataToSchema } from '../utils/osmImport'
+import { searchOSMCourses, fetchCourseDetailsFromOverpass, parseOSMDataToSchema } from '../features/map/utils/osmImport'
 import { importCourseToSupabase } from '../services/courseImportService'
 import { Search, Map as MapIcon, Download, X, Loader2 } from 'lucide-react'
 

@@ -1,7 +1,7 @@
 // AI assisted development
 import { useMemo } from 'react'
 import { Trash2 } from 'lucide-react'
-import { buildPlanningView } from '../utils/planningSegments'
+import { buildPlanningView } from '../../utils/planningSegments'
 
 /**
  * @param {object} props

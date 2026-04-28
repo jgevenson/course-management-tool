@@ -6,9 +6,9 @@ import { supabase } from './supabaseClient'
 // Components & Pages
 import Auth from './components/Auth'
 import Header from './components/Header'
-import MapCanvas from './components/MapCanvas'
+import MapCanvas from './features/map/components/MapCanvas'
 import Dashboard from './pages/Dashboard'
-import CourseDetails from './pages/CourseDetails'
+import CourseDetails from './features/course/components/CourseDetails'
 import Profile from './pages/Profile'
 
 export default function App() {
