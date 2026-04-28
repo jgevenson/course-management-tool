@@ -1,0 +1,11 @@
+/* AI assisted development */
+@import "tailwindcss";
+
+.leaflet-hole-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.leaflet-hole-marker .leaflet-hole-marker-inner {
+  pointer-events: none;
+}
