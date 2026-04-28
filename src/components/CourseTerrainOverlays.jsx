@@ -4,6 +4,13 @@ import L from 'leaflet'
 import { useMap, useMapEvents } from 'react-leaflet'
 import { styleForRegionPhase } from '../utils/regionTerrain'
 
+const dragHandleIcon = L.divIcon({
+  html: `<div style="background: white; border: 2px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); cursor: move;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"></polyline><polyline points="9 5 12 2 15 5"></polyline><polyline points="19 9 22 12 19 15"></polyline><polyline points="9 19 12 22 15 19"></polyline><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line></svg></div>`,
+  className: 'custom-drag-handle',
+  iconSize: [24, 24],
+  iconAnchor: [12, 12]
+})
+
 /**
  * @typedef {object} TerrainOverlayRow
  * @property {string} id
@@ -55,6 +62,8 @@ export default function CourseTerrainOverlays({
   const suppressRef = useRef(suppressMapInteractions)
   const hoverRef = useRef(/** @type {string | null} */ (null))
   const commitTimerRef = useRef(/** @type {ReturnType<typeof setTimeout> | null} */ (null))
+  const dragHandleRef = useRef(/** @type {L.Marker | null} */ (null))
+  const dragStateRef = useRef(null)
 
   const onGeometryCommitRef = useRef(onGeometryCommit)
   const onSelectIdRef = useRef(onSelectId)
@@ -93,6 +102,9 @@ export default function CourseTerrainOverlays({
     if (!g) return
     const sel = selectedRef.current
     const sup = suppressRef.current
+    
+    let selectedPath = null
+
     g.eachLayer((ly) => {
       const path = /** @type {L.Path & { __overlayId?: string, __terrainType?: string }} */ (ly)
       const id = path.__overlayId
@@ -107,6 +119,7 @@ export default function CourseTerrainOverlays({
       }
       applyPhaseToLayer(path, tt, id === sel ? 'selected' : 'idle')
       if (id === sel) {
+        selectedPath = path
         if (path.pm && !path.pm.enabled()) {
           path.pm.enable({ snappable: true })
         }
@@ -114,8 +127,75 @@ export default function CourseTerrainOverlays({
         path.pm.disable()
       }
     })
+    
+    // Manage drag handle
+    if (selectedPath && !sup) {
+      const center = selectedPath.getBounds().getCenter()
+      
+      const setupDragEvents = (marker, path) => {
+        marker.off('dragstart')
+        marker.off('drag')
+        marker.off('dragend')
+        
+        marker.on('dragstart', (e) => {
+          if (path.pm && path.pm.enabled()) {
+            path.pm.disable()
+          }
+          dragStateRef.current = {
+            startMarkerLatLng: e.target.getLatLng(),
+            startPathLatLngs: path.getLatLngs()
+          }
+        })
+        
+        marker.on('drag', (e) => {
+          if (!dragStateRef.current) return
+          const currentLatLng = e.target.getLatLng()
+          const dLat = currentLatLng.lat - dragStateRef.current.startMarkerLatLng.lat
+          const dLng = currentLatLng.lng - dragStateRef.current.startMarkerLatLng.lng
+          
+          function applyDelta(latlngs) {
+            if (Array.isArray(latlngs)) {
+              return latlngs.map(applyDelta)
+            }
+            return L.latLng(latlngs.lat + dLat, latlngs.lng + dLng)
+          }
+          
+          path.setLatLngs(applyDelta(dragStateRef.current.startPathLatLngs))
+        })
+        
+        marker.on('dragend', () => {
+          if (path.pm) {
+            path.pm.enable({ snappable: true })
+          }
+          dragStateRef.current = null
+          path.fire('pm:update') // trigger save
+        })
+      }
+
+      if (!dragHandleRef.current) {
+        const marker = L.marker(center, {
+          icon: dragHandleIcon,
+          draggable: true,
+          zIndexOffset: 1000
+        })
+        setupDragEvents(marker, selectedPath)
+        marker.addTo(map)
+        dragHandleRef.current = marker
+      } else {
+        if (!dragStateRef.current) {
+          dragHandleRef.current.setLatLng(center)
+        }
+        setupDragEvents(dragHandleRef.current, selectedPath)
+      }
+    } else {
+      if (dragHandleRef.current) {
+        map.removeLayer(dragHandleRef.current)
+        dragHandleRef.current = null
+      }
+    }
+
     applyPlanningPointerPassthrough()
-  }, [applyPhaseToLayer, applyPlanningPointerPassthrough])
+  }, [applyPhaseToLayer, applyPlanningPointerPassthrough, map])
 
   useEffect(() => {
     const g = L.featureGroup()
@@ -125,6 +205,10 @@ export default function CourseTerrainOverlays({
       if (commitTimerRef.current) {
         clearTimeout(commitTimerRef.current)
         commitTimerRef.current = null
+      }
+      if (dragHandleRef.current) {
+        map.removeLayer(dragHandleRef.current)
+        dragHandleRef.current = null
       }
       map.removeLayer(g)
       groupRef.current = null
@@ -177,7 +261,7 @@ export default function CourseTerrainOverlays({
             if (selectedRef.current === row.id) return
             applyPhaseToLayer(path, row.terrain_type, 'idle')
           })
-          path.on('pm:update', () => {
+          const handleGeomUpdate = () => {
             if (!path.__overlayId) return
             if (commitTimerRef.current) clearTimeout(commitTimerRef.current)
             commitTimerRef.current = setTimeout(() => {
@@ -186,7 +270,9 @@ export default function CourseTerrainOverlays({
                 onGeometryCommitRef.current(path.__overlayId, /** @type {GeoJSON.Feature} */ (gj))
               }
             }, 450)
-          })
+          }
+          path.on('pm:update', handleGeomUpdate)
+          path.on('pm:dragend', handleGeomUpdate)
         },
       })
       gjLayer.eachLayer((ly) => g.addLayer(ly))

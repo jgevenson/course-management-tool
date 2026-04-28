@@ -16,6 +16,7 @@
     "leaflet-ellipse": "^0.9.1",
     "leaflet-rotate": "^0.2.8",
     "lucide-react": "^1.9.0",
+    "osmtogeojson": "^3.0.0-beta.5",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-leaflet": "^5.0.0",

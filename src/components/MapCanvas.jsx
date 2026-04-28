@@ -12,7 +12,9 @@ import AutoDrawRegionTool from './AutoDrawRegionTool'
 import RegionDraftPreview from './RegionDraftPreview'
 import { HOLE_MARKER_KIND, activeMarkerLatLng } from '../utils/holeMarkers'
 import { bearingDegrees, mapBearingForTeeBottomGreenTop } from '../utils/holeViewBearing'
-import { isValidTerrainType } from '../utils/regionTerrain'
+import { isValidTerrainType, terrainTypeOptionLabel } from '../utils/regionTerrain'
+import { fetchOSMFeaturesInBbox } from '../utils/osmImport'
+import OSMMapFeaturesLayer from './OSMMapFeaturesLayer'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-rotate/dist/leaflet-rotate.js'
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
@@ -76,6 +78,9 @@ export default function MapCanvas() {
   const [autoDrawTolerance, setAutoDrawTolerance] = useState(AUTO_DRAW_DEFAULT_TOLERANCE)
   const [autoDrawMaxRadiusYards, setAutoDrawMaxRadiusYards] = useState(AUTO_DRAW_DEFAULT_RADIUS_YARDS)
   const [autoDrawMessage, setAutoDrawMessage] = useState(null)
+  
+  const [osmToolActive, setOsmToolActive] = useState(false)
+  const [osmFeaturesData, setOsmFeaturesData] = useState(null)
 
   const [workspaceMode, setWorkspaceMode] = useState(
     /** @returns {'mapping' | 'planning'} */ () => 'mapping',
@@ -88,6 +93,7 @@ export default function MapCanvas() {
       setRegionDrawActive(false)
       setAutoDrawActive(false)
       setAutoDrawMessage(null)
+      setOsmToolActive(false)
       setRegionDraft(null)
       setRegionMessage(null)
       setSelectedTerrainOverlayId(null)
@@ -153,6 +159,7 @@ export default function MapCanvas() {
       setRegionDrawActive(false)
       setAutoDrawActive(false)
       setAutoDrawMessage(null)
+      setOsmToolActive(false)
     }
     setActivePointTool(tool)
   }, [])
@@ -163,6 +170,7 @@ export default function MapCanvas() {
       setSelectedTerrainOverlayId(null)
       setAutoDrawActive(false)
       setAutoDrawMessage(null)
+      setOsmToolActive(false)
     }
     setRegionDrawActive(active)
   }, [])
@@ -173,11 +181,96 @@ export default function MapCanvas() {
       setRegionDrawActive(false)
       setSelectedTerrainOverlayId(null)
       setAutoDrawMessage('Click a clean seed point inside the area to trace.')
+      setOsmToolActive(false)
     } else {
       setAutoDrawMessage(null)
     }
     setAutoDrawActive(active)
   }, [])
+
+  const handleOsmToolActiveChange = useCallback((active) => {
+    if (active) {
+      setActivePointTool(null)
+      setRegionDrawActive(false)
+      setSelectedTerrainOverlayId(null)
+      setAutoDrawActive(false)
+      setAutoDrawMessage(null)
+    } else {
+      setOsmFeaturesData(null)
+    }
+    setOsmToolActive(active)
+  }, [])
+
+  useEffect(() => {
+    if (osmToolActive && mapInstance) {
+      const bounds = mapInstance.getBounds()
+      const minLat = bounds.getSouth()
+      const minLon = bounds.getWest()
+      const maxLat = bounds.getNorth()
+      const maxLon = bounds.getEast()
+
+      setOsmFeaturesData(null)
+      fetchOSMFeaturesInBbox(minLat, minLon, maxLat, maxLon)
+        .then((data) => {
+          if (data && data.features.length > 0) {
+            setOsmFeaturesData(data)
+          } else {
+            console.log('No OSM features found in this area.')
+          }
+        })
+        .catch((err) => {
+          console.error('Failed to fetch OSM features:', err)
+        })
+    }
+  }, [osmToolActive, mapInstance])
+
+  const handleOSMFeatureSelect = useCallback(async (feature, isShiftClick) => {
+    // When an OSM feature is selected...
+    if (isShiftClick) {
+      if (!course?.id) return;
+      
+      let terrainType = feature.properties?.golf || feature.properties?.natural || 'fairway';
+      if (terrainType === 'water_hazard') terrainType = 'water';
+      if (terrainType === 'sand') terrainType = 'bunker';
+      if (!isValidTerrainType(terrainType)) terrainType = 'unknown';
+
+      try {
+        const { data: newOverlay, error: overlayErr } = await supabase.from('terrain_overlays').insert({
+          course_id: course.id,
+          terrain_type: terrainType,
+          geojson_data: feature,
+          label: feature.properties?.name || null
+        }).select().single();
+
+        if (overlayErr) throw overlayErr;
+
+        const currentHole = holes[selectedHoleIndex];
+        if (currentHole?.id && newOverlay?.id) {
+          const { error: linkErr } = await supabase.from('terrain_overlay_holes').insert({
+            terrain_overlay_id: newOverlay.id,
+            hole_id: currentHole.id
+          });
+          if (linkErr) throw linkErr;
+        }
+
+        loadTerrainOverlays();
+        // Do not close the OSM tool so they can continue shift-clicking!
+        setRegionMessage('Imported feature as ' + terrainTypeOptionLabel(terrainType));
+      } catch (err) {
+        console.error('Error auto-importing OSM feature:', err);
+        setRegionMessage('Failed to import feature.');
+      }
+    } else {
+      setOsmToolActive(false)
+      setOsmFeaturesData(null)
+      setRegionDrawActive(false)
+      setAutoDrawActive(false)
+      setSelectedTerrainOverlayId(null)
+      setRegionDraft(feature)
+      setRegionDraftKey((k) => k + 1)
+      setRegionMessage(null)
+    }
+  }, [course?.id, loadTerrainOverlays, holes, selectedHoleIndex])
 
   const handleAutoDrawToleranceChange = useCallback((value) => {
     setAutoDrawTolerance(Number.isFinite(value) ? Math.min(140, Math.max(8, value)) : AUTO_DRAW_DEFAULT_TOLERANCE)
@@ -934,7 +1027,7 @@ export default function MapCanvas() {
                 onSelectId={setSelectedTerrainOverlayId}
                 regionDrawActive={regionDrawActive && workspaceMode === 'mapping'}
                 suppressMapInteractions={
-                  workspaceMode === 'planning' || autoDrawActive || Boolean(regionDraft)
+                  workspaceMode === 'planning' || autoDrawActive || osmToolActive || Boolean(regionDraft) || Boolean(activePointTool)
                 }
                 onPolygonDrawn={handlePolygonDrawn}
                 onGeometryCommit={handleTerrainGeometryCommit}
@@ -949,6 +1042,11 @@ export default function MapCanvas() {
                 onFeatureCreated={handlePolygonDrawn}
                 onStatusChange={setAutoDrawMessage}
               />
+              <OSMMapFeaturesLayer
+                isActive={osmToolActive && workspaceMode === 'mapping' && !regionDraft}
+                geojsonData={osmFeaturesData}
+                onFeatureSelect={handleOSMFeatureSelect}
+              />
               <RegionDraftPreview
                 feature={workspaceMode === 'mapping' ? regionDraft : null}
                 onFeatureChange={handleRegionDraftGeometryChange}
@@ -961,6 +1059,7 @@ export default function MapCanvas() {
                 suppressHoleMapPick={
                   regionDrawActive ||
                   autoDrawActive ||
+                  osmToolActive ||
                   Boolean(regionDraft) ||
                   (workspaceMode === 'planning' &&
                     activePointTool !== 'tee_shot_location' &&
@@ -990,6 +1089,8 @@ export default function MapCanvas() {
         autoDrawMaxRadiusYards={autoDrawMaxRadiusYards}
         onAutoDrawMaxRadiusYardsChange={handleAutoDrawMaxRadiusYardsChange}
         autoDrawMessage={autoDrawMessage}
+        osmToolActive={osmToolActive}
+        onOsmToolActiveChange={handleOsmToolActiveChange}
         regionDraft={regionDraft}
         regionDraftKey={regionDraftKey}
         onDiscardRegionDraft={handleDiscardRegionDraft}

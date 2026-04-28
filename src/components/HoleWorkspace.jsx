@@ -13,6 +13,7 @@ import {
   Trash2,
   WandSparkles,
   Zap,
+  DownloadCloud,
 } from 'lucide-react'
 import { HOLE_MARKER_KIND, markerIsSet } from '../utils/holeMarkers'
 import { TERRAIN_TYPE_OPTIONS, isValidTerrainType, terrainTypeOptionLabel } from '../utils/regionTerrain'
@@ -426,6 +427,8 @@ export default function HoleWorkspace({
   autoDrawMaxRadiusYards,
   onAutoDrawMaxRadiusYardsChange,
   autoDrawMessage,
+  osmToolActive,
+  onOsmToolActiveChange,
   regionDraft,
   regionDraftKey,
   onDiscardRegionDraft,
@@ -646,6 +649,20 @@ export default function HoleWorkspace({
             onClick={() => onAutoDrawActiveChange(!autoDrawActive)}
           />
           )}
+          {!isPlanning && (
+          <ToolButton
+            icon={DownloadCloud}
+            label="Fetch OSM Features"
+            hint={
+              osmToolActive
+                ? 'Click on highlighted map features'
+                : 'Load OpenStreetMap features in this view'
+            }
+            active={osmToolActive}
+            disabled={!selectedHole || Boolean(regionDraft)}
+            onClick={() => onOsmToolActiveChange(!osmToolActive)}
+          />
+          )}
           {!isPlanning && autoDrawActive && (
             <div className="rounded-lg border border-emerald-500/30 bg-slate-900/80 p-3 text-xs text-slate-300">
               <div className="flex items-center justify-between gap-3">
@@ -719,6 +736,7 @@ export default function HoleWorkspace({
                 onActivePointToolChange(null)
                 onRegionDrawActiveChange(false)
                 onAutoDrawActiveChange(false)
+                onOsmToolActiveChange(false)
               }}
               className="text-xs text-slate-400 hover:text-white py-2 transition-all duration-200"
             >

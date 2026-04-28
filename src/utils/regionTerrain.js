@@ -14,6 +14,7 @@ export const TERRAIN_TYPE_OPTIONS = Object.freeze([
   { id: 'water', label: 'Water', fill: '#38bdf8' },
   { id: 'trees_ob', label: 'Trees / OB', fill: '#57534e' },
   { id: 'cart_path', label: 'Cart path', fill: '#94a3b8' },
+  { id: 'unknown', label: 'Unassigned', fill: '#9ca3af' },
 ])
 
 const DEFAULT_FILL = '#64748b'
