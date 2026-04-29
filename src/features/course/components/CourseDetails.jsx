@@ -96,7 +96,7 @@ export default function CourseDetails() {
           className="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-500 transition-all duration-200 shadow-lg shadow-emerald-900/20"
         >
           <Map className="w-5 h-5" aria-hidden />
-          Open map
+          Start Planning
         </Link>
       </div>
 

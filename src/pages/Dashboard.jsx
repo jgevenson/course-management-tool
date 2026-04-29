@@ -4,12 +4,15 @@ import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import { MapPin, Plus, Download } from 'lucide-react'
 import OSMImportModal from '../components/OSMImportModal'
+import { useProfile } from '../hooks/useProfile'
 
 export default function Dashboard() {
   const [courses, setCourses] = useState([])
   const [loading, setLoading] = useState(true)
   const [showImportModal, setShowImportModal] = useState(false)
   const navigate = useNavigate()
+  const { profile } = useProfile()
+  const isMappingAdmin = profile?.is_mapping_admin ?? false
 
   useEffect(() => {
     fetchCourses()
@@ -39,13 +42,15 @@ export default function Dashboard() {
     <div className="p-8 max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-white">Your Courses</h1>
-        <button
-          onClick={() => setShowImportModal(true)}
-          className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-        >
-          <Download className="w-4 h-4" />
-          Import from OpenStreetMap
-        </button>
+        {isMappingAdmin && (
+          <button
+            onClick={() => setShowImportModal(true)}
+            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          >
+            <Download className="w-4 h-4" />
+            Import from OpenStreetMap
+          </button>
+        )}
       </div>
       
       {loading ? (
@@ -55,15 +60,19 @@ export default function Dashboard() {
           <MapPin className="w-12 h-12 text-slate-500 mx-auto mb-4" />
           <h2 className="text-xl font-medium text-white mb-2">No Courses Found</h2>
           <p className="text-slate-400 mb-6 max-w-md mx-auto">
-            You haven't mapped any courses yet. Get a massive head start by importing a course layout directly from OpenStreetMap.
+            {isMappingAdmin
+              ? "You haven't mapped any courses yet. Get a massive head start by importing a course layout directly from OpenStreetMap."
+              : 'No courses are available yet. Check back soon.'}
           </p>
-          <button
-            onClick={() => setShowImportModal(true)}
-            className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-          >
-            <Download className="w-5 h-5" />
-            Import Your First Course
-          </button>
+          {isMappingAdmin && (
+            <button
+              onClick={() => setShowImportModal(true)}
+              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            >
+              <Download className="w-5 h-5" />
+              Import Your First Course
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -1,11 +1,12 @@
 // AI assisted development
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useMapCourse } from '../../../hooks/useMapCourse'
 import { useHoles } from '../../../hooks/useHoles'
 import { useMapTools } from '../../../hooks/useMapTools'
 import { useMapTerrainOverlays } from '../../../hooks/useMapTerrainOverlays'
 import { useMapViewControl } from '../../../hooks/useMapViewControl'
+import { useProfile } from '../../../hooks/useProfile'
 import MapEditorHeader from './MapEditorHeader'
 import MapArea from './MapArea'
 import HoleWorkspace from './HoleWorkspace'
@@ -15,11 +16,21 @@ export default function MapCanvas() {
   const [mapInstance, setMapInstance] = useState(null)
 
   // ── Data hooks ────────────────────────────────────────────
+  const { profile } = useProfile()
+  const isMappingAdmin = profile?.is_mapping_admin ?? false
   const courseState = useMapCourse(id)
   const holesState = useHoles(courseState.course?.id)
   const terrainState = useMapTerrainOverlays(courseState.course?.id)
   const tools = useMapTools(mapInstance)
   useMapViewControl(mapInstance, holesState, courseState.course)
+
+  // Non-admins are locked to planning mode — enforce it if the mode ever
+  // gets set to 'mapping' while the user doesn't have the admin flag.
+  useEffect(() => {
+    if (!isMappingAdmin && tools.workspaceMode !== 'planning') {
+      tools.setWorkspaceMode('planning')
+    }
+  }, [isMappingAdmin, tools])
 
   // ── Derived values ────────────────────────────────────────
   const visibleTerrainOverlays = useMemo(() => {
@@ -153,6 +164,7 @@ export default function MapCanvas() {
         courseName={courseState.course.name}
         workspaceMode={tools.workspaceMode}
         onWorkspaceModeChange={handleWorkspaceModeChange}
+        isMappingAdmin={isMappingAdmin}
         savingLocation={courseState.savingLocation}
         locationFeedback={courseState.locationFeedback}
         usingFallback={courseState.usingFallback}

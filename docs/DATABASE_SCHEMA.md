@@ -1,6 +1,6 @@
 # 🗃️ Database Schema Documentation
 
-*Last Updated: 4/29/2026, 12:37:46 PM*
+*Last Updated: 4/29/2026, 1:41:20 PM*
 
 This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL.
 
@@ -133,6 +133,7 @@ This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL
 | **username** | `text` | - | Optional display name chosen by the user. |
 | **created_at** | `timestamp with time zone` | **NOT NULL**<br>Default: `timezone('utc'::text, now())` | Timestamp when the user profile was created (UTC). |
 | **is_active** | `boolean` | **NOT NULL**<br>Default: `true` | Soft-delete flag for the user profile. |
+| **is_mapping_admin** | `boolean` | **NOT NULL**<br>Default: `false` | - |
 
 ---
 ## 📋 Table: `terrain_overlay_holes`
