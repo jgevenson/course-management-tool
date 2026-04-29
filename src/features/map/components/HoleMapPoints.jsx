@@ -1,105 +1,164 @@
 // AI assisted development
-import { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useRef, useCallback } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { Crosshair, FlagTriangleLeft, MapPin, Navigation2, Zap } from 'lucide-react'
+import { Crosshair, FlagTriangleLeft, MapPin } from 'lucide-react'
 import L from 'leaflet'
 import { Marker, Polyline, useMap, useMapEvents } from 'react-leaflet'
 import { haversineDistanceYards } from '../utils/geoDistance'
-import { HOLE_MARKER_KIND, activeMarkerLatLng } from '../utils/holeMarkers'
+import { HOLE_MARKER_KIND, activeMarkerLatLng, resolvePlanningMarkers } from '../utils/holeMarkers'
 
-const TEE_ICON_SIZE = [20, 26]
-const GREEN_ICON_SIZE = [20, 22]
-const TEE_SHOT_ICON_SIZE = [24, 24]
-const FIRST_SHOT_ICON_SIZE = [24, 24]
-const SECOND_SHOT_ICON_SIZE = [24, 24]
+// ─── Icon builders ────────────────────────────────────────────────────────────
 
 function buildTeeDivIcon() {
   const html = renderToStaticMarkup(
-    <MapPin size={18} strokeWidth={2.25} className="text-amber-400" fill="#fbbf24" color="#f59e0b" />,
+    <MapPin size={18} strokeWidth={2.25} fill="#fbbf24" color="#f59e0b" />,
   )
   return L.divIcon({
-    html: `<div class="leaflet-hole-marker-inner" style="display:flex;justify-content:center;width:${TEE_ICON_SIZE[0]}px;height:${TEE_ICON_SIZE[1]}px">${html}</div>`,
+    html: `<div style="display:flex;justify-content:center;width:20px;height:26px">${html}</div>`,
     className: 'leaflet-hole-marker',
-    iconSize: TEE_ICON_SIZE,
-    iconAnchor: [TEE_ICON_SIZE[0] / 2, TEE_ICON_SIZE[1]],
+    iconSize: [20, 26],
+    iconAnchor: [10, 26],
   })
 }
 
 function buildGreenDivIcon() {
   const html = renderToStaticMarkup(
-    <FlagTriangleLeft size={17} strokeWidth={2.25} className="text-emerald-400" fill="#34d399" color="#10b981" />,
+    <FlagTriangleLeft size={17} strokeWidth={2.25} fill="#34d399" color="#10b981" />,
   )
   return L.divIcon({
-    html: `<div class="leaflet-hole-marker-inner" style="display:flex;justify-content:center;align-items:flex-end;width:${GREEN_ICON_SIZE[0]}px;height:${GREEN_ICON_SIZE[1]}px">${html}</div>`,
+    html: `<div style="display:flex;justify-content:center;align-items:flex-end;width:20px;height:22px">${html}</div>`,
     className: 'leaflet-hole-marker',
-    iconSize: GREEN_ICON_SIZE,
-    iconAnchor: [GREEN_ICON_SIZE[0] / 2, GREEN_ICON_SIZE[1]],
+    iconSize: [20, 22],
+    iconAnchor: [10, 22],
   })
 }
 
 function buildTeeShotDivIcon() {
   const html = renderToStaticMarkup(
-    <Crosshair size={20} strokeWidth={2.5} className="text-sky-400" color="#38bdf8" />,
+    <Crosshair size={20} strokeWidth={2.5} color="#38bdf8" />,
   )
   return L.divIcon({
-    html: `<div class="leaflet-hole-marker-inner" style="display:flex;justify-content:center;align-items:center;width:${TEE_SHOT_ICON_SIZE[0]}px;height:${TEE_SHOT_ICON_SIZE[1]}px">${html}</div>`,
+    html: `<div style="display:flex;justify-content:center;align-items:center;width:24px;height:24px">${html}</div>`,
     className: 'leaflet-hole-marker',
-    iconSize: TEE_SHOT_ICON_SIZE,
-    iconAnchor: [TEE_SHOT_ICON_SIZE[0] / 2, TEE_SHOT_ICON_SIZE[1] / 2],
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
   })
 }
 
-function buildFirstShotDivIcon() {
+function buildLandingDivIcon(number) {
+  return L.divIcon({
+    html: `<div style="display:flex;justify-content:center;align-items:center;width:28px;height:28px;background:#7c3aed;border:2px solid #a78bfa;border-radius:50%;color:white;font-size:12px;font-weight:bold;box-shadow:0 2px 4px rgba(0,0,0,0.4)">${number}</div>`,
+    className: 'leaflet-hole-marker',
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+  })
+}
+
+function buildPinDivIcon() {
   const html = renderToStaticMarkup(
-    <Zap size={19} strokeWidth={2.35} className="text-violet-400" fill="#a78bfa" color="#7c3aed" />,
+    <FlagTriangleLeft size={18} strokeWidth={2.5} fill="#34d399" color="#10b981" />,
   )
   return L.divIcon({
-    html: `<div class="leaflet-hole-marker-inner" style="display:flex;justify-content:center;align-items:center;width:${FIRST_SHOT_ICON_SIZE[0]}px;height:${FIRST_SHOT_ICON_SIZE[1]}px">${html}</div>`,
+    html: `<div style="display:flex;justify-content:center;align-items:center;width:24px;height:24px">${html}</div>`,
     className: 'leaflet-hole-marker',
-    iconSize: FIRST_SHOT_ICON_SIZE,
-    iconAnchor: [FIRST_SHOT_ICON_SIZE[0] / 2, FIRST_SHOT_ICON_SIZE[1] / 2],
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
   })
 }
 
-function buildSecondShotDivIcon() {
-  const html = renderToStaticMarkup(
-    <Navigation2 size={18} strokeWidth={2.35} className="text-amber-400" color="#fbbf24" />,
-  )
+function buildYardsLabel(yards) {
   return L.divIcon({
-    html: `<div class="leaflet-hole-marker-inner" style="display:flex;justify-content:center;align-items:center;width:${SECOND_SHOT_ICON_SIZE[0]}px;height:${SECOND_SHOT_ICON_SIZE[1]}px">${html}</div>`,
-    className: 'leaflet-hole-marker',
-    iconSize: SECOND_SHOT_ICON_SIZE,
-    iconAnchor: [SECOND_SHOT_ICON_SIZE[0] / 2, SECOND_SHOT_ICON_SIZE[1] / 2],
-  })
-}
-
-/**
- * @param {number} yards Rounded display yards
- */
-function buildYardsLabelDivIcon(yards) {
-  const html = `<div style="padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;color:#fff;background:rgba(0,0,0,0.82);border:1px solid rgba(255,255,255,0.35);white-space:nowrap;pointer-events:none">${yards}&nbsp;yd</div>`
-  return L.divIcon({
-    html,
-    className: 'leaflet-hole-marker leaflet-distance-label',
+    html: `<div style="padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;color:#fff;background:rgba(0,0,0,0.82);border:1px solid rgba(255,255,255,0.35);white-space:nowrap;pointer-events:none">${yards}&nbsp;yd</div>`,
+    className: 'leaflet-distance-label',
     iconSize: [64, 22],
     iconAnchor: [32, 11],
   })
 }
 
+// ─── Imperative polyline updater ──────────────────────────────────────────────
+
+/**
+ * Given the current live positions of all markers (as a Map from key -> {lat, lng}),
+ * recompute the segments and update the Leaflet polylines and label markers imperatively.
+ */
+function updateLinesImperative(
+  sequence,          // resolved planning sequence (from React state)
+  livePositions,     // Map<key, {lat, lng}> of all current positions (overrides)
+  polylineRefs,      // array of Leaflet Polyline instances
+  labelRefs,         // array of Leaflet Marker instances (distance labels)
+) {
+  if (!polylineRefs || !labelRefs) return
+
+  for (let i = 0; i < sequence.length - 1; i++) {
+    const start = sequence[i]
+    const end = sequence[i + 1]
+    const startKey = start.id || `default-${start.marker_type}`
+    const endKey = end.id || `default-${end.marker_type}`
+
+    const startLive = livePositions.get(startKey)
+    const endLive = livePositions.get(endKey)
+
+    const startLat = startLive ? startLive.lat : Number(start.lat)
+    const startLng = startLive ? startLive.lng : Number(start.long ?? start.lng)
+    const endLat = endLive ? endLive.lat : Number(end.lat)
+    const endLng = endLive ? endLive.lng : Number(end.long ?? end.lng)
+
+    const polyline = polylineRefs[i]
+    const label = labelRefs[i]
+
+    if (polyline) {
+      polyline.setLatLngs([[startLat, startLng], [endLat, endLng]])
+    }
+
+    if (label) {
+      const yards = Math.round(haversineDistanceYards(startLat, startLng, endLat, endLng))
+      label.setLatLng([(startLat + endLat) / 2, (startLng + endLng) / 2])
+      label.setIcon(buildYardsLabel(yards))
+    }
+  }
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
 export default function HoleMapPoints({
   selectedHole,
   activePointTool,
   onPick,
+  onMarkerMove,
+  onMapMarkerMove,
   suppressHoleMapPick,
   workspaceMode = 'mapping',
 }) {
   const map = useMap()
 
-  const teeIcon = useMemo(() => buildTeeDivIcon(), [])
-  const greenIcon = useMemo(() => buildGreenDivIcon(), [])
+  const teeIcon    = useMemo(() => buildTeeDivIcon(), [])
+  const greenIcon  = useMemo(() => buildGreenDivIcon(), [])
   const teeShotIcon = useMemo(() => buildTeeShotDivIcon(), [])
-  const firstShotIcon = useMemo(() => buildFirstShotDivIcon(), [])
-  const secondShotIcon = useMemo(() => buildSecondShotDivIcon(), [])
+  const pinIcon    = useMemo(() => buildPinDivIcon(), [])
+
+  // Refs to the Leaflet polyline / label instances for imperative updates during drag
+  const polylineRefs = useRef([])
+  const labelRefs    = useRef([])
+
+  // Live positions during drag — plain Map (not React state), so no re-renders
+  const livePositions = useRef(new Map())
+
+  const planningSequence = useMemo(
+    () => resolvePlanningMarkers(selectedHole),
+    [selectedHole],
+  )
+
+  // Clear live positions when hole changes
+  useEffect(() => {
+    livePositions.current = new Map()
+  }, [selectedHole?.id])
+
+  // Cursor
+  useEffect(() => {
+    const el = map.getContainer()
+    el.style.cursor = (activePointTool && !suppressHoleMapPick) ? 'crosshair' : ''
+    return () => { el.style.cursor = '' }
+  }, [map, activePointTool, suppressHoleMapPick])
 
   useMapEvents({
     click(e) {
@@ -110,256 +169,154 @@ export default function HoleMapPoints({
     },
   })
 
-  useEffect(() => {
-    const el = map.getContainer()
-    if (activePointTool && !suppressHoleMapPick) {
-      el.style.cursor = 'crosshair'
+  // ── Planning marker drag handlers ──────────────────────────────────────────
+
+  const handlePlanningDrag = useCallback((marker, e) => {
+    const key = marker.id || `default-${marker.marker_type}`
+    livePositions.current.set(key, e.latlng)
+    updateLinesImperative(
+      planningSequence,
+      livePositions.current,
+      polylineRefs.current,
+      labelRefs.current,
+    )
+  }, [planningSequence])
+
+  const handlePlanningDragEnd = useCallback(async (marker, e) => {
+    const latlng = e.target.getLatLng()
+    const lat = Math.round(latlng.lat * 1e6) / 1e6
+    const lng = Math.round(latlng.lng * 1e6) / 1e6
+
+    if (marker.id) {
+      await onMarkerMove(marker.id, lat, lng)
     } else {
-      el.style.cursor = ''
+      // Default marker — save it as a new planning marker
+      await onPick(marker.marker_type, lat, lng)
     }
-    return () => {
-      el.style.cursor = ''
+
+    // Clear the live override so React's updated state takes over display
+    const key = marker.id || `default-${marker.marker_type}`
+    livePositions.current.delete(key)
+  }, [onMarkerMove, onPick])
+
+  // ── Map marker drag handlers ───────────────────────────────────────────────
+
+  const handleMapMarkerDragEnd = useCallback(async (kind, e) => {
+    const latlng = e.target.getLatLng()
+    const lat = Math.round(latlng.lat * 1e6) / 1e6
+    const lng = Math.round(latlng.lng * 1e6) / 1e6
+    await onMapMarkerMove(kind, lat, lng)
+  }, [onMapMarkerMove])
+
+  // ── Compute initial segment data for first render ──────────────────────────
+
+  const initialSegments = useMemo(() => {
+    const segs = []
+    for (let i = 0; i < planningSequence.length - 1; i++) {
+      const start = planningSequence[i]
+      const end = planningSequence[i + 1]
+      const startLng = Number(start.long ?? start.lng)
+      const endLng = Number(end.long ?? end.lng)
+      const yards = Math.round(
+        haversineDistanceYards(Number(start.lat), startLng, Number(end.lat), endLng),
+      )
+      segs.push({
+        positions: [[Number(start.lat), startLng], [Number(end.lat), endLng]],
+        midpoint: [(Number(start.lat) + Number(end.lat)) / 2, (startLng + endLng) / 2],
+        yards,
+      })
     }
-  }, [map, activePointTool, suppressHoleMapPick])
-
-  const green = selectedHole
-    ? activeMarkerLatLng(selectedHole, HOLE_MARKER_KIND.GREEN_CENTER)
-    : null
-  const tee = selectedHole ? activeMarkerLatLng(selectedHole, HOLE_MARKER_KIND.TEE_BACK) : null
-  const teeShot = selectedHole
-    ? activeMarkerLatLng(selectedHole, HOLE_MARKER_KIND.TEE_SHOT_LOCATION)
-    : null
-  const firstShot = selectedHole
-    ? activeMarkerLatLng(selectedHole, HOLE_MARKER_KIND.FIRST_SHOT_LOCATION)
-    : null
-  const secondShot = selectedHole
-    ? activeMarkerLatLng(selectedHole, HOLE_MARKER_KIND.SECOND_SHOT_LOCATION)
-    : null
-  const showTeeMarker = workspaceMode !== 'planning'
-
-  /**
-   * Tee → explicit first landing, OR tee → green center when first shot is unset
-   * (short holes: implied target is the flag / green center).
-   */
-  const teeToFirstLandingLinePositions =
-    teeShot && firstShot
-      ? [
-          [Number(teeShot.lat), Number(teeShot.lng)],
-          [Number(firstShot.lat), Number(firstShot.lng)],
-        ]
-      : teeShot && green && !firstShot
-        ? [
-            [Number(teeShot.lat), Number(teeShot.lng)],
-            [Number(green.lat), Number(green.lng)],
-          ]
-        : null
-
-  const yardsTeeToFirstLandingRounded =
-    teeShot && firstShot
-      ? Math.round(
-          haversineDistanceYards(
-            Number(teeShot.lat),
-            Number(teeShot.lng),
-            Number(firstShot.lat),
-            Number(firstShot.lng),
-          ),
-        )
-      : teeShot && green && !firstShot
-        ? Math.round(
-            haversineDistanceYards(
-              Number(teeShot.lat),
-              Number(teeShot.lng),
-              Number(green.lat),
-              Number(green.lng),
-            ),
-          )
-        : null
-
-  const midpointTeeToFirstLandingIcon = useMemo(() => {
-    if (yardsTeeToFirstLandingRounded == null) return null
-    return buildYardsLabelDivIcon(yardsTeeToFirstLandingRounded)
-  }, [yardsTeeToFirstLandingRounded])
-
-  const midpointTeeToFirstLandingPosition =
-    teeShot && firstShot
-      ? [
-          (Number(teeShot.lat) + Number(firstShot.lat)) / 2,
-          (Number(teeShot.lng) + Number(firstShot.lng)) / 2,
-        ]
-      : teeShot && green && !firstShot
-        ? [
-            (Number(teeShot.lat) + Number(green.lat)) / 2,
-            (Number(teeShot.lng) + Number(green.lng)) / 2,
-          ]
-        : null
-
-  /** First shot → second shot (optional) */
-  const firstToSecondLinePositions =
-    firstShot && secondShot
-      ? [
-          [Number(firstShot.lat), Number(firstShot.lng)],
-          [Number(secondShot.lat), Number(secondShot.lng)],
-        ]
-      : null
-
-  const yardsFirstToSecondRounded =
-    firstShot && secondShot
-      ? Math.round(
-          haversineDistanceYards(
-            Number(firstShot.lat),
-            Number(firstShot.lng),
-            Number(secondShot.lat),
-            Number(secondShot.lng),
-          ),
-        )
-      : null
-
-  const midpointFirstToSecondIcon = useMemo(() => {
-    if (yardsFirstToSecondRounded == null) return null
-    return buildYardsLabelDivIcon(yardsFirstToSecondRounded)
-  }, [yardsFirstToSecondRounded])
-
-  const midpointFirstToSecondPosition =
-    firstShot && secondShot
-      ? [
-          (Number(firstShot.lat) + Number(secondShot.lat)) / 2,
-          (Number(firstShot.lng) + Number(secondShot.lng)) / 2,
-        ]
-      : null
-
-  /**
-   * After an explicit first-shot point only: second → green, or first → green.
-   * When first shot is omitted (short hole), tee→green above already ends at the flag — no duplicate leg.
-   */
-  const intoGreenLinePositions =
-    !firstShot || !green
-      ? null
-      : secondShot
-        ? [
-            [Number(secondShot.lat), Number(secondShot.lng)],
-            [Number(green.lat), Number(green.lng)],
-          ]
-        : [
-            [Number(firstShot.lat), Number(firstShot.lng)],
-            [Number(green.lat), Number(green.lng)],
-          ]
-
-  const yardsIntoGreenRounded =
-    !firstShot
-      ? null
-      : green && secondShot
-        ? Math.round(
-            haversineDistanceYards(
-              Number(secondShot.lat),
-              Number(secondShot.lng),
-              Number(green.lat),
-              Number(green.lng),
-            ),
-          )
-        : green && firstShot && !secondShot
-          ? Math.round(
-              haversineDistanceYards(
-                Number(firstShot.lat),
-                Number(firstShot.lng),
-                Number(green.lat),
-                Number(green.lng),
-              ),
-            )
-          : null
-
-  const midpointIntoGreenIcon = useMemo(() => {
-    if (yardsIntoGreenRounded == null) return null
-    return buildYardsLabelDivIcon(yardsIntoGreenRounded)
-  }, [yardsIntoGreenRounded])
-
-  const midpointIntoGreenPosition =
-    !firstShot
-      ? null
-      : green && secondShot
-        ? [
-            (Number(secondShot.lat) + Number(green.lat)) / 2,
-            (Number(secondShot.lng) + Number(green.lng)) / 2,
-          ]
-        : green && firstShot && !secondShot
-          ? [
-              (Number(firstShot.lat) + Number(green.lat)) / 2,
-              (Number(firstShot.lng) + Number(green.lng)) / 2,
-            ]
-          : null
+    return segs
+  }, [planningSequence])
 
   if (!selectedHole) return null
 
+  // ── Mapping mode ───────────────────────────────────────────────────────────
+
+  if (workspaceMode === 'mapping') {
+    const green = activeMarkerLatLng(selectedHole, HOLE_MARKER_KIND.GREEN_CENTER)
+    const tee   = activeMarkerLatLng(selectedHole, HOLE_MARKER_KIND.TEE_BACK)
+    return (
+      <>
+        {tee && (
+          <Marker
+            position={[Number(tee.lat), Number(tee.lng)]}
+            icon={teeIcon}
+            draggable={!activePointTool}
+            eventHandlers={{
+              dragend: (e) => handleMapMarkerDragEnd(HOLE_MARKER_KIND.TEE_BACK, e),
+            }}
+          />
+        )}
+        {green && (
+          <Marker
+            position={[Number(green.lat), Number(green.lng)]}
+            icon={greenIcon}
+            draggable={!activePointTool}
+            eventHandlers={{
+              dragend: (e) => handleMapMarkerDragEnd(HOLE_MARKER_KIND.GREEN_CENTER, e),
+            }}
+          />
+        )}
+      </>
+    )
+  }
+
+  // ── Planning / Strategist mode ─────────────────────────────────────────────
+
   return (
     <>
-      {teeToFirstLandingLinePositions && (
-        <Polyline
-          positions={teeToFirstLandingLinePositions}
-          pathOptions={{ color: '#000000', weight: 2, opacity: 1 }}
-          interactive={false}
-        />
-      )}
-      {midpointTeeToFirstLandingPosition && midpointTeeToFirstLandingIcon && (
-        <Marker
-          position={midpointTeeToFirstLandingPosition}
-          icon={midpointTeeToFirstLandingIcon}
-          interactive={false}
-        />
-      )}
-      {firstToSecondLinePositions && (
-        <Polyline
-          positions={firstToSecondLinePositions}
-          pathOptions={{ color: '#000000', weight: 2, opacity: 1 }}
-          interactive={false}
-        />
-      )}
-      {midpointFirstToSecondPosition && midpointFirstToSecondIcon && (
-        <Marker position={midpointFirstToSecondPosition} icon={midpointFirstToSecondIcon} interactive={false} />
-      )}
-      {intoGreenLinePositions && (
-        <Polyline
-          positions={intoGreenLinePositions}
-          pathOptions={{ color: '#000000', weight: 2, opacity: 1 }}
-          interactive={false}
-        />
-      )}
-      {midpointIntoGreenPosition && midpointIntoGreenIcon && (
-        <Marker position={midpointIntoGreenPosition} icon={midpointIntoGreenIcon} interactive={false} />
-      )}
-      {tee && showTeeMarker && (
-        <Marker
-          position={[Number(tee.lat), Number(tee.lng)]}
-          icon={teeIcon}
-          interactive={false}
-        />
-      )}
-      {green && (
-        <Marker
-          position={[Number(green.lat), Number(green.lng)]}
-          icon={greenIcon}
-          interactive={false}
-        />
-      )}
-      {teeShot && (
-        <Marker
-          position={[Number(teeShot.lat), Number(teeShot.lng)]}
-          icon={teeShotIcon}
-          interactive={false}
-        />
-      )}
-      {firstShot && (
-        <Marker
-          position={[Number(firstShot.lat), Number(firstShot.lng)]}
-          icon={firstShotIcon}
-          interactive={false}
-        />
-      )}
-      {secondShot && (
-        <Marker
-          position={[Number(secondShot.lat), Number(secondShot.lng)]}
-          icon={secondShotIcon}
-          interactive={false}
-        />
-      )}
+      {/* Polylines + distance labels — rendered with React but updated imperatively during drag */}
+      {initialSegments.map((seg, idx) => (
+        <React.Fragment key={`seg-${idx}`}>
+          <Polyline
+            positions={seg.positions}
+            pathOptions={{ color: '#ffffff', weight: 3, opacity: 0.6, dashArray: '5, 8' }}
+            interactive={false}
+            ref={(el) => {
+              // el is the React-Leaflet Polyline component; get the underlying Leaflet layer
+              if (el) polylineRefs.current[idx] = el
+            }}
+          />
+          <Marker
+            position={seg.midpoint}
+            icon={buildYardsLabel(seg.yards)}
+            interactive={false}
+            ref={(el) => {
+              if (el) labelRefs.current[idx] = el
+            }}
+          />
+        </React.Fragment>
+      ))}
+
+      {/* Planning markers — draggable, position prop NEVER changes during drag */}
+      {planningSequence.map((m, idx) => {
+        const lng = Number(m.long ?? m.lng)
+        let icon
+        if (m.marker_type === 'tee_shot_location') {
+          icon = teeShotIcon
+        } else if (m.marker_type === 'pin_location') {
+          icon = pinIcon
+        } else {
+          const landingIdx = planningSequence
+            .slice(0, idx + 1)
+            .filter(x => x.marker_type === 'landing_area').length
+          icon = buildLandingDivIcon(landingIdx)
+        }
+
+        return (
+          <Marker
+            key={m.id || `default-${m.marker_type}`}
+            position={[Number(m.lat), lng]}
+            icon={icon}
+            draggable={!activePointTool}
+            eventHandlers={{
+              drag:    (e) => handlePlanningDrag(m, e),
+              dragend: (e) => handlePlanningDragEnd(m, e),
+            }}
+          />
+        )
+      })}
     </>
   )
 }

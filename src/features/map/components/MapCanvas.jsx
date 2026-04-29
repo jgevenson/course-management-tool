@@ -197,6 +197,8 @@ export default function MapCanvas() {
             selectedHole={holesState.selectedHole}
             activePointTool={tools.activePointTool}
             onMarkerPick={handleMarkerPick}
+            onMarkerMove={holesState.movePlanningMarker}
+            onMapMarkerMove={holesState.moveMapMarker}
             workspaceMode={tools.workspaceMode}
             suppressHoleMapPick={
               tools.regionDrawActive ||
@@ -205,8 +207,8 @@ export default function MapCanvas() {
               Boolean(tools.regionDraft) ||
               (isPlanning &&
                 tools.activePointTool !== 'tee_shot_location' &&
-                tools.activePointTool !== 'first_shot_location' &&
-                tools.activePointTool !== 'second_shot_location')
+                tools.activePointTool !== 'landing_area' &&
+                tools.activePointTool !== 'pin_location')
             }
           />
         }
@@ -247,6 +249,8 @@ export default function MapCanvas() {
         onRemovePlanningMarker={holesState.removePlanningMarker}
         removePlanningSaving={holesState.removePlanningSaving}
         removePlanningMessage={holesState.removePlanningMessage}
+        onMarkerMove={holesState.movePlanningMarker}
+        onMapMarkerMove={holesState.moveMapMarker}
       />
     </div>
   )

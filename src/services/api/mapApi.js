@@ -50,7 +50,10 @@ export const mapApi = {
     const holeIds = list.map((h) => h.id)
 
     let markers = []
+    let planningMarkers = []
+
     if (holeIds.length > 0) {
+      // Map markers (reference points)
       const { data: markerRows, error: mErr } = await supabase
         .from('hole_map_markers')
         .select('id, hole_id, marker_kind, lat, lng, is_active')
@@ -60,11 +63,23 @@ export const mapApi = {
       if (!mErr && markerRows) {
         markers = markerRows
       }
+
+      // Planning markers (strategy points)
+      const { data: pRows, error: pErr } = await supabase
+        .from('hole_planning_markers')
+        .select('id, hole_id, marker_type, sequence_order, lat, long')
+        .in('hole_id', holeIds)
+        .order('sequence_order')
+
+      if (!pErr && pRows) {
+        planningMarkers = pRows
+      }
     }
 
     return list.map((h) => ({
       ...h,
       mapMarkers: markers.filter((m) => m.hole_id === h.id),
+      planningMarkers: planningMarkers.filter((m) => m.hole_id === h.id),
     }))
   },
 
@@ -86,7 +101,7 @@ export const mapApi = {
   },
 
   /**
-   * Soft-delete planning markers by setting is_active = false.
+   * Soft-delete map markers by setting is_active = false.
    */
   deactivateMarkers: async (holeId, kinds) => {
     for (const k of kinds) {
@@ -98,6 +113,66 @@ export const mapApi = {
 
       if (error) throw error
     }
+  },
+
+  /**
+   * Upsert a planning marker (tee shot, landing area, pin).
+   */
+  upsertPlanningMarker: async (holeId, markerType, sequenceOrder, lat, long) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) throw new Error('Not authenticated')
+
+    // For landing areas, we don't have a unique constraint on hole_id + marker_type + sequence_order
+    // in the same way, but we should handle it.
+    // If it's a tee_shot or pin_location, we can treat it as unique for the hole.
+    // Landing areas are multiple.
+
+    // Use upsert for all planning markers. 
+    // The unique index covers hole_id, user_id, marker_type, and sequence_order.
+    const { data, error } = await supabase
+      .from('hole_planning_markers')
+      .upsert(
+        {
+          hole_id: holeId,
+          user_id: user.id,
+          marker_type: markerType,
+          sequence_order: sequenceOrder,
+          lat,
+          long,
+        },
+        { onConflict: 'hole_id,user_id,marker_type,sequence_order' }
+      )
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  },
+
+  /**
+   * Move an existing planning marker by ID.
+   */
+  movePlanningMarker: async (markerId, lat, long) => {
+    const { data, error } = await supabase
+      .from('hole_planning_markers')
+      .update({ lat, long })
+      .eq('id', markerId)
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  },
+
+  /**
+   * Hard-delete a planning marker (landing area).
+   */
+  deletePlanningMarker: async (markerId) => {
+    const { error } = await supabase.from('hole_planning_markers').delete().eq('id', markerId)
+
+    if (error) throw error
   },
 
   /**

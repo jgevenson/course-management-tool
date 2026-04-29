@@ -39,8 +39,8 @@ export function useMapTools(mapInstance) {
     } else {
       setActivePointToolRaw((prev) =>
         prev === 'tee_shot_location' ||
-        prev === 'first_shot_location' ||
-        prev === 'second_shot_location'
+        prev === 'landing_area' ||
+        prev === 'pin_location'
           ? null
           : prev,
       )

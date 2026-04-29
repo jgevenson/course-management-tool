@@ -61,6 +61,8 @@ export default function MapArea({
   selectedHole,
   activePointTool,
   onMarkerPick,
+  onMarkerMove,
+  onMapMarkerMove,
   workspaceMode,
   suppressHoleMapPick,
 }) {
@@ -120,6 +122,8 @@ export default function MapArea({
           selectedHole={selectedHole}
           activePointTool={activePointTool}
           onPick={onMarkerPick}
+          onMarkerMove={onMarkerMove}
+          onMapMarkerMove={onMapMarkerMove}
           workspaceMode={workspaceMode}
           suppressHoleMapPick={suppressHoleMapPick}
         />

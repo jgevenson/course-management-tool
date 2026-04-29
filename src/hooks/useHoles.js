@@ -63,22 +63,58 @@ export function useHoles(courseId) {
       if (!hole) return null
       setMarkerMessage(null)
 
-      let marker_kind
-      if (tool === 'green_center') marker_kind = HOLE_MARKER_KIND.GREEN_CENTER
-      else if (tool === 'tee_back') marker_kind = HOLE_MARKER_KIND.TEE_BACK
-      else if (tool === 'tee_shot_location') marker_kind = HOLE_MARKER_KIND.TEE_SHOT_LOCATION
-      else if (tool === 'first_shot_location') marker_kind = HOLE_MARKER_KIND.FIRST_SHOT_LOCATION
-      else if (tool === 'second_shot_location') marker_kind = HOLE_MARKER_KIND.SECOND_SHOT_LOCATION
-      else return null
+      // Handle map markers
+      if (tool === 'green_center' || tool === 'tee_back') {
+        const marker_kind = tool === 'green_center' ? HOLE_MARKER_KIND.GREEN_CENTER : HOLE_MARKER_KIND.TEE_BACK
+        try {
+          const data = await mapApi.upsertHoleMarker(hole.id, marker_kind, lat, lng)
+
+          setHoles((prev) =>
+            prev.map((h) => {
+              if (h.id !== hole.id) return h
+              const rest = (h.mapMarkers ?? []).filter((m) => m.marker_kind !== marker_kind)
+              return { ...h, mapMarkers: [...rest, data] }
+            }),
+          )
+          return data
+        } catch (err) {
+          setMarkerMessage(err.message)
+          return null
+        }
+      }
+
+      // Handle planning markers
+      let markerType
+      let sequenceOrder
+      if (tool === 'tee_shot_location') {
+        markerType = 'tee_shot_location'
+        sequenceOrder = 0
+      } else if (tool === 'pin_location') {
+        markerType = 'pin_location'
+        sequenceOrder = 99
+      } else if (tool === 'landing_area') {
+        markerType = 'landing_area'
+        // Find next sequence order for landing areas (1, 2, 3...)
+        const landingAreas = (hole.planningMarkers ?? []).filter(m => m.marker_type === 'landing_area')
+        sequenceOrder = landingAreas.length + 1
+      } else {
+        return null
+      }
 
       try {
-        const data = await mapApi.upsertHoleMarker(hole.id, marker_kind, lat, lng)
+        const data = await mapApi.upsertPlanningMarker(hole.id, markerType, sequenceOrder, lat, lng)
 
         setHoles((prev) =>
           prev.map((h) => {
             if (h.id !== hole.id) return h
-            const rest = (h.mapMarkers ?? []).filter((m) => m.marker_kind !== marker_kind)
-            return { ...h, mapMarkers: [...rest, data] }
+            let newMarkers
+            if (markerType === 'landing_area') {
+              newMarkers = [...(h.planningMarkers ?? []), data]
+            } else {
+              const rest = (h.planningMarkers ?? []).filter((m) => m.marker_type !== markerType)
+              newMarkers = [...rest, data]
+            }
+            return { ...h, planningMarkers: newMarkers.sort((a, b) => a.sequence_order - b.sequence_order) }
           }),
         )
         return data
@@ -91,37 +127,24 @@ export function useHoles(courseId) {
   )
 
   /**
-   * Remove planning markers (cascading: tee_shot removes first+second too).
+   * Remove a planning marker by ID (hard delete).
    */
   const removePlanningMarker = useCallback(
-    async (markerKind) => {
+    async (markerId) => {
       const hole = holes[selectedHoleIndex]
       if (!hole?.id) return
       setRemovePlanningSaving(true)
       setRemovePlanningMessage(null)
 
-      const kindsToClear =
-        markerKind === HOLE_MARKER_KIND.TEE_SHOT_LOCATION
-          ? [
-              HOLE_MARKER_KIND.TEE_SHOT_LOCATION,
-              HOLE_MARKER_KIND.FIRST_SHOT_LOCATION,
-              HOLE_MARKER_KIND.SECOND_SHOT_LOCATION,
-            ]
-          : markerKind === HOLE_MARKER_KIND.FIRST_SHOT_LOCATION
-            ? [HOLE_MARKER_KIND.FIRST_SHOT_LOCATION, HOLE_MARKER_KIND.SECOND_SHOT_LOCATION]
-            : [HOLE_MARKER_KIND.SECOND_SHOT_LOCATION]
-
-      const kindSet = new Set(kindsToClear)
-
       try {
-        await mapApi.deactivateMarkers(hole.id, kindsToClear)
+        await mapApi.deletePlanningMarker(markerId)
 
         setHoles((prev) =>
           prev.map((h) => {
             if (h.id !== hole.id) return h
             return {
               ...h,
-              mapMarkers: (h.mapMarkers ?? []).filter((m) => !kindSet.has(m.marker_kind)),
+              planningMarkers: (h.planningMarkers ?? []).filter((m) => m.id !== markerId),
             }
           }),
         )
@@ -137,8 +160,58 @@ export function useHoles(courseId) {
   )
 
   /**
-   * Save hole stats (par, stroke index, scorecard yardage).
+   * Move an existing planning marker (hard-saved in DB).
    */
+  const movePlanningMarker = useCallback(
+    async (markerId, lat, lng) => {
+      const hole = holes[selectedHoleIndex]
+      if (!hole?.id) return
+
+      try {
+        const data = await mapApi.movePlanningMarker(markerId, lat, lng)
+
+        setHoles((prev) =>
+          prev.map((h) => {
+            if (h.id !== hole.id) return h
+            return {
+              ...h,
+              planningMarkers: (h.planningMarkers ?? []).map((m) =>
+                m.id === markerId ? data : m
+              ),
+            }
+          }),
+        )
+      } catch (err) {
+        setMarkerMessage(err.message)
+      }
+    },
+    [holes, selectedHoleIndex],
+  )
+
+  /**
+   * Move a map marker (reference point).
+   */
+  const moveMapMarker = useCallback(
+    async (markerKind, lat, lng) => {
+      const hole = holes[selectedHoleIndex]
+      if (!hole?.id) return
+
+      try {
+        const data = await mapApi.upsertHoleMarker(hole.id, markerKind, lat, lng)
+
+        setHoles((prev) =>
+          prev.map((h) => {
+            if (h.id !== hole.id) return h
+            const rest = (h.mapMarkers ?? []).filter((m) => m.marker_kind !== markerKind)
+            return { ...h, mapMarkers: [...rest, data] }
+          }),
+        )
+      } catch (err) {
+        setMarkerMessage(err.message)
+      }
+    },
+    [holes, selectedHoleIndex],
+  )
   const saveHoleStats = useCallback(
     async (holeId, payload) => {
       setStatsSaving(true)
@@ -179,6 +252,8 @@ export function useHoles(courseId) {
     selectedHole,
     selectHoleIndex,
     placeMarker,
+    movePlanningMarker,
+    moveMapMarker,
     removePlanningMarker,
     saveHoleStats,
     statsSaving,

@@ -95,12 +95,9 @@ export default function HoleWorkspace({
 
   const greenOk = selectedHole && markerIsSet(selectedHole, HOLE_MARKER_KIND.GREEN_CENTER)
   const teeOk = selectedHole && markerIsSet(selectedHole, HOLE_MARKER_KIND.TEE_BACK)
-  const teeShotOk =
-    selectedHole && markerIsSet(selectedHole, HOLE_MARKER_KIND.TEE_SHOT_LOCATION)
-  const firstShotOk =
-    selectedHole && markerIsSet(selectedHole, HOLE_MARKER_KIND.FIRST_SHOT_LOCATION)
-  const secondShotOk =
-    selectedHole && markerIsSet(selectedHole, HOLE_MARKER_KIND.SECOND_SHOT_LOCATION)
+  const teeShotOk = selectedHole?.planningMarkers?.some(m => m.marker_type === 'tee_shot_location')
+  const pinOk = selectedHole?.planningMarkers?.some(m => m.marker_type === 'pin_location')
+  const landingCount = selectedHole?.planningMarkers?.filter(m => m.marker_type === 'landing_area').length ?? 0
 
   return (
     <div className="flex flex-1 min-h-0 w-full min-w-0">
@@ -170,8 +167,8 @@ export default function HoleWorkspace({
               label="Tee shot location"
               hint={
                 teeShotOk
-                  ? 'Placed — click map to move'
-                  : 'Click map where you expect to hit the tee shot from'
+                  ? 'Set — click map to move'
+                  : 'Defaults to back tee if not set'
               }
               active={activePointTool === 'tee_shot_location'}
               disabled={!selectedHole}
@@ -185,21 +182,17 @@ export default function HoleWorkspace({
           {isPlanning && (
             <ToolButton
               icon={Zap}
-              label="Planned first shot"
+              label="Add landing zone"
               hint={
-                firstShotOk
-                  ? 'Placed — click map to move'
-                  : teeShotOk && greenOk
-                    ? 'Optional — short holes skip this (yardage tee→green uses flag center)'
-                    : teeShotOk
-                      ? 'Place green center in Mapping mode for tee-to-flag yardage; add this point for longer holes'
-                      : 'Place tee shot location first'
+                landingCount > 0
+                  ? `${landingCount} placed — click map to add another`
+                  : 'Click map to place sequential landing points'
               }
-              active={activePointTool === 'first_shot_location'}
-              disabled={!selectedHole || !teeShotOk}
+              active={activePointTool === 'landing_area'}
+              disabled={!selectedHole}
               onClick={() =>
                 onActivePointToolChange(
-                  activePointTool === 'first_shot_location' ? null : 'first_shot_location',
+                  activePointTool === 'landing_area' ? null : 'landing_area',
                 )
               }
             />
@@ -207,19 +200,17 @@ export default function HoleWorkspace({
           {isPlanning && (
             <ToolButton
               icon={Navigation2}
-              label="Planned second shot"
+              label="Pin location"
               hint={
-                secondShotOk
-                  ? 'Placed — click map to move'
-                  : firstShotOk
-                    ? 'Optional: for long holes, where the second shot should be played from or to'
-                    : 'Place the first shot first'
+                pinOk
+                  ? 'Set — click map to move'
+                  : 'Defaults to green center if not set'
               }
-              active={activePointTool === 'second_shot_location'}
-              disabled={!selectedHole || !firstShotOk}
+              active={activePointTool === 'pin_location'}
+              disabled={!selectedHole}
               onClick={() =>
                 onActivePointToolChange(
-                  activePointTool === 'second_shot_location' ? null : 'second_shot_location',
+                  activePointTool === 'pin_location' ? null : 'pin_location',
                 )
               }
             />
@@ -367,7 +358,7 @@ export default function HoleWorkspace({
               }}
               className="text-xs text-slate-400 hover:text-white py-2 transition-all duration-200"
             >
-              Cancel placement / draw
+              Cancel tool
             </button>
           )}
           {!isPlanning && regionDraft && selectedHole && (
