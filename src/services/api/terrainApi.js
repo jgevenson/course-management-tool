@@ -3,7 +3,7 @@ import { supabase } from '../../supabaseClient'
 export const terrainApi = {
   getOverlays: async (courseId) => {
     const { data, error } = await supabase
-      .from('terrain_overlays')
+      .from('terrain_overlays_view')
       .select('id, course_id, terrain_type, risk_tier, label, geojson_data, terrain_overlay_holes(hole_id)')
       .eq('course_id', courseId)
       .eq('is_active', true)
@@ -15,18 +15,13 @@ export const terrainApi = {
   addOverlay: async (courseId, payload) => {
     const { holeIds, terrainType, label, geojsonData } = payload
     
-    const { data: row, error } = await supabase
-      .from('terrain_overlays')
-      .insert({
-        course_id: courseId,
-        terrain_type: terrainType,
-        label: label ? label : null,
-        risk_tier: null,
-        geojson_data: geojsonData,
-        is_active: true,
-      })
-      .select('id')
-      .maybeSingle()
+    const { data: row, error } = await supabase.rpc('upsert_terrain_overlay', {
+      p_id: null,
+      p_course_id: courseId,
+      p_terrain_type: terrainType,
+      p_risk_tier: null,
+      p_geojson_data: geojsonData,
+    })
 
     if (error || !row?.id) throw error || new Error('Could not save region')
 
@@ -48,15 +43,13 @@ export const terrainApi = {
   updateOverlayProperties: async (id, payload) => {
     const { terrainType, label, geojsonData, holeIds } = payload
     
-    const { error: uErr } = await supabase
-      .from('terrain_overlays')
-      .update({
-        terrain_type: terrainType,
-        label: label ? label : null,
-        geojson_data: geojsonData,
-      })
-      .eq('id', id)
-      .eq('is_active', true)
+    const { error: uErr } = await supabase.rpc('upsert_terrain_overlay', {
+      p_id: id,
+      p_course_id: null, // Course ID is usually already set for existing overlays
+      p_terrain_type: terrainType,
+      p_risk_tier: null,
+      p_geojson_data: geojsonData,
+    })
 
     if (uErr) throw uErr
 
@@ -74,11 +67,21 @@ export const terrainApi = {
   },
 
   updateOverlayGeometry: async (id, feature) => {
-    const { error } = await supabase
-      .from('terrain_overlays')
-      .update({ geojson_data: feature })
+    // Fetch the overlay to get its current properties if needed, or just use the RPC
+    // Since upsert_terrain_overlay handles both insert and update, we use it here.
+    const { data: overlay } = await supabase
+      .from('terrain_overlays_view')
+      .select('course_id, terrain_type, risk_tier')
       .eq('id', id)
-      .eq('is_active', true)
+      .single()
+
+    const { error } = await supabase.rpc('upsert_terrain_overlay', {
+      p_id: id,
+      p_course_id: overlay?.course_id,
+      p_terrain_type: overlay?.terrain_type,
+      p_risk_tier: overlay?.risk_tier,
+      p_geojson_data: feature,
+    })
 
     if (error) throw error
   },

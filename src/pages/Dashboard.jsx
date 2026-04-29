@@ -21,7 +21,7 @@ export default function Dashboard() {
   async function fetchCourses() {
     setLoading(true)
     const { data, error } = await supabase
-      .from('courses')
+      .from('courses_view')
       .select('*')
       .eq('is_active', true)
       .order('name')

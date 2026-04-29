@@ -3,7 +3,7 @@ import { supabase } from '../../supabaseClient'
 export const courseApi = {
   getCourse: async (id) => {
     const { data, error } = await supabase
-      .from('courses')
+      .from('courses_view')
       .select('id, user_id, name, address_line, city, region, postal_code, country, phone, website, notes, course_lat, course_lng, is_active')
       .eq('id', id)
       .eq('is_active', true)
@@ -13,13 +13,30 @@ export const courseApi = {
   },
 
   updateCourse: async (id, payload) => {
-    const { data, error } = await supabase
-      .from('courses')
-      .update(payload)
-      .eq('id', id)
-      .eq('is_active', true)
-    if (error) throw error
-    return data
+    const { course_lat, course_lng, ...otherPayload } = payload
+
+    // If location is being updated, use the RPC
+    if (course_lat !== undefined || course_lng !== undefined) {
+      const { error: rpcError } = await supabase.rpc('update_course_location', {
+        p_course_id: id,
+        p_lat: course_lat,
+        p_lng: course_lng,
+      })
+      if (rpcError) throw rpcError
+    }
+
+    // If there are other fields, update them normally
+    if (Object.keys(otherPayload).length > 0) {
+      const { data, error } = await supabase
+        .from('courses')
+        .update(otherPayload)
+        .eq('id', id)
+        .eq('is_active', true)
+      if (error) throw error
+      return data
+    }
+
+    return null
   },
 
   getTees: async (courseId) => {
