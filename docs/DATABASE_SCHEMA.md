@@ -1,6 +1,6 @@
 # 🗃️ Database Schema Documentation
 
-*Last Updated: 4/29/2026, 1:41:20 PM*
+*Last Updated: 4/29/2026, 2:45:02 PM*
 
 This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL.
 
