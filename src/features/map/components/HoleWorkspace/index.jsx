@@ -72,6 +72,8 @@ export default function HoleWorkspace({
   onRemovePlanningMarker,
   removePlanningSaving = false,
   removePlanningMessage = null,
+  clubs = [],
+  profile = null,
 }) {
   /** @type {Hole | null} */
   const selectedHole = holes[selectedIndex] ?? null
@@ -140,25 +142,6 @@ export default function HoleWorkspace({
           </button>
         </div>
 
-        <div className="px-3 py-2 border-b border-slate-800">
-          <label className="flex items-start gap-2.5 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={autoRotateHoleView}
-              onChange={(e) => onAutoRotateHoleViewChange(e.target.checked)}
-              disabled={!greenOk || !teeOk}
-              className="mt-0.5 size-3.5 rounded border-slate-600 bg-slate-900 text-emerald-600 focus:ring-emerald-500/40"
-            />
-            <span className="min-w-0">
-              <span className="text-sm font-medium text-slate-200 block">Auto rotate hole view</span>
-              <span className="text-xs text-slate-500 block mt-0.5 leading-snug">
-                {greenOk && teeOk
-                  ? 'Tee at bottom, green at top. Off = north up.'
-                  : 'Place back tee and green center to enable.'}
-              </span>
-            </span>
-          </label>
-        </div>
 
         <div className="p-3 flex flex-col gap-2 flex-1 min-h-0 overflow-y-auto">
           {isPlanning && (
@@ -414,6 +397,7 @@ export default function HoleWorkspace({
             onRemoveMarker={onRemovePlanningMarker ?? (async () => {})}
             removing={removePlanningSaving}
             message={removePlanningMessage}
+            clubs={clubs}
           />
         ) : (
           <HolePropertyForm

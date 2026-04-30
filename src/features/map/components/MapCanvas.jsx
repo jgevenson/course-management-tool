@@ -7,6 +7,7 @@ import { useMapTools } from '../../../hooks/useMapTools'
 import { useMapTerrainOverlays } from '../../../hooks/useMapTerrainOverlays'
 import { useMapViewControl } from '../../../hooks/useMapViewControl'
 import { useProfile } from '../../../hooks/useProfile'
+import { useClubs } from '../../../hooks/useClubs'
 import MapEditorHeader from './MapEditorHeader'
 import MapArea from './MapArea'
 import HoleWorkspace from './HoleWorkspace'
@@ -18,6 +19,7 @@ export default function MapCanvas() {
   // ── Data hooks ────────────────────────────────────────────
   const { profile } = useProfile()
   const isMappingAdmin = profile?.is_mapping_admin ?? false
+  const { clubs } = useClubs(profile?.id)
   const courseState = useMapCourse(id)
   const holesState = useHoles(courseState.course?.id)
   const terrainState = useMapTerrainOverlays(courseState.course?.id)
@@ -41,7 +43,6 @@ export default function MapCanvas() {
   // These thin handlers connect hooks that need to coordinate.
 
   const handleSelectHoleIndex = useCallback((idx) => {
-    holesState.setAutoRotateHoleView(false)
     tools.toggleAutoDraw(false)
     holesState.selectHoleIndex(idx)
     terrainState.selectOverlay(null)
@@ -222,6 +223,8 @@ export default function MapCanvas() {
                 tools.activePointTool !== 'landing_area' &&
                 tools.activePointTool !== 'pin_location')
             }
+            profile={profile}
+            clubs={clubs}
           />
         }
         holes={holesState.holes}
@@ -263,6 +266,8 @@ export default function MapCanvas() {
         removePlanningMessage={holesState.removePlanningMessage}
         onMarkerMove={holesState.movePlanningMarker}
         onMapMarkerMove={holesState.moveMapMarker}
+        clubs={clubs}
+        profile={profile}
       />
     </div>
   )

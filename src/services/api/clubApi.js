@@ -4,7 +4,7 @@ export const clubApi = {
   getClubs: async (userId) => {
     const { data, error } = await supabase
       .from('clubs')
-      .select('id, name, short_name, club_type, is_putter, sort_order, carry_distance, total_distance, created_at')
+      .select('id, name, short_name, club_type, is_putter, sort_order, carry_distance, total_distance, miss_left, miss_right, miss_short, miss_long, stock_shot_shape, created_at')
       .eq('user_id', userId)
       .eq('is_active', true)
       .order('sort_order', { ascending: true, nullsFirst: false })

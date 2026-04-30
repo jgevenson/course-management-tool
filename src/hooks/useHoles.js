@@ -14,7 +14,7 @@ export function useHoles(courseId) {
   const [markerMessage, setMarkerMessage] = useState(null)
   const [removePlanningSaving, setRemovePlanningSaving] = useState(false)
   const [removePlanningMessage, setRemovePlanningMessage] = useState(null)
-  const [autoRotateHoleView, setAutoRotateHoleView] = useState(false)
+  const [autoRotateHoleView, setAutoRotateHoleView] = useState(true)
 
   // Load holes + markers when courseId changes
   useEffect(() => {

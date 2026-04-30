@@ -1,6 +1,6 @@
 // src/components/Header.jsx
 import { Link, useLocation } from 'react-router-dom'
-import { User, LogOut, LayoutDashboard, Flag } from 'lucide-react'
+import { User, LogOut, LayoutDashboard, Flag, Crosshair } from 'lucide-react'
 import { supabase } from '../supabaseClient'
 
 export default function Header() {
@@ -36,6 +36,7 @@ export default function Header() {
               <LayoutDashboard className="w-4 h-4" />
               Dashboard
             </Link>
+
             {/* Future routes like /community or /leaderboard can drop in right here */}
           </nav>
 

@@ -3,15 +3,14 @@ import { useClubs } from '../../../hooks/useClubs'
 import BagAddClubForm from './BagAddClubForm'
 import BagClubList from './BagClubList'
 
-export default function DigitalBagPanel({ userId }) {
-  const { clubs, loading, error: fetchError, addClub, updateClub, removeClub } = useClubs(userId)
+export default function DigitalBagPanel({ userId, clubs, loading, activeClubId, onSelectClub, addClub, updateClub, removeClub }) {
   const [error, setError] = useState(null)
   const [message, setMessage] = useState(null)
 
-  const displayError = error || fetchError
+  const displayError = error
 
   return (
-    <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 mt-8">
+    <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
       <h2 className="text-xl font-semibold text-white mb-1">My bag</h2>
       <p className="text-sm text-slate-500 mb-5">
         Clubs are ordered by <span className="text-slate-400">sort order</span>. Set carry and total (yards); carry
@@ -29,16 +28,19 @@ export default function DigitalBagPanel({ userId }) {
 
       {!loading && (
         <>
-          <BagAddClubForm 
-            onAdd={addClub} 
+
+          <BagClubList
             clubs={clubs}
+            activeClubId={activeClubId}
+            onSelectClub={onSelectClub}
+            onUpdate={updateClub}
+            onRemove={removeClub}
             setError={setError}
             setMessage={setMessage}
           />
-          <BagClubList 
+          <BagAddClubForm
+            onAdd={addClub}
             clubs={clubs}
-            onUpdate={updateClub}
-            onRemove={removeClub}
             setError={setError}
             setMessage={setMessage}
           />

@@ -40,7 +40,7 @@ export default function App() {
             <Route
               path="/profile"
               element={
-                <div className="h-full min-h-0 overflow-y-auto">
+                <div className="h-full min-h-0 flex flex-col overflow-y-auto">
                   <Profile session={session} />
                 </div>
               }
@@ -61,6 +61,7 @@ export default function App() {
                 </div>
               }
             />
+
           </Routes>
         </main>
       </div>

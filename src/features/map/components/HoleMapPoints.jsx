@@ -3,9 +3,10 @@ import React, { useEffect, useMemo, useRef, useCallback } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { Crosshair, FlagTriangleLeft, MapPin } from 'lucide-react'
 import L from 'leaflet'
-import { Marker, Polyline, useMap, useMapEvents } from 'react-leaflet'
-import { haversineDistanceYards } from '../utils/geoDistance'
+import { Marker, Polyline, Polygon, useMap, useMapEvents } from 'react-leaflet'
+import { haversineDistanceYards, getBearing } from '../utils/geoDistance'
 import { HOLE_MARKER_KIND, activeMarkerLatLng, resolvePlanningMarkers } from '../utils/holeMarkers'
+import { getRecommendedClub, getDispersionPolygon } from '../../bag/utils/dispersion'
 
 // ─── Icon builders ────────────────────────────────────────────────────────────
 
@@ -86,6 +87,9 @@ function updateLinesImperative(
   livePositions,     // Map<key, {lat, lng}> of all current positions (overrides)
   polylineRefs,      // array of Leaflet Polyline instances
   labelRefs,         // array of Leaflet Marker instances (distance labels)
+  dispersionRefs,    // array of Leaflet Polygon instances
+  clubs,             // user's clubs
+  profile,           // user's profile (for handedness)
 ) {
   if (!polylineRefs || !labelRefs) return
 
@@ -105,15 +109,33 @@ function updateLinesImperative(
 
     const polyline = polylineRefs[i]
     const label = labelRefs[i]
+    const dispersion = dispersionRefs[i]
 
     if (polyline) {
       polyline.setLatLngs([[startLat, startLng], [endLat, endLng]])
     }
 
+    const yards = Math.round(haversineDistanceYards(startLat, startLng, endLat, endLng))
     if (label) {
-      const yards = Math.round(haversineDistanceYards(startLat, startLng, endLat, endLng))
       label.setLatLng([(startLat + endLat) / 2, (startLng + endLng) / 2])
       label.setIcon(buildYardsLabel(yards))
+    }
+
+    if (dispersion) {
+      const club = getRecommendedClub(yards, clubs)
+      if (club) {
+        const bearing = getBearing(startLat, startLng, endLat, endLng)
+        const polyPoints = getDispersionPolygon(
+          { lat: endLat, lng: endLng },
+          bearing,
+          club,
+          profile?.handedness || 'Right',
+        )
+        dispersion.setLatLngs(polyPoints)
+        dispersion.setStyle({ color: club.color, fillColor: club.color, opacity: 0.6, fillOpacity: 0.25 })
+      } else {
+        dispersion.setLatLngs([])
+      }
     }
   }
 }
@@ -128,6 +150,8 @@ export default function HoleMapPoints({
   onMapMarkerMove,
   suppressHoleMapPick,
   workspaceMode = 'mapping',
+  clubs = [],
+  profile = null,
 }) {
   const map = useMap()
 
@@ -139,6 +163,7 @@ export default function HoleMapPoints({
   // Refs to the Leaflet polyline / label instances for imperative updates during drag
   const polylineRefs = useRef([])
   const labelRefs    = useRef([])
+  const dispersionRefs = useRef([])
 
   // Live positions during drag — plain Map (not React state), so no re-renders
   const livePositions = useRef(new Map())
@@ -179,8 +204,11 @@ export default function HoleMapPoints({
       livePositions.current,
       polylineRefs.current,
       labelRefs.current,
+      dispersionRefs.current,
+      clubs,
+      profile,
     )
-  }, [planningSequence])
+  }, [planningSequence, clubs, profile])
 
   const handlePlanningDragEnd = useCallback(async (marker, e) => {
     const latlng = e.target.getLatLng()
@@ -220,14 +248,29 @@ export default function HoleMapPoints({
       const yards = Math.round(
         haversineDistanceYards(Number(start.lat), startLng, Number(end.lat), endLng),
       )
-      segs.push({
-        positions: [[Number(start.lat), startLng], [Number(end.lat), endLng]],
-        midpoint: [(Number(start.lat) + Number(end.lat)) / 2, (startLng + endLng) / 2],
-        yards,
-      })
-    }
-    return segs
-  }, [planningSequence])
+
+        const club = getRecommendedClub(yards, clubs)
+        let dispersionPoints = []
+        if (club) {
+          const bearing = getBearing(Number(start.lat), startLng, Number(end.lat), endLng)
+          dispersionPoints = getDispersionPolygon(
+            { lat: Number(end.lat), lng: endLng },
+            bearing,
+            club,
+            profile?.handedness || 'Right',
+          )
+        }
+
+        segs.push({
+          positions: [[Number(start.lat), startLng], [Number(end.lat), endLng]],
+          midpoint: [(Number(start.lat) + Number(end.lat)) / 2, (startLng + endLng) / 2],
+          yards,
+          dispersionPoints,
+          clubColor: club?.color || '#3b82f6',
+        })
+      }
+      return segs
+    }, [planningSequence, clubs, profile])
 
   if (!selectedHole) return null
 
@@ -244,7 +287,11 @@ export default function HoleMapPoints({
             icon={teeIcon}
             draggable={!activePointTool}
             eventHandlers={{
-              dragend: (e) => handleMapMarkerDragEnd(HOLE_MARKER_KIND.TEE_BACK, e),
+              dragstart: () => map.dragging.disable(),
+              dragend: (e) => {
+                map.dragging.enable()
+                handleMapMarkerDragEnd(HOLE_MARKER_KIND.TEE_BACK, e)
+              },
             }}
           />
         )}
@@ -254,7 +301,11 @@ export default function HoleMapPoints({
             icon={greenIcon}
             draggable={!activePointTool}
             eventHandlers={{
-              dragend: (e) => handleMapMarkerDragEnd(HOLE_MARKER_KIND.GREEN_CENTER, e),
+              dragstart: () => map.dragging.disable(),
+              dragend: (e) => {
+                map.dragging.enable()
+                handleMapMarkerDragEnd(HOLE_MARKER_KIND.GREEN_CENTER, e)
+              },
             }}
           />
         )}
@@ -286,6 +337,20 @@ export default function HoleMapPoints({
               if (el) labelRefs.current[idx] = el
             }}
           />
+          <Polygon
+            positions={seg.dispersionPoints}
+            pathOptions={{
+              color: seg.clubColor,
+              fillColor: seg.clubColor,
+              weight: 1,
+              opacity: seg.dispersionPoints.length > 0 ? 0.6 : 0,
+              fillOpacity: seg.dispersionPoints.length > 0 ? 0.25 : 0,
+            }}
+            interactive={false}
+            ref={(el) => {
+              if (el) dispersionRefs.current[idx] = el
+            }}
+          />
         </React.Fragment>
       ))}
 
@@ -311,8 +376,12 @@ export default function HoleMapPoints({
             icon={icon}
             draggable={!activePointTool}
             eventHandlers={{
+              dragstart: () => map.dragging.disable(),
               drag:    (e) => handlePlanningDrag(m, e),
-              dragend: (e) => handlePlanningDragEnd(m, e),
+              dragend: (e) => {
+                map.dragging.enable()
+                handlePlanningDragEnd(m, e)
+              },
             }}
           />
         )

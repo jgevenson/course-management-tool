@@ -65,6 +65,8 @@ export default function MapArea({
   onMapMarkerMove,
   workspaceMode,
   suppressHoleMapPick,
+  profile,
+  clubs,
 }) {
   return (
     <div className="h-full w-full min-h-0 relative flex flex-col">
@@ -126,6 +128,8 @@ export default function MapArea({
           onMapMarkerMove={onMapMarkerMove}
           workspaceMode={workspaceMode}
           suppressHoleMapPick={suppressHoleMapPick}
+          profile={profile}
+          clubs={clubs}
         />
       </MapContainer>
     </div>

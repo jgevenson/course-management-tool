@@ -2,6 +2,7 @@
 import { useMemo } from 'react'
 import { Trash2 } from 'lucide-react'
 import { buildPlanningView } from '../../utils/planningSegments'
+import { getRecommendedClub } from '../../../bag/utils/dispersion'
 
 /**
  * @param {object} props
@@ -9,8 +10,9 @@ import { buildPlanningView } from '../../utils/planningSegments'
  * @param {(markerId: string) => Promise<void>} props.onRemoveMarker
  * @param {boolean} props.removing
  * @param {string | null} props.message
+ * @param {Array<any>} props.clubs
  */
-export default function PlanningDistancesPanel({ hole, onRemoveMarker, removing, message }) {
+export default function PlanningDistancesPanel({ hole, onRemoveMarker, removing, message, clubs = [] }) {
   const { segments, markers } = useMemo(() => buildPlanningView(hole), [hole])
 
   const landingAreas = useMemo(() => {
@@ -27,15 +29,20 @@ export default function PlanningDistancesPanel({ hole, onRemoveMarker, removing,
           </p>
         ) : (
           <ul className="space-y-2">
-            {segments.map((s) => (
-              <li
-                key={s.id}
-                className="flex justify-between items-start gap-3 rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2.5"
-              >
-                <span className="text-sm text-slate-200 leading-snug">{s.label}</span>
-                <span className="text-emerald-400 font-semibold tabular-nums shrink-0">{s.yards} yd</span>
-              </li>
-            ))}
+            {segments.map((s) => {
+              const recommendedClub = getRecommendedClub(s.yards, clubs)
+              const label = recommendedClub ? recommendedClub.short_name : s.label
+
+              return (
+                <li
+                  key={s.id}
+                  className="flex justify-between items-start gap-3 rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2.5"
+                >
+                  <span className="text-sm text-slate-200 leading-snug">{label}</span>
+                  <span className="text-emerald-400 font-semibold tabular-nums shrink-0">{s.yards} yd</span>
+                </li>
+              )
+            })}
           </ul>
         )}
       </div>

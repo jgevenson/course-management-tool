@@ -18,6 +18,8 @@ export function useMapViewControl(mapInstance, holesState, course) {
     holesState ?? {}
 
   const lastNavigatedHoleId = useRef(null)
+  const lastAutoFittedHoleId = useRef(null)
+  const lastAutoRotateValue = useRef(false)
 
   // Fly to hole on navigation change
   useEffect(() => {
@@ -33,37 +35,33 @@ export function useMapViewControl(mapInstance, holesState, course) {
     const t = activeMarkerLatLng(sh, HOLE_MARKER_KIND.TEE_BACK)
     const useAutoFrame = Boolean(autoRotateHoleView && g && t)
 
-    if (useAutoFrame) {
-      // The auto-rotate effect (below) will handle framing if autoRotateHoleView is on
-      return
-    }
+    if (useAutoFrame) return
 
     if (g) {
       mapInstance.flyTo([g.lat, g.lng], 17)
-      return
-    }
-    if (t) {
+    } else if (t) {
       mapInstance.flyTo([t.lat, t.lng], 17)
-      return
-    }
-    if (course && course.course_lat !== 0) {
+    } else if (course && course.course_lat !== 0) {
       mapInstance.flyTo([course.course_lat, course.course_lng], 16)
     }
-  }, [mapInstance, selectedHoleIndex, holesLoading, course, autoRotateHoleView])
+  }, [mapInstance, selectedHoleIndex, holesLoading, course, autoRotateHoleView, holes])
 
   // Auto-rotate: fit bounds tee-bottom / green-top
   useEffect(() => {
-    if (!mapInstance || holesLoading || typeof mapInstance.setBearing !== 'function' || !holes) return
+    if (!mapInstance || holesLoading || !holes || holes.length === 0) return
+    if (typeof mapInstance.setBearing !== 'function') return
 
     const sh = holes[selectedHoleIndex]
     if (!sh) return
-    
-    // We only want to auto-rotate/fit-bounds when we first arrive at the hole
-    // or when the toggle is turned ON.
-    // We'll use a local ref to track if we've already rotated for THIS hole.
-    // Actually, we can check if navChanged happened in a different way or just
-    // only trigger this when the hole ID or toggle changes.
-    
+
+    // Guard: only re-fit if the hole changed or the mode was toggled
+    const holeChanged = lastAutoFittedHoleId.current !== sh.id
+    const toggleChanged = lastAutoRotateValue.current !== autoRotateHoleView
+    if (!holeChanged && !toggleChanged) return
+
+    lastAutoFittedHoleId.current = sh.id
+    lastAutoRotateValue.current = autoRotateHoleView
+
     if (!autoRotateHoleView) {
       mapInstance.setBearing(0)
       return
@@ -71,28 +69,31 @@ export function useMapViewControl(mapInstance, holesState, course) {
 
     const tee = activeMarkerLatLng(sh, HOLE_MARKER_KIND.TEE_BACK)
     const green = activeMarkerLatLng(sh, HOLE_MARKER_KIND.GREEN_CENTER)
+    
     if (!tee || !green) {
       mapInstance.setBearing(0)
       return
     }
 
+    // Immediate update sequence
     mapInstance.invalidateSize()
+    mapInstance.setBearing(0, { animate: false })
+
     const bounds = L.latLngBounds(
       L.latLng(tee.lat, tee.lng),
       L.latLng(green.lat, green.lng),
     )
     
-    // Use animate: false to avoid jitter while navigating, 
-    // and only do it if the hole just changed.
     mapInstance.fitBounds(bounds, {
-      padding: [44, 72, 88, 72],
+      padding: [60, 60, 100, 60], // Ample padding
       maxZoom: MAP_MAX_ZOOM,
       animate: false,
     })
     
     const lineBearing = bearingDegrees(tee.lat, tee.lng, green.lat, green.lng)
-    mapInstance.setBearing(mapBearingForTeeBottomGreenTop(lineBearing))
-  }, [mapInstance, autoRotateHoleView, selectedHoleIndex, holesLoading])
+    const targetBearing = mapBearingForTeeBottomGreenTop(lineBearing)
+    mapInstance.setBearing(targetBearing, { animate: false })
+  }, [mapInstance, autoRotateHoleView, selectedHoleIndex, holesLoading, holes])
 
   return {
     autoRotateHoleView: autoRotateHoleView ?? false,

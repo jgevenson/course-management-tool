@@ -1,6 +1,6 @@
 # 🗃️ Database Schema Documentation
 
-*Last Updated: 4/29/2026, 2:45:02 PM*
+*Last Updated: 4/30/2026, 4:52:30 PM*
 
 This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL.
 
@@ -15,16 +15,17 @@ This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL
 | **name** | `text` | **NOT NULL** | Full display name of the club (e.g. "7 Iron", "Driver"). |
 | **carry_distance** | `integer` | **NOT NULL** | Average distance the ball travels in the air (yards/meters). |
 | **total_distance** | `integer` | **NOT NULL** | Average total distance including roll-out (yards/meters). |
-| **miss_long** | `integer` | Default: `0` | Typical distance error beyond the target center. |
-| **miss_short** | `integer` | Default: `0` | Typical distance error short of the target center. |
-| **miss_left** | `integer` | Default: `0` | Horizontal dispersion bias to the left of the line of play. |
-| **miss_right** | `integer` | Default: `0` | Horizontal dispersion bias to the right of the line of play. |
+| **miss_long** | `integer` | Default: `0` | Typical distance miss long of the target (yards). |
+| **miss_short** | `integer` | Default: `0` | Typical distance miss short of the target (yards). |
+| **miss_left** | `integer` | Default: `0` | Typical horizontal miss to the left (yards). |
+| **miss_right** | `integer` | Default: `0` | Typical horizontal miss to the right (yards). |
 | **created_at** | `timestamp with time zone` | **NOT NULL**<br>Default: `timezone('utc'::text, now())` | Timestamp when the club record was created (UTC). |
 | **is_active** | `boolean` | **NOT NULL**<br>Default: `true` | Soft-delete flag to maintain data integrity. |
 | **club_type** | `text` | - | Category of the club (e.g. iron, wood, wedge, putter) used for badge display and grouping. |
 | **is_putter** | `boolean` | **NOT NULL**<br>Default: `false` | True if this club is a putter; putters are excluded from dispersion modeling and sorted separately. |
 | **short_name** | `text` | - | Abbreviated label shown in compact UI views (e.g. "7i", "Dr", "PT"). |
 | **sort_order** | `bigint` | - | User-defined ordering position within the bag list; lower values appear first. |
+| **stock_shot_shape** | `text` | - | Default shot shape for this club (e.g., Straight, Draw, Fade). |
 
 ---
 ## 📋 Table: `course_tees`
@@ -65,6 +66,57 @@ This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL
 | **phone** | `text` | - | Contact phone number for the golf course. |
 | **website** | `text` | - | URL to the course's website. |
 | **notes** | `text` | - | Free-form notes or memo about the course. |
+| **location** | `USER-DEFINED` | - | - |
+
+---
+## 📋 Table: `courses_view`
+> No table description provided.
+
+| Column | Type | Constraints / Refs | Description |
+| :--- | :--- | :--- | :--- |
+| **id** | `uuid` | - | - |
+| **user_id** | `uuid` | - | - |
+| **name** | `text` | - | - |
+| **address_line** | `text` | - | - |
+| **city** | `text` | - | - |
+| **region** | `text` | - | - |
+| **postal_code** | `text` | - | - |
+| **country** | `text` | - | - |
+| **phone** | `text` | - | - |
+| **website** | `text` | - | - |
+| **notes** | `text` | - | - |
+| **course_lat** | `double precision` | - | - |
+| **course_lng** | `double precision` | - | - |
+| **is_active** | `boolean` | - | - |
+| **created_at** | `timestamp with time zone` | - | - |
+
+---
+## 📋 Table: `geography_columns`
+> No table description provided.
+
+| Column | Type | Constraints / Refs | Description |
+| :--- | :--- | :--- | :--- |
+| **f_table_catalog** | `name` | - | - |
+| **f_table_schema** | `name` | - | - |
+| **f_table_name** | `name` | - | - |
+| **f_geography_column** | `name` | - | - |
+| **coord_dimension** | `integer` | - | - |
+| **srid** | `integer` | - | - |
+| **type** | `text` | - | - |
+
+---
+## 📋 Table: `geometry_columns`
+> No table description provided.
+
+| Column | Type | Constraints / Refs | Description |
+| :--- | :--- | :--- | :--- |
+| **f_table_catalog** | `character varying` | - | - |
+| **f_table_schema** | `name` | - | - |
+| **f_table_name** | `name` | - | - |
+| **f_geometry_column** | `name` | - | - |
+| **coord_dimension** | `integer` | - | - |
+| **srid** | `integer` | - | - |
+| **type** | `character varying` | - | - |
 
 ---
 ## 📋 Table: `hole_map_markers`
@@ -79,6 +131,21 @@ This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL
 | **lng** | `double precision` | **NOT NULL** | Longitude coordinate of the marker on the map. |
 | **is_active** | `boolean` | **NOT NULL**<br>Default: `true` | Soft-delete flag; planning markers are deactivated rather than deleted. |
 | **created_at** | `timestamp with time zone` | **NOT NULL**<br>Default: `now()` | Timestamp when the marker was created. |
+| **marker_geom** | `USER-DEFINED` | - | - |
+
+---
+## 📋 Table: `hole_map_markers_view`
+> No table description provided.
+
+| Column | Type | Constraints / Refs | Description |
+| :--- | :--- | :--- | :--- |
+| **id** | `uuid` | - | - |
+| **hole_id** | `uuid` | - | - |
+| **marker_kind** | `text` | - | - |
+| **lat** | `double precision` | - | - |
+| **lng** | `double precision` | - | - |
+| **is_active** | `boolean` | - | - |
+| **created_at** | `timestamp with time zone` | - | - |
 
 ---
 ## 📋 Table: `hole_planning_markers`
@@ -94,6 +161,23 @@ This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL
 | **sequence_order** | `integer` | - | 0 for Tee, 1...N for Landing Areas, 99 for Pin. |
 | **lat** | `double precision` | - | Geographic (latitude) coordinates for map placement. |
 | **long** | `double precision` | - | Geographic (longitude) coordinates for map placement. |
+| **marker_geom** | `USER-DEFINED` | - | - |
+
+---
+## 📋 Table: `hole_planning_markers_view`
+> No table description provided.
+
+| Column | Type | Constraints / Refs | Description |
+| :--- | :--- | :--- | :--- |
+| **id** | `uuid` | - | - |
+| **hole_id** | `uuid` | - | - |
+| **user_id** | `uuid` | - | - |
+| **marker_type** | `text` | - | - |
+| **sequence_order** | `integer` | - | - |
+| **lat** | `double precision` | - | - |
+| **lng** | `double precision` | - | - |
+| **long** | `double precision` | - | - |
+| **created_at** | `timestamp with time zone` | - | - |
 
 ---
 ## 📋 Table: `hole_tee_yardages`
@@ -134,6 +218,62 @@ This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL
 | **created_at** | `timestamp with time zone` | **NOT NULL**<br>Default: `timezone('utc'::text, now())` | Timestamp when the user profile was created (UTC). |
 | **is_active** | `boolean` | **NOT NULL**<br>Default: `true` | Soft-delete flag for the user profile. |
 | **is_mapping_admin** | `boolean` | **NOT NULL**<br>Default: `false` | - |
+| **first_name** | `text` | - | User's first name. |
+| **last_name** | `text` | - | User's last name. |
+| **handicap_index** | `numeric` | - | USGA/World Handicap System index, rounded to one decimal place. |
+| **dexterity** | `USER-DEFINED` | **NOT NULL**<br>Default: `'Right Handed'::dexterity_type` | Preferred playing orientation (Left Handed or Right Handed). |
+
+---
+## 📋 Table: `raster_columns`
+> No table description provided.
+
+| Column | Type | Constraints / Refs | Description |
+| :--- | :--- | :--- | :--- |
+| **r_table_catalog** | `name` | - | - |
+| **r_table_schema** | `name` | - | - |
+| **r_table_name** | `name` | - | - |
+| **r_raster_column** | `name` | - | - |
+| **srid** | `integer` | - | - |
+| **scale_x** | `double precision` | - | - |
+| **scale_y** | `double precision` | - | - |
+| **blocksize_x** | `integer` | - | - |
+| **blocksize_y** | `integer` | - | - |
+| **same_alignment** | `boolean` | - | - |
+| **regular_blocking** | `boolean` | - | - |
+| **num_bands** | `integer` | - | - |
+| **pixel_types** | `ARRAY` | - | - |
+| **nodata_values** | `ARRAY` | - | - |
+| **out_db** | `ARRAY` | - | - |
+| **extent** | `USER-DEFINED` | - | - |
+| **spatial_index** | `boolean` | - | - |
+
+---
+## 📋 Table: `raster_overviews`
+> No table description provided.
+
+| Column | Type | Constraints / Refs | Description |
+| :--- | :--- | :--- | :--- |
+| **o_table_catalog** | `name` | - | - |
+| **o_table_schema** | `name` | - | - |
+| **o_table_name** | `name` | - | - |
+| **o_raster_column** | `name` | - | - |
+| **r_table_catalog** | `name` | - | - |
+| **r_table_schema** | `name` | - | - |
+| **r_table_name** | `name` | - | - |
+| **r_raster_column** | `name` | - | - |
+| **overview_factor** | `integer` | - | - |
+
+---
+## 📋 Table: `spatial_ref_sys`
+> No table description provided.
+
+| Column | Type | Constraints / Refs | Description |
+| :--- | :--- | :--- | :--- |
+| **srid** | `integer` | **NOT NULL**<br>⚖️ Check: CHECK (((srid > 0) AND (srid <= 998999))) | - |
+| **auth_name** | `character varying` | - | - |
+| **auth_srid** | `integer` | - | - |
+| **srtext** | `character varying` | - | - |
+| **proj4text** | `character varying` | - | - |
 
 ---
 ## 📋 Table: `terrain_overlay_holes`
@@ -158,5 +298,21 @@ This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL
 | **geojson_data** | `jsonb` | **NOT NULL** | GeoJSON Feature defining the physical footprint of the shape. |
 | **is_active** | `boolean` | **NOT NULL**<br>Default: `true` | Soft-delete flag for the terrain overlay. |
 | **created_at** | `timestamp with time zone` | **NOT NULL**<br>Default: `now()` | Timestamp when the terrain overlay was created. |
+| **shape** | `USER-DEFINED` | - | - |
+
+---
+## 📋 Table: `terrain_overlays_view`
+> No table description provided.
+
+| Column | Type | Constraints / Refs | Description |
+| :--- | :--- | :--- | :--- |
+| **id** | `uuid` | - | - |
+| **course_id** | `uuid` | - | - |
+| **terrain_type** | `text` | - | - |
+| **risk_tier** | `smallint` | - | - |
+| **label** | `text` | - | - |
+| **geojson_data** | `jsonb` | - | - |
+| **is_active** | `boolean` | - | - |
+| **created_at** | `timestamp with time zone` | - | - |
 
 ---

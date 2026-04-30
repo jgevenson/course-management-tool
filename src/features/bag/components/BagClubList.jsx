@@ -26,7 +26,7 @@ function clubTypeBadgeClasses(type) {
   return `${base} ${map[t] ?? 'border-slate-600 bg-slate-800/80 text-slate-400'}`
 }
 
-export default function BagClubList({ clubs, onUpdate, onRemove, setError, setMessage }) {
+export default function BagClubList({ clubs, activeClubId, onSelectClub, onUpdate, onRemove, setError, setMessage }) {
   const [editingId, setEditingId] = useState(null)
   const [editName, setEditName] = useState('')
   const [editShortName, setEditShortName] = useState('')
@@ -35,6 +35,11 @@ export default function BagClubList({ clubs, onUpdate, onRemove, setError, setMe
   const [editSortOrder, setEditSortOrder] = useState('')
   const [editCarry, setEditCarry] = useState('')
   const [editTotal, setEditTotal] = useState('')
+  const [editMissLeft, setEditMissLeft] = useState('')
+  const [editMissRight, setEditMissRight] = useState('')
+  const [editMissShort, setEditMissShort] = useState('')
+  const [editMissLong, setEditMissLong] = useState('')
+  const [editStockShotShape, setEditStockShotShape] = useState('Straight')
   const [editSaving, setEditSaving] = useState(false)
 
   const [removingId, setRemovingId] = useState(null)
@@ -90,6 +95,11 @@ export default function BagClubList({ clubs, onUpdate, onRemove, setError, setMe
     setEditSortOrder(String(row.sort_order ?? ''))
     setEditCarry(String(row.carry_distance))
     setEditTotal(String(row.total_distance))
+    setEditMissLeft(String(row.miss_left ?? '0'))
+    setEditMissRight(String(row.miss_right ?? '0'))
+    setEditMissShort(String(row.miss_short ?? '0'))
+    setEditMissLong(String(row.miss_long ?? '0'))
+    setEditStockShotShape(row.stock_shot_shape || 'Straight')
     setError(null)
   }
 
@@ -102,6 +112,11 @@ export default function BagClubList({ clubs, onUpdate, onRemove, setError, setMe
     setEditSortOrder('')
     setEditCarry('')
     setEditTotal('')
+    setEditMissLeft('')
+    setEditMissRight('')
+    setEditMissShort('')
+    setEditMissLong('')
+    setEditStockShotShape('Straight')
   }
 
   const handleSaveEdit = async () => {
@@ -151,6 +166,11 @@ export default function BagClubList({ clubs, onUpdate, onRemove, setError, setMe
       sort_order: so.value,
       carry_distance: c.value,
       total_distance: t.value,
+      miss_left: parseInt(editMissLeft) || 0,
+      miss_right: parseInt(editMissRight) || 0,
+      miss_short: parseInt(editMissShort) || 0,
+      miss_long: parseInt(editMissLong) || 0,
+      stock_shot_shape: editStockShotShape,
     })
 
     setEditSaving(false)
@@ -180,6 +200,10 @@ export default function BagClubList({ clubs, onUpdate, onRemove, setError, setMe
     if (editingId === id) cancelEdit()
   }
 
+  const sortedClubs = [...clubs].sort((a, b) => {
+    return (a.sort_order ?? 0) - (b.sort_order ?? 0)
+  })
+
   const inputClass =
     'w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500'
   const inputTight = inputClass + ' py-1.5 text-xs'
@@ -189,55 +213,49 @@ export default function BagClubList({ clubs, onUpdate, onRemove, setError, setMe
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-slate-700">
-      <table className="w-full min-w-[800px] text-sm text-left">
-        <thead>
-          <tr className="border-b border-slate-700 bg-slate-900/80 text-xs uppercase tracking-wide text-slate-500">
-            <th className="px-2 py-2 font-medium w-10">#</th>
-            <th className="px-2 py-2 font-medium w-[72px]">Abbr</th>
-            <th className="px-3 py-2 font-medium min-w-[120px]">Name</th>
-            <th className="px-2 py-2 font-medium w-[88px]">Type</th>
-            <th className="px-2 py-2 font-medium w-[72px] text-center">Putter</th>
-            <th className="px-2 py-2 font-medium tabular-nums w-[72px]">Carry</th>
-            <th className="px-2 py-2 font-medium tabular-nums w-[72px]">Total</th>
-            <th className="px-3 py-2 font-medium w-[100px] text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {clubs.map((row) => (
-            <tr key={row.id} className="border-b border-slate-700/80 last:border-0 hover:bg-slate-900/30">
-              {editingId === row.id ? (
-                <>
-                  <td className="px-2 py-2 align-top">
-                    <input
-                      type="number"
-                      min={0}
-                      max={99}
-                      value={editSortOrder}
-                      onChange={(e) => setEditSortOrder(e.target.value)}
-                      className={inputTight}
-                      aria-label="Sort order"
-                    />
-                  </td>
-                  <td className="px-2 py-2 align-top">
-                    <input
-                      type="text"
-                      value={editShortName}
-                      onChange={(e) => setEditShortName(e.target.value)}
-                      className={inputTight}
-                      aria-label="Short name"
-                    />
-                  </td>
-                  <td className="px-3 py-2 align-top">
+    <div className="space-y-3">
+      {sortedClubs.map((row) => {
+        const isEditing = editingId === row.id;
+        const isActive = activeClubId === row.id;
+        
+        return (
+          <div 
+            key={row.id} 
+            className={`bg-slate-900/40 border transition-all duration-200 rounded-xl overflow-hidden cursor-pointer ${
+              isEditing ? 'border-emerald-500/50 ring-1 ring-emerald-500/20' : 
+              isActive ? 'border-emerald-500 ring-1 ring-emerald-500/30 bg-emerald-500/5' :
+              'border-slate-700 hover:border-slate-600'
+            }`}
+            onClick={() => onSelectClub && onSelectClub(row.id)}
+          >
+            {isEditing ? (
+              <div className="p-4 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Club Name</label>
                     <input
                       type="text"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
                       className={inputTight}
-                      aria-label="Club name"
+                      placeholder="e.g. Driver"
                     />
-                  </td>
-                  <td className="px-2 py-2 align-top">
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Abbreviation</label>
+                    <input
+                      type="text"
+                      value={editShortName}
+                      onChange={(e) => setEditShortName(e.target.value)}
+                      className={inputTight}
+                      placeholder="e.g. Dr"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Type</label>
                     <select
                       value={editClubType}
                       onChange={(e) => {
@@ -245,119 +263,193 @@ export default function BagClubList({ clubs, onUpdate, onRemove, setError, setMe
                         setEditClubType(v)
                         if (v === 'putter') setEditIsPutter(true)
                       }}
-                      className={inputTight + ' cursor-pointer'}
-                      aria-label="Club type"
+                      className={inputTight}
                     >
                       {CLUB_TYPE_OPTIONS.map((o) => (
-                        <option key={o.value} value={o.value}>
-                          {o.label}
-                        </option>
+                        <option key={o.value} value={o.value}>{o.label}</option>
                       ))}
                     </select>
-                  </td>
-                  <td className="px-2 py-2 align-middle text-center">
-                    <input
-                      type="checkbox"
-                      checked={editIsPutter}
-                      onChange={(e) => {
-                        const v = e.target.checked
-                        setEditIsPutter(v)
-                        if (v) setEditClubType('putter')
-                      }}
-                      className="size-4 rounded border-slate-600 bg-slate-900 text-emerald-600"
-                      aria-label="Is putter"
-                    />
-                  </td>
-                  <td className="px-2 py-2 align-top">
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Sort Order</label>
                     <input
                       type="number"
-                      min={YARD_MIN}
-                      max={YARD_MAX}
-                      step={1}
-                      value={editCarry}
-                      onChange={(e) => setEditCarry(e.target.value)}
+                      value={editSortOrder}
+                      onChange={(e) => setEditSortOrder(e.target.value)}
                       className={inputTight}
-                      aria-label="Carry yards"
                     />
-                  </td>
-                  <td className="px-2 py-2 align-top">
-                    <input
-                      type="number"
-                      min={YARD_MIN}
-                      max={YARD_MAX}
-                      step={1}
-                      value={editTotal}
-                      onChange={(e) => setEditTotal(e.target.value)}
-                      className={inputTight}
-                      aria-label="Total yards"
-                    />
-                  </td>
-                  <td className="px-2 py-2 align-top text-right whitespace-nowrap">
+                  </div>
+                  <div className="flex items-end pb-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={editIsPutter}
+                        onChange={(e) => {
+                          const v = e.target.checked
+                          setEditIsPutter(v)
+                          if (v) setEditClubType('putter')
+                        }}
+                        className="size-4 rounded border-slate-600 bg-slate-900 text-emerald-600"
+                      />
+                      <span className="text-xs text-slate-300">Is Putter</span>
+                    </label>
+                  </div>
+                </div>
+
+                {!editIsPutter && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Carry (yds)</label>
+                      <input
+                        type="number"
+                        value={editCarry}
+                        onChange={(e) => setEditCarry(e.target.value)}
+                        className={inputTight}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Total (yds)</label>
+                      <input
+                        type="number"
+                        value={editTotal}
+                        onChange={(e) => setEditTotal(e.target.value)}
+                        className={inputTight}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {!editIsPutter && (
+                  <div className="pt-2 border-t border-slate-800">
+                    <label className="block text-[10px] font-bold text-emerald-500 uppercase mb-2 tracking-wider">Dispersion Modeling</label>
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Stock Shot Shape</label>
+                        <select
+                          value={editStockShotShape}
+                          onChange={(e) => setEditStockShotShape(e.target.value)}
+                          className={inputTight}
+                        >
+                          {['Big Draw', 'Draw', 'Slight Draw', 'Straight', 'Slight Fade', 'Fade', 'Big Fade'].map(s => (
+                            <option key={s} value={s}>{s}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4 mb-3">
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Miss Left (yds)</label>
+                        <input
+                          type="number"
+                          value={editMissLeft}
+                          onChange={(e) => setEditMissLeft(e.target.value)}
+                          className={inputTight}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Miss Right (yds)</label>
+                        <input
+                          type="number"
+                          value={editMissRight}
+                          onChange={(e) => setEditMissRight(e.target.value)}
+                          className={inputTight}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Miss Short (yds)</label>
+                        <input
+                          type="number"
+                          value={editMissShort}
+                          onChange={(e) => setEditMissShort(e.target.value)}
+                          className={inputTight}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Miss Long (yds)</label>
+                        <input
+                          type="number"
+                          value={editMissLong}
+                          onChange={(e) => setEditMissLong(e.target.value)}
+                          className={inputTight}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex justify-end gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
+                    className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); handleSaveEdit(); }}
+                    disabled={editSaving}
+                    className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    {editSaving ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg shadow-inner border ${
+                    row.is_putter ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-slate-800 border-slate-700 text-slate-100'
+                  }`}>
+                    {row.short_name}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-100 font-bold">{row.name}</span>
+                      <span className={clubTypeBadgeClasses(row.club_type)}>{row.club_type}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-6">
+                  {!row.is_putter && (
+                    <div className="text-right">
+                      <div className="text-emerald-400 font-extrabold text-2xl tracking-tighter tabular-nums leading-none">
+                        {row.total_distance}<span className="text-[10px] font-bold ml-0.5 text-emerald-500/60 uppercase">yds</span>
+                      </div>
+                      <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Carry: {row.carry_distance}y</div>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center gap-1 border-l border-slate-800 pl-4 ml-2">
                     <button
                       type="button"
-                      onClick={handleSaveEdit}
-                      disabled={editSaving}
-                      className="mr-2 text-emerald-400 hover:text-emerald-300 text-xs font-medium disabled:opacity-50"
-                    >
-                      {editSaving ? 'Saving…' : 'Save'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={cancelEdit}
-                      disabled={editSaving}
-                      className="inline-flex items-center gap-1 text-slate-400 hover:text-slate-200 text-xs"
-                    >
-                      <X className="w-3.5 h-3.5" aria-hidden />
-                      Cancel
-                    </button>
-                  </td>
-                </>
-              ) : (
-                <>
-                  <td className="px-2 py-2.5 text-slate-500 tabular-nums text-center">
-                    {row.sort_order == null ? '—' : sortOrderNum(row)}
-                  </td>
-                  <td className="px-2 py-2.5 font-medium text-emerald-400/95 tabular-nums">{row.short_name}</td>
-                  <td className="px-3 py-2.5 text-slate-200">{row.name}</td>
-                  <td className="px-2 py-2.5">
-                    <span className={clubTypeBadgeClasses(row.club_type)}>
-                      {String(row.club_type ?? '—')}
-                    </span>
-                  </td>
-                  <td className="px-2 py-2.5 text-center text-slate-400">
-                    {row.is_putter ? (
-                      <span className="text-emerald-400 font-medium text-xs">Yes</span>
-                    ) : (
-                      <span className="text-slate-600">—</span>
-                    )}
-                  </td>
-                  <td className="px-2 py-2.5 text-slate-300 tabular-nums">{row.carry_distance}</td>
-                  <td className="px-2 py-2.5 text-slate-300 tabular-nums">{row.total_distance}</td>
-                  <td className="px-2 py-2.5 text-right">
-                    <button
-                      type="button"
-                      onClick={() => startEdit(row)}
-                      className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-slate-400 hover:bg-slate-700/80 hover:text-white transition-colors mr-1"
+                      onClick={(e) => { e.stopPropagation(); startEdit(row); }}
+                      className="p-2 text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/5 rounded-lg transition-all"
                       aria-label={`Edit ${row.name}`}
                     >
-                      <Pencil className="w-3.5 h-3.5" aria-hidden />
+                      <Pencil className="w-4 h-4" />
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleRemove(row.id)}
+                      onClick={(e) => { e.stopPropagation(); handleRemove(row.id); }}
                       disabled={removingId === row.id}
-                      className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-red-400/90 hover:bg-red-950/50 hover:text-red-300 disabled:opacity-50 transition-colors"
-                      aria-label={`Remove ${row.name} from bag`}
+                      className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-500/5 rounded-lg transition-all"
+                      aria-label={`Remove ${row.name}`}
                     >
-                      <Trash2 className="w-3.5 h-3.5" aria-hidden />
+                      <Trash2 className="w-4 h-4" />
                     </button>
-                  </td>
-                </>
-              )}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
-  )
+  );
 }
