@@ -31,6 +31,41 @@ const getFeatureStyle = (feature) => {
   return { color: '#ec4899', weight: 2, fillColor: '#f472b6', fillOpacity: 0.3 } // pink-500/400
 }
 
+
+/**
+ * ## OSM Map Features Layer Component
+ * 
+ * A specialized map layer component for rendering OpenStreetMap (OSM) features as interactive
+ * overlays within a Leaflet map. This component is designed to display golf-related features
+ * such as water hazards, bunkers, greens, and fairways, enabling users to visualize and potentially
+ * import these features into the course data.
+ *
+ * ### Component Responsibilities
+ * - **Feature Rendering**: Renders GeoJSON features using Leaflet's `GeoJSON` component. Each feature is
+ *   styled dynamically based on its type and properties, following a consistent color palette.
+ * - **Styling**: Applies distinct styles to different types of golf features to enhance visual
+ *   differentiation. For example, water hazards are rendered in blue, bunkers in yellow, and greens in green.
+ * - **Interactivity**: Attaches interactive event handlers to each feature, including tooltips on
+ *   mouse hover and click events for feature selection.
+ * - **State Management**: Manages the visibility of the entire layer through the `isActive` prop and handles
+ *   data updates efficiently using React `useRef` to maintain a stable reference to the GeoJSON layer.
+ *
+ * ### Data Flow & Dependencies
+ * The component receives its data via the `geojsonData` prop, which is expected to be a GeoJSON object.
+ * Interaction with the map is facilitated through the `onFeatureSelect` callback, which is invoked when a
+ * feature is clicked, passing the feature data and a boolean indicating if the Shift key was pressed.
+ *
+ * ### Usage Example
+ * This component is intended to be used as a child of `MapArea`, conditionally rendered based on the
+ * `osmToolActive` state. It requires the Leaflet library to be initialized and available in the
+ * component tree.
+ * 
+ * @param {Object} props - The properties for the OSMMapFeaturesLayer component.
+ * @param {Object|null} props.geojsonData - The GeoJSON data containing the features to render.
+ * @param {function} props.onFeatureSelect - Callback function invoked when a feature is selected.
+ * @param {boolean} props.isActive - Flag to determine the visibility and interactivity of the layer.
+ * @returns {JSX.Element|null}
+ */
 export default function OSMMapFeaturesLayer({ geojsonData, onFeatureSelect, isActive }) {
   const geoJsonRef = useRef(null)
 

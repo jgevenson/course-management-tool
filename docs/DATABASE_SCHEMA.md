@@ -1,6 +1,6 @@
 # 🗃️ Database Schema Documentation
 
-*Last Updated: 4/30/2026, 4:52:30 PM*
+*Last Updated: 5/1/2026, 4:46:38 PM*
 
 This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL.
 
@@ -132,6 +132,7 @@ This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL
 | **is_active** | `boolean` | **NOT NULL**<br>Default: `true` | Soft-delete flag; planning markers are deactivated rather than deleted. |
 | **created_at** | `timestamp with time zone` | **NOT NULL**<br>Default: `now()` | Timestamp when the marker was created. |
 | **marker_geom** | `USER-DEFINED` | - | - |
+| **elevation** | `numeric` | - | Elevation in yards above sea level, derived from USGS EPQS at placement time. NULL when lookup failed. |
 
 ---
 ## 📋 Table: `hole_map_markers_view`
@@ -144,6 +145,7 @@ This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL
 | **marker_kind** | `text` | - | - |
 | **lat** | `double precision` | - | - |
 | **lng** | `double precision` | - | - |
+| **elevation** | `numeric` | - | - |
 | **is_active** | `boolean` | - | - |
 | **created_at** | `timestamp with time zone` | - | - |
 
@@ -162,6 +164,7 @@ This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL
 | **lat** | `double precision` | - | Geographic (latitude) coordinates for map placement. |
 | **long** | `double precision` | - | Geographic (longitude) coordinates for map placement. |
 | **marker_geom** | `USER-DEFINED` | - | - |
+| **elevation** | `numeric` | - | Elevation in yards above sea level, derived from USGS EPQS at placement time. NULL when lookup failed. |
 
 ---
 ## 📋 Table: `hole_planning_markers_view`
@@ -175,8 +178,9 @@ This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL
 | **marker_type** | `text` | - | - |
 | **sequence_order** | `integer` | - | - |
 | **lat** | `double precision` | - | - |
-| **lng** | `double precision` | - | - |
 | **long** | `double precision` | - | - |
+| **lng** | `double precision` | - | - |
+| **elevation** | `numeric` | - | - |
 | **created_at** | `timestamp with time zone` | - | - |
 
 ---

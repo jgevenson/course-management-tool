@@ -195,6 +195,7 @@ export default function HoleMapPoints({
   })
 
   // ── Planning marker drag handlers ──────────────────────────────────────────
+  // `drag` only updates polylines imperatively (no network). API + DB run on `dragend` only.
 
   const handlePlanningDrag = useCallback((marker, e) => {
     const key = marker.id || `default-${marker.marker_type}`
@@ -210,16 +211,16 @@ export default function HoleMapPoints({
     )
   }, [planningSequence, clubs, profile])
 
-  const handlePlanningDragEnd = useCallback(async (marker, e) => {
+  const handlePlanningDragEnd = useCallback((marker, e) => {
     const latlng = e.target.getLatLng()
     const lat = Math.round(latlng.lat * 1e6) / 1e6
     const lng = Math.round(latlng.lng * 1e6) / 1e6
 
     if (marker.id) {
-      await onMarkerMove(marker.id, lat, lng)
+      onMarkerMove(marker.id, lat, lng)
     } else {
-      // Default marker — save it as a new planning marker
-      await onPick(marker.marker_type, lat, lng)
+      // Default marker — save it as a new planning marker (optimistic + background sync in useHoles)
+      onPick(marker.marker_type, lat, lng)
     }
 
     // Clear the live override so React's updated state takes over display
@@ -229,11 +230,11 @@ export default function HoleMapPoints({
 
   // ── Map marker drag handlers ───────────────────────────────────────────────
 
-  const handleMapMarkerDragEnd = useCallback(async (kind, e) => {
+  const handleMapMarkerDragEnd = useCallback((kind, e) => {
     const latlng = e.target.getLatLng()
     const lat = Math.round(latlng.lat * 1e6) / 1e6
     const lng = Math.round(latlng.lng * 1e6) / 1e6
-    await onMapMarkerMove(kind, lat, lng)
+    onMapMarkerMove(kind, lat, lng)
   }, [onMapMarkerMove])
 
   // ── Compute initial segment data for first render ──────────────────────────

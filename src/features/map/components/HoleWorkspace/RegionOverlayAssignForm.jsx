@@ -1,7 +1,74 @@
 import { useState, useCallback } from 'react'
 import { TERRAIN_TYPE_OPTIONS, isValidTerrainType } from '../../utils/regionTerrain'
 
-export default function RegionOverlayAssignForm({
+/**
+ * ## Region Overlay Assign Form
+ * 
+ * A specialized UI form for managing the assignment of generated region overlays to specific golf holes.
+ * This component facilitates the critical link between the geospatial "What" (the region geometry)
+ * and the course data model "Where" (the hole assignment).
+ *
+ * ### State Management
+ * The component manages two primary pieces of local state:
+ * - `terrainType`: A controlled string state tied directly to the `TERRAIN_TYPE_OPTIONS` enum.
+ *   It defaults to the first available option (typically 'Unknown') and is updated via a standard
+ *   HTML `<select>` element.
+ * - `label`: A controlled string state for a user-provided label.
+ *   This allows for semantic annotation of the region (e.g., "Front-right bunker") to provide
+ *   context beyond the technical terrain type.
+ * - `holeIds`: A controlled array of strings (UUIDs) representing the IDs of the holes that
+ *   this region overlay affects. It is initialized lazily based on the `selectedHole` prop,
+ *   ensuring that if a hole is already selected when the form opens, it is pre-checked.
+*
+ * ### Data Flow & Persistence
+ * The form operates as a "Controlled Component" within the broader `HoleWorkspace` parent component.
+ * - **Initialization**: Upon mount, `holeIds` is seeded with `selectedHole.id` if available.
+ * - **Updates**: The `toggleHole` callback uses a `Set` internally for efficient O(1) add/remove
+ *   operations, ensuring that the `holeIds` array remains a unique list of selected holes.
+ * - **Submission**: The `handleSave` callback validates the selection and invokes the parent's
+ *   `onSaveRegionDraft`. It passes a payload containing the `terrainType`, the optional `label`,
+ *   and the array of `holeIds`. This payload is then used by the parent to update the geospatial
+ *   database via a Supabase RPC call.
+ *
+ * ### Validation & Constraints
+ * The component enforces data integrity through native HTML5 validation and explicit checks:
+ * - **Terrain Type**: The `isValidTerrainType` utility (imported from `utils/regionTerrain`) 
+ *   validates the `terrainType` state against the defined schema, preventing invalid terrain types
+ *   from being saved.
+ * - **Hole Selection**: The `handleSave` function explicitly checks if `holeIds.length === 0`. 
+ *   If no holes are selected, the save operation is aborted, enforcing the business rule that a region
+ *   must be associated with at least one hole.
+*
+ * ### UI/UX Patterns
+ * The form is designed for a compact sidebar environment, prioritizing clarity and ease of interaction.
+ * - **Hierarchical Information**: It begins with a clear header (`New region`) and a brief instruction
+ *   (`Choose type, optional label...`) to orient the user.
+ * - **Control Grouping**: The input fields are grouped by function: `Terrain type`, `Optional label`,
+ *   and `Holes in play`.
+ * - **Visual Feedback**: Errors are displayed in a distinct `text-red-400` color, and the save button
+ *   provides immediate loading state feedback via the `regionSaving` prop.
+ * - **Dense Selection List**: The list of holes uses a compact layout with a checkbox for selection.
+ *   The `toggleHole` logic ensures that a single hole cannot be deselected if it is the last one
+ *   in the list, preventing accidental disassociation.
+ *
+ * ### Event Handling
+ * - **Callbacks**: The component relies on three callback props: `onDiscardRegionDraft` (for cleanup),
+ *   `onSaveRegionDraft` (for persistence), and `regionSaving` (for loading state).
+ * - **Optimization**: `toggleHole` and `handleSave` are wrapped in `useCallback` to ensure stable
+ *   function references, which is crucial for performance in React environments where this component
+ *   might be frequently re-rendered.
+ *
+ * @param {Object} props - The properties for the RegionOverlayAssignForm component.
+ * @param {Array<Object>} props.holes - An array of hole objects available for selection. Expected format: `{ id: string, hole_number: number, ... }`.
+ * @param {Object|null} props.selectedHole - The currently selected hole object. Used to pre-populate the `holeIds` state.
+ * @param {function} props.onDiscardRegionDraft - A callback function to execute when the user wishes to discard the current region draft. Typically sets the drawing layer to null.
+ * @param {function(Object): void} props.onSaveRegionDraft - A callback function that persists the new region. It receives a payload object: `{ terrainType: string, label?: string, holeIds: string[] }`.
+ * @param {boolean} props.regionSaving - A boolean flag indicating if a region save operation is currently in progress. Used to disable buttons and show loading states.
+ * @param {string|null} props.regionError - An error message string to display if the last save operation failed.
+ * @returns {JSX.Element}
+ */
+
+export default function RegionOverlayAssignForm({ 
   holes,
   selectedHole,
   onDiscardRegionDraft,

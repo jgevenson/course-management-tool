@@ -1,6 +1,57 @@
 import { useState, useCallback } from 'react'
 import { Pentagon, Trash2 } from 'lucide-react'
 import { TERRAIN_TYPE_OPTIONS, isValidTerrainType, terrainTypeOptionLabel } from '../../utils/regionTerrain'
+  
+/**
+ * ## Region Properties Form
+ *
+ * A comprehensive form for editing the properties of an existing geospatial region overlay on the golf course.
+ * This component acts as the primary interface for refining region definitions after initial creation.
+ *
+ * ### State Management
+ * The component manages the following mutable properties:
+ * - `terrainType`: The classification of the terrain (e.g., "Water", "Fairway"). It is initialized from `overlay.terrain_type` and validated against `TERRAIN_TYPE_OPTIONS`.
+ * - `label`: An optional user-defined name for the region (e.g., "North bunker"), initialized from `overlay.label`.
+ * - `holeIds`: A managed array of hole identifiers to which this region applies. It uses a `Set` internally to efficiently track additions and removals, ensuring uniqueness while maintaining a stable array representation for the parent component.
+ *
+ * ### Data Flow & Persistence
+ * The form operates as a controlled component, relying on callback props to interact with the parent `HoleWorkspace`.
+ * - **Initialization**: `holeIds` is seeded with the `overlay.holeIds` prop if available.
+ * - **Updates**: The `toggleHole` callback handles the addition or removal of hole associations.
+ * - **Submission**: The `handleSave` callback triggers the `onSave` prop, passing a payload containing the updated `terrainType`, `label`, and `holeIds`. It performs validation to ensure `terrainType` is valid and at least one hole is selected.
+ * - **Deletion**: A dedicated `onDelete` callback is invoked when the user chooses to delete the region.
+ *
+ * ### Validation & Constraints
+ * The component enforces data integrity through multiple mechanisms:
+ * - **Terrain Type**: The `isValidTerrainType` utility ensures the selected terrain type is part of the defined schema.
+ * - **Hole Selection**: The `holeIds.length === 0` check prevents the removal of the last remaining hole from a region.
+ * - **Label Validation**: The `label.trim()` call ensures that only non-empty strings are persisted.
+ *
+ * ### UI/UX Patterns
+ * The form is optimized for a sidebar environment, prioritizing density and clarity:
+ * - **Identity Header**: The top section prominently displays the region's terrain type and its current label (or "No label" if absent), providing immediate context.
+ * - **Action Buttons**: It features a primary "Save changes" button (disabled during save operations) and a destructive "Delete region" button, both using distinct visual styling (green for save, red for delete).
+ * - **Dense List**: The list of holes uses a compact layout with checkboxes, allowing users to quickly associate or disassociate the region with multiple holes.
+ * - **Feedback Area**: A dedicated area below the controls displays messages (e.g., "Saved" or error strings) passed via the `message` prop.
+ *
+ * ### Event Handling
+ * All state-mutating callbacks (`toggleHole`, `handleSave`) are wrapped in `useCallback` to maintain referential stability, which is crucial for performance in React.
+ * The `onDone` callback is provided for the parent to handle the completion of the editing session.
+ *
+ * @param {Object} props
+ * @param {Object} props.overlay - The region overlay data object.
+ * @param {string} props.overlay.id - The unique identifier of the region.
+ * @param {string} props.overlay.terrain_type - The terrain type of the region.
+ * @param {string} [props.overlay.label] - The optional label for the region.
+ * @param {Array<string>} [props.overlay.holeIds] - An array of hole IDs associated with the region.
+ * @param {Array<Object>} props.holes - An array of available hole objects for association.
+ * @param {function} props.onSave - Callback to save the region changes.
+ * @param {function} props.onDelete - Callback to delete the region.
+ * @param {function} props.onDone - Callback to complete the editing session.
+ * @param {boolean} props.saving - Flag indicating if a save operation is in progress.
+ * @param {string|null} props.message - A message to display regarding the last operation.
+ * @returns {JSX.Element}
+ */
 
 export default function RegionPropertiesForm({ overlay, holes, onSave, onDelete, onDone, saving, message }) {
   const [terrainType, setTerrainType] = useState(overlay.terrain_type)

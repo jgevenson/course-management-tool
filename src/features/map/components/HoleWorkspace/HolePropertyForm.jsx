@@ -1,10 +1,56 @@
 import { useState, useCallback } from 'react'
 import { Flag } from 'lucide-react'
 
+/**
+ * ## Property Form Component
+ *
+ * A specialized UI form for managing golf hole statistics within a geospatial editing environment.
+ * This component is optimized for density and clarity, prioritizing data entry efficiency over decoration.
+ *
+ * ### State Management
+ * The component uses `useState` hooks to manage the three core metrics independently:
+ * - `par`: The standard number of strokes expected for the hole.
+ * - `strokeIndex`: The hole's difficulty ranking relative to other holes on the course.
+ * - `yardage`: The total length of the hole in yards.
+ *
+ * State is initialized lazily (`useState(() => ...)`) to avoid recalculation on every render, aligning with React best practices for derived state.
+ *
+ * ### Data Flow & Persistence
+ * The form connects to a parent controller (likely `HoleWorkspace`) via the `onSaveHoleStats` callback. This pattern facilitates a "controlled component" architecture, ensuring the UI remains the single source of truth for input values while delegating complex persistence logic to the parent.
+ *
+ * The `handleSaveStats` function wraps the persistence logic, ensuring that empty strings (representing unset values) are cleanly converted to `null` before being passed to the persistence layer. This prevents type mismatches and allows the backend to treat unset properties as "unset" rather than "zero".
+ *
+ * ### Validation & Constraints
+ * The input fields are configured with native HTML5 validation attributes to enforce data integrity:
+ * - `type="number"`: Restricts input to numeric values.
+ * - `min` and `max`: Enforce reasonable boundaries for each metric (e.g., Par between 3 and 6, Stroke Index between 1 and 18).
+ *
+ * ### UI/UX Patterns
+ * The layout follows a strict vertical stack, optimizing for single-column display typically found in sidebars or mobile views.
+ * - **Labeling**: Uses uppercase, semantically distinct labels (`text-slate-500 uppercase tracking-wide`) to ensure schema-level clarity.
+ * - **Visual Affordance**: The Hole Number is visually highlighted with a prominent icon (`Flag`) to reinforce the primary identifier of the entity being edited.
+ * - **Feedback Loop**: A dedicated `statsMessage` area is included below the action button. This space is reserved for transient system feedback—such as success confirmations (e.g., "Saved!") or error messages—enabling immediate user feedback without cluttering the input area.
+ *
+ * ### Event Handling
+ * All state updates are wrapped in `useCallback` to maintain stable function references. This is critical for performance when the component is rendered within a list or frequently updated parent container, preventing unnecessary re-renders of child components.
+ *
+ * @param {Object} props
+ * @param {Object} props.hole - The golf hole data object.
+ * @param {number} props.hole.hole_number - The identifier for the hole.
+ * @param {number} [props.hole.par] - The standard par value for the hole.
+ * @param {number} [props.hole.stroke_index] - The stroke index value for the hole.
+ * @param {number} [props.hole.scorecard_yardage] - The yardage value for the hole.
+ * @param {function} props.onSaveHoleStats - Callback function to persist the updated hole data.
+ * @param {boolean} props.statsSaving - Loading state flag for the persistence operation.
+ * @param {string|null} props.statsMessage - A message to display to the user regarding the last operation.
+ *
+ * @returns {JSX.Element}
+ */
+
 export default function HolePropertyForm({ hole, onSaveHoleStats, statsSaving, statsMessage }) {
   const [par, setPar] = useState(() => (hole.par ?? '').toString())
   const [strokeIndex, setStrokeIndex] = useState(() => (hole.stroke_index ?? '').toString())
-  const [yardage, setYardage] = useState(() => (hole.scorecard_yardage ?? '').toString())
+  const [yardage, setYardage] = useState(() => (hole.scorecard_yardage ?? '').toString()) 
 
   const handleSaveStats = useCallback(async () => {
     await onSaveHoleStats(hole.id, {

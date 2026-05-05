@@ -28,8 +28,68 @@ function MapInstanceBridge({ onMapReady }) {
 }
 
 /**
- * Wraps the Leaflet MapContainer and all map-layer children.
+ * ## Map Area
+ * 
+ * The main container component for the interactive golf course map, rendering the Leaflet map
+ * and all specialized map-layer children. It serves as the central hub for geospatial data visualization.
+*
+ * ### Responsibilities
+ * - **Map Initialization**: Renders a `MapContainer` configured with ESRI World Imagery tiles, centered 
+ *   on the provided `center` coordinates with an initial `zoom` level.
+ * - **Layer Composition**: Composes and manages the visibility of several distinct map layers:
+ *   1.  **`CourseTerrainOverlays`**: Visualizes terrain regions with user interaction support.
+ *   2.  **`AutoDrawRegionTool`**: Enables automated region generation based on AI predictions.
+ *   3.  **`OSMMapFeaturesLayer`**: Displays OpenStreetMap features (e.g., water hazards).
+ *   4.  **`RegionDraftPreview`**: Shows a live preview of a region currently being edited.
+ *   5.  **`HoleMapPoints`**: Renders markers and tee boxes for individual holes.
+ * 
+ * ### Interaction & Control Flow
+ * The component acts as a high-level controller for various map-based tools:
+ * - **Terrain Tools**: Manages `regionDrawActive` and `suppressTerrainInteractions` flags to control drawing and editing modes.
+ * - **Auto Draw**: Exposes configuration options (`autoDrawTolerance`, `autoDrawMaxRadiusYards`) and lifecycle events (`onAutoDrawFeatureCreated`).
+ * - **OSM Tool**: Activates the `osmToolActive` state and passes `osmFeaturesData` for rendering.
+ * - **Hole Points**: Coordinates marker placement (`onMarkerPick`), movement (`onMarkerMove`), and tool activation (`activePointTool`).
+ * 
+ * ### State & Data Handling
+ * - **Loading State**: Displays a "Loading holes…" indicator when `holesLoading` is true.
+ * - **Map Readiness**: Uses `MapInstanceBridge` to acquire a reference to the Leaflet map instance and pass it to the `onMapReady` callback.
+ * - **Props Management**: The component relies heavily on **callback props** to communicate events and data changes up to its parent component (`HoleWorkspace`). It does not manage significant local state, instead passing control down to specialized layer components.
+ * 
+ * @param {Object} props - The properties for the MapArea component.
+ * @param {Array<number>} props.center - The initial center coordinates of the map [lat, lng].
+ * @param {number} props.zoom - The initial zoom level of the map.
+ * @param {boolean} props.holesLoading - Flag to indicate if hole data is currently loading.
+ * @param {function} props.onMapReady - Callback function invoked when the Leaflet map instance is ready.
+ * @param {Array<Object>} props.visibleTerrainOverlays - Array of terrain overlay objects to display.
+ * @param {string|null} props.selectedTerrainOverlayId - The ID of the currently selected terrain overlay.
+ * @param {function} props.onSelectTerrainOverlayId - Callback to handle terrain overlay selection.
+ * @param {boolean} props.regionDrawActive - Flag to enable the region drawing tool.
+ * @param {function} props.suppressTerrainInteractions - Function to suppress map interactions within terrain layers.
+ * @param {function} props.onPolygonDrawn - Callback for when a polygon is drawn.
+ * @param {function} props.onGeometryCommit - Callback for committing a geometry.
+ * @param {boolean} props.autoDrawActive - Flag to enable the auto-draw tool.
+ * @param {boolean} props.autoDrawDisabled - Flag to disable the auto-draw tool.
+ * @param {number} props.autoDrawTolerance - Tolerance setting for auto-draw.
+ * @param {number} props.autoDrawMaxRadiusYards - Maximum radius for auto-draw.
+ * @param {function} props.onAutoDrawFeatureCreated - Callback for when an auto-drawn feature is created.
+ * @param {function} props.onAutoDrawStatusChange - Callback for when auto-draw status changes.
+ * @param {boolean} props.osmToolActive - Flag to enable the OSM tool.
+ * @param {Object} props.osmFeaturesData - GeoJSON data for OSM features.
+ * @param {function} props.onOSMFeatureSelect - Callback for when an OSM feature is selected.
+ * @param {Object|null} props.regionDraft - The current region draft geometry.
+ * @param {function} props.onRegionDraftGeometryChange - Callback for region draft geometry changes.
+ * @param {Object|null} props.selectedHole - The currently selected hole object.
+ * @param {string|null} props.activePointTool - The active point tool type.
+ * @param {function} props.onMarkerPick - Callback for marker picking.
+ * @param {function} props.onMarkerMove - Callback for marker movement.
+ * @param {function} props.onMapMarkerMove - Callback for map marker movement.
+ * @param {string} props.workspaceMode - The current workspace mode.
+ * @param {boolean} props.suppressHoleMapPick - Flag to suppress hole map picking.
+ * @param {Object} props.profile - User profile data.
+ * @param {Array<Object>} props.clubs - Array of club data.
+ * @returns {JSX.Element}
  */
+
 export default function MapArea({
   center,
   zoom,

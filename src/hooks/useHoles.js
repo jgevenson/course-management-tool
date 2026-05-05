@@ -1,9 +1,40 @@
+// AI assisted development
 import { useState, useCallback, useEffect } from 'react'
 import { mapApi } from '../services/api/mapApi'
 import { HOLE_MARKER_KIND } from '../features/map/utils/holeMarkers'
+import { fetchElevation } from '../features/map/utils/fetchElevation'
 
 /**
- * Manages holes, markers, and hole stats for the map editor.
+ * ## useHoles Hook
+ * 
+ * A custom React hook for managing hole data for a specific course, providing an abstraction layer over 
+ * the `mapApi` for fetching, updating, and removing holes and their associated markers.
+ *
+ * ### Responsibilities
+ * - **State Management**: Manages the array of `holes`, `selectedHoleIndex`, loading status (`holesLoading`), 
+ *   and various status states for different operations (`statsSaving`, `statsMessage`, `markerMessage`, 
+ *   `removePlanningSaving`, `removePlanningMessage`).
+ * - **Data Fetching**: Loads holes and their markers when the `courseId` changes, automatically selecting 
+ *   the first hole or the last valid index.
+ * - **Marker Operations**: Provides functions to place and remove both `mapMarkers` (like tee backs and green centers) 
+ *   and `planningMarkers` (like tee shots, pins, and landing areas), handling optimistic UI updates and 
+ *   background synchronization with the backend.
+ * - **Elevation Handling**: Integrates with `fetchElevation` to automatically fetch elevation data for new 
+ *   marker placements.
+ * - **Side Effects**: Automatically refetches or updates hole data after successful mutations to ensure 
+ *   the local state remains synchronized with the server.
+ * - **Memoization**: Uses `useCallback` to memoize the CRUD and state-modifying functions, preventing unnecessary 
+ *   re-renders in components that consume this hook.
+ *
+ * ### Usage Pattern
+ * This hook is designed to be used within React components that require access to hole data, typically 
+ * as a central data provider for a specific course's holes.
+ * 
+ * @param {string|null|undefined} courseId - The ID of the course whose holes are to be managed. 
+ *        If falsy, the loading process is skipped.
+ * @returns {Object} An object containing the `holes` array, `loading` status, `selectedHole`, 
+ *          `selectHoleIndex` function, marker-related state and functions, statistics state and functions,
+ *          and the `autoRotateHoleView` flag.
  */
 export function useHoles(courseId) {
   const [holes, setHoles] = useState([])
@@ -54,33 +85,76 @@ export function useHoles(courseId) {
   }, [])
 
   /**
-   * Place or move a map marker for the currently selected hole.
-   * Returns the saved marker data on success, or null on failure.
+   * ## placeMarker Function
+   * 
+   * A callback function that handles the placement or updating of a map marker for the currently 
+   * selected hole. It provides optimistic UI updates and schedules a background synchronization 
+   * with the backend.
+   *
+   * ### Responsibilities
+   * - **Marker Placement**: Supports two main categories of markers: `mapMarkers` (green center and tee back) 
+   *   and `planningMarkers` (tee shot locations, pin locations, and landing areas).
+   * - **Optimistic UI**: Updates the local state immediately to reflect the marker placement before 
+   *   the backend operation completes.
+   * - **Background Sync**: Initiates an asynchronous operation to persist the marker data to the backend 
+   *   via `mapApi.upsertHoleMarker` or `mapApi.upsertPlanningMarker`.
+   * - **Error Handling**: Catches errors during the backend operation and updates the `markerMessage` state.
+   * - **Elevation Fetching**: Automatically fetches elevation data for the marker's coordinates using `fetchElevation`.
+   * - **Sequence Management**: For landing area markers, it dynamically calculates the `sequence_order` 
+   *   based on the number of existing landing area markers.
+   *
+   * ### Arguments
+   * @param {string} tool - The type of tool used, determining the type of marker to place.
+   * @param {number} lat - The latitude coordinate for the marker.
+   * @param {number} lng - The longitude coordinate for the marker.
+   *
+   * @returns {Object|null} An object with an `ok: true` property if the operation was successful, `null` otherwise.
    */
   const placeMarker = useCallback(
-    async (tool, lat, lng) => {
+    (tool, lat, lng) => {
       const hole = holes[selectedHoleIndex]
       if (!hole) return null
       setMarkerMessage(null)
 
       // Handle map markers
       if (tool === 'green_center' || tool === 'tee_back') {
-        const marker_kind = tool === 'green_center' ? HOLE_MARKER_KIND.GREEN_CENTER : HOLE_MARKER_KIND.TEE_BACK
-        try {
-          const data = await mapApi.upsertHoleMarker(hole.id, marker_kind, lat, lng)
+        const marker_kind =
+          tool === 'green_center' ? HOLE_MARKER_KIND.GREEN_CENTER : HOLE_MARKER_KIND.TEE_BACK
 
-          setHoles((prev) =>
-            prev.map((h) => {
-              if (h.id !== hole.id) return h
-              const rest = (h.mapMarkers ?? []).filter((m) => m.marker_kind !== marker_kind)
-              return { ...h, mapMarkers: [...rest, data] }
-            }),
-          )
-          return data
-        } catch (err) {
-          setMarkerMessage(err.message)
-          return null
-        }
+        setHoles((prev) =>
+          prev.map((h) => {
+            if (h.id !== hole.id) return h
+            const existing = (h.mapMarkers ?? []).find((m) => m.marker_kind === marker_kind)
+            const rest = (h.mapMarkers ?? []).filter((m) => m.marker_kind !== marker_kind)
+            const optimistic = {
+              ...existing,
+              marker_kind,
+              lat,
+              lng,
+              is_active: true,
+              elevation: existing?.elevation ?? null,
+            }
+            return { ...h, mapMarkers: [...rest, optimistic] }
+          }),
+        )
+
+        void (async () => {
+          try {
+            const elevation = await fetchElevation(lat, lng)
+            const data = await mapApi.upsertHoleMarker(hole.id, marker_kind, lat, lng, elevation)
+            setHoles((prev) =>
+              prev.map((h) => {
+                if (h.id !== hole.id) return h
+                const rest = (h.mapMarkers ?? []).filter((m) => m.marker_kind !== marker_kind)
+                return { ...h, mapMarkers: [...rest, data] }
+              }),
+            )
+          } catch (err) {
+            setMarkerMessage(err.message)
+          }
+        })()
+
+        return { ok: true }
       }
 
       // Handle planning markers
@@ -94,34 +168,80 @@ export function useHoles(courseId) {
         sequenceOrder = 99
       } else if (tool === 'landing_area') {
         markerType = 'landing_area'
-        // Find next sequence order for landing areas (1, 2, 3...)
-        const landingAreas = (hole.planningMarkers ?? []).filter(m => m.marker_type === 'landing_area')
+        const landingAreas = (hole.planningMarkers ?? []).filter(
+          (m) => m.marker_type === 'landing_area',
+        )
         sequenceOrder = landingAreas.length + 1
       } else {
         return null
       }
 
-      try {
-        const data = await mapApi.upsertPlanningMarker(hole.id, markerType, sequenceOrder, lat, lng)
-
-        setHoles((prev) =>
-          prev.map((h) => {
-            if (h.id !== hole.id) return h
-            let newMarkers
-            if (markerType === 'landing_area') {
-              newMarkers = [...(h.planningMarkers ?? []), data]
-            } else {
-              const rest = (h.planningMarkers ?? []).filter((m) => m.marker_type !== markerType)
-              newMarkers = [...rest, data]
-            }
-            return { ...h, planningMarkers: newMarkers.sort((a, b) => a.sequence_order - b.sequence_order) }
-          }),
-        )
-        return data
-      } catch (err) {
-        setMarkerMessage(err.message)
-        return null
+      const tempId = `pending-${crypto.randomUUID()}`
+      const optimistic = {
+        id: tempId,
+        hole_id: hole.id,
+        marker_type: markerType,
+        sequence_order: sequenceOrder,
+        lat,
+        lng,
+        long: lng,
+        elevation: null,
+        created_at: new Date().toISOString(),
       }
+
+      setHoles((prev) =>
+        prev.map((h) => {
+          if (h.id !== hole.id) return h
+          let newMarkers
+          if (markerType === 'landing_area') {
+            newMarkers = [...(h.planningMarkers ?? []), optimistic]
+          } else {
+            const rest = (h.planningMarkers ?? []).filter((m) => m.marker_type !== markerType)
+            newMarkers = [...rest, optimistic]
+          }
+          return {
+            ...h,
+            planningMarkers: newMarkers.sort((a, b) => a.sequence_order - b.sequence_order),
+          }
+        }),
+      )
+
+      void (async () => {
+        try {
+          const elevation = await fetchElevation(lat, lng)
+          const data = await mapApi.upsertPlanningMarker(
+            hole.id,
+            markerType,
+            sequenceOrder,
+            lat,
+            lng,
+            elevation,
+          )
+          setHoles((prev) =>
+            prev.map((h) => {
+              if (h.id !== hole.id) return h
+              const pm = (h.planningMarkers ?? []).map((m) => (m.id === tempId ? data : m))
+              return {
+                ...h,
+                planningMarkers: pm.sort((a, b) => a.sequence_order - b.sequence_order),
+              }
+            }),
+          )
+        } catch (err) {
+          setMarkerMessage(err.message)
+          setHoles((prev) =>
+            prev.map((h) => {
+              if (h.id !== hole.id) return h
+              return {
+                ...h,
+                planningMarkers: (h.planningMarkers ?? []).filter((m) => m.id !== tempId),
+              }
+            }),
+          )
+        }
+      })()
+
+      return { ok: true }
     },
     [holes, selectedHoleIndex],
   )
@@ -161,57 +281,87 @@ export function useHoles(courseId) {
 
   /**
    * Move an existing planning marker (hard-saved in DB).
+   * Optimistic lat/lng immediately; elevation + Supabase in background.
    */
   const movePlanningMarker = useCallback(
-    async (markerId, lat, lng) => {
+    (markerId, lat, lng) => {
       const hole = holes[selectedHoleIndex]
       if (!hole?.id) return
 
-      try {
-        const data = await mapApi.movePlanningMarker(markerId, lat, lng)
+      setHoles((prev) =>
+        prev.map((h) => {
+          if (h.id !== hole.id) return h
+          return {
+            ...h,
+            planningMarkers: (h.planningMarkers ?? []).map((m) =>
+              m.id === markerId ? { ...m, lat, lng, long: lng } : m,
+            ),
+          }
+        }),
+      )
 
-        setHoles((prev) =>
-          prev.map((h) => {
-            if (h.id !== hole.id) return h
-            return {
-              ...h,
-              planningMarkers: (h.planningMarkers ?? []).map((m) =>
-                m.id === markerId ? data : m
-              ),
-            }
-          }),
-        )
-      } catch (err) {
-        setMarkerMessage(err.message)
-      }
+      void (async () => {
+        try {
+          const elevation = await fetchElevation(lat, lng)
+          const data = await mapApi.movePlanningMarker(markerId, lat, lng, elevation)
+          setHoles((prev) =>
+            prev.map((h) => {
+              if (h.id !== hole.id) return h
+              return {
+                ...h,
+                planningMarkers: (h.planningMarkers ?? []).map((m) =>
+                  m.id === markerId ? data : m,
+                ),
+              }
+            }),
+          )
+        } catch (err) {
+          setMarkerMessage(err.message)
+        }
+      })()
     },
     [holes, selectedHoleIndex],
   )
 
   /**
-   * Move a map marker (reference point).
+   * Move a map marker (reference point). Optimistic UI; sync in background.
    */
   const moveMapMarker = useCallback(
-    async (markerKind, lat, lng) => {
+    (markerKind, lat, lng) => {
       const hole = holes[selectedHoleIndex]
       if (!hole?.id) return
 
-      try {
-        const data = await mapApi.upsertHoleMarker(hole.id, markerKind, lat, lng)
+      setHoles((prev) =>
+        prev.map((h) => {
+          if (h.id !== hole.id) return h
+          return {
+            ...h,
+            mapMarkers: (h.mapMarkers ?? []).map((m) =>
+              m.marker_kind === markerKind ? { ...m, lat, lng } : m,
+            ),
+          }
+        }),
+      )
 
-        setHoles((prev) =>
-          prev.map((h) => {
-            if (h.id !== hole.id) return h
-            const rest = (h.mapMarkers ?? []).filter((m) => m.marker_kind !== markerKind)
-            return { ...h, mapMarkers: [...rest, data] }
-          }),
-        )
-      } catch (err) {
-        setMarkerMessage(err.message)
-      }
+      void (async () => {
+        try {
+          const elevation = await fetchElevation(lat, lng)
+          const data = await mapApi.upsertHoleMarker(hole.id, markerKind, lat, lng, elevation)
+          setHoles((prev) =>
+            prev.map((h) => {
+              if (h.id !== hole.id) return h
+              const rest = (h.mapMarkers ?? []).filter((m) => m.marker_kind !== markerKind)
+              return { ...h, mapMarkers: [...rest, data] }
+            }),
+          )
+        } catch (err) {
+          setMarkerMessage(err.message)
+        }
+      })()
     },
     [holes, selectedHoleIndex],
   )
+
   const saveHoleStats = useCallback(
     async (holeId, payload) => {
       setStatsSaving(true)

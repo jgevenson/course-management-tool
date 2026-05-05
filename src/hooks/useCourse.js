@@ -2,6 +2,32 @@ import { useState, useCallback, useEffect } from 'react'
 import { courseApi } from '../services/api/courseApi'
 import { supabase } from '../supabaseClient'
 
+/**
+ * ## useCourse Hook
+ * 
+ * A custom React hook for managing course data, providing an abstraction layer over 
+ * the `courseApi` for fetching and managing course, tees, holes, and yardages.
+ *
+ * ### Responsibilities
+ * - **State Management**: Manages the `course`, `tees`, `holes`, and `yardages` data, 
+ *   along with `loading` status and potential `error` messages.
+ * - **Data Fetching**: Loads all relevant data for a course on mount or when the `courseId` changes.
+ * - **CRUD Operations**: Exposes functions to perform Update (`updateCourse`) and 
+ *   Add/Update/Delete operations for tees and yardages.
+ * - **Side Effects**: Automatically refetches the data after successful mutations to ensure 
+ *   the local state remains synchronized with the server.
+ * - **Memoization**: Uses `useCallback` to memoize the data-modifying functions, preventing unnecessary 
+ *   re-renders in components that consume this hook.
+ *
+ * ### Usage Pattern
+ * This hook is designed to be used within React components that require access to course data, 
+ * typically as a central data provider for a specific course.
+ * 
+ * @param {string|null|undefined} courseId - The ID of the course to manage. 
+ *        If falsy, the loading process is skipped.
+ * @returns {Object} An object containing the course data (`course`, `tees`, `holes`, `yardages`), 
+ *          `loading` status, `error` message, and data-modifying functions.
+ */
 export function useCourse(courseId) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)

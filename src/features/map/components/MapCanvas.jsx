@@ -12,6 +12,36 @@ import MapEditorHeader from './MapEditorHeader'
 import MapArea from './MapArea'
 import HoleWorkspace from './HoleWorkspace'
 
+/**
+ * ## Map Canvas Component
+ * 
+ * The root component for the interactive golf course mapping interface. It orchestrates the entire 
+ * workflow by composing the `MapArea` (the main map view) and the `HoleWorkspace` (the side panel 
+ * for tools and information), managed through the `useMapTools` hook.
+ * 
+ * ### Component Responsibilities
+ * - **State Orchestration**: Aggregates data and state from multiple specialized hooks: `useMapCourse`, 
+ *   `useHoles`, `useMapTerrainOverlays`, `useProfile`, `useClubs`, and `useMapTools`.
+ * - **Data Fetching**: Initiates data loading for the map course and its associated holes.
+ * - **Permission Control**: Enforces a **planning-only** mode for non-administrative users, 
+ *   automatically reverting the workspace mode if a mapping admin is not detected.
+ * - **UI Composition**: Renders the main `MapEditorHeader`, the interactive `MapArea`, and the `HoleWorkspace`.
+ * - **Event Bridging**: Acts as a central hub for event callbacks, relaying complex interactions between 
+ *   the map layers and the workspace tools.
+ * 
+ * ### Data Flow & Dependencies
+ * The `MapCanvas` relies on **callback props** to communicate with its parent components. It receives 
+ * its primary map instance from the `MapArea` via the `onMapReady` callback, which is then passed down 
+ * to the `useMapTools` hook. The `MapArea` itself is populated with a comprehensive set of props 
+ * related to terrain overlays, auto-draw tools, OSM features, and hole markers.
+ * 
+ * ### Usage Example
+ * The component is typically rendered within a layout that manages routing (via `react-router-dom`) and 
+ * theme context. It requires a valid `id` parameter from the route for data fetching.
+ * 
+ * @returns {JSX.Element} A React component representing the full map editing interface.
+ */
+
 export default function MapCanvas() {
   const { id } = useParams()
   const [mapInstance, setMapInstance] = useState(null)
