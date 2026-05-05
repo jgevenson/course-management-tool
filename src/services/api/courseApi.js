@@ -92,7 +92,7 @@ export const courseApi = {
   getHoles: async (courseId) => {
     const { data, error } = await supabase
       .from('holes')
-      .select('id, hole_number, course_id')
+      .select('id, hole_number, course_id, par, stroke_index')
       .eq('course_id', courseId)
       .eq('is_active', true)
       .order('hole_number', { ascending: true })

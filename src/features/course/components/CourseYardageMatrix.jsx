@@ -1,5 +1,42 @@
 import { useState, useEffect } from 'react'
 
+/**
+ * ## CourseYardageMatrix Component
+ * 
+ * A React component for displaying and editing a matrix of hole yardages across different tee sets. 
+ * It provides a grid-based interface for users to input and save yardage values for each hole and tee combination.
+ * The component supports both displaying existing yardage data and collecting new yardage data.
+ *
+ * ### Component Responsibilities
+ * - **State Management**: Manages the state of the yardage matrix using `yardageDraft`, an object that maps 
+ *   tee-hole combinations to their respective yardage values. It also tracks `matrixSaving` status and 
+ *   `matrixMessage` for user feedback.
+ * - **Data Initialization**: Initializes the `yardageDraft` from the `yardages` prop, populating it with 
+ *   existing yardage data. It also ensures that every combination of holes and tees has an entry, even if empty,
+ *   by iterating over `holes` and `tees`.
+ * - **User Interaction Handling**: Provides a mechanism to update individual yardage cells via the `setYardCell` 
+ *   function, which updates the local state in response to user input.
+ * - **Form Submission**: Handles the saving of the yardage matrix through the `handleSave` function. This function 
+ *   iterates over the `yardageDraft`, formats the data, and invokes the `onSaveYardages` callback provided by the parent component.
+ * - **User Feedback**: Displays status messages after save operations, indicating success or failure. It uses a timeout 
+ *   to clear these messages after a specified duration.
+ * - **Conditional Rendering**: Renders the yardage matrix UI only when both `holes` and `tees` arrays are non-empty. 
+ *   Otherwise, it displays informative messages guiding the user on how to proceed.
+ *
+ * ### Usage Pattern
+ * This component is intended to be used as a child component within a larger course management interface. 
+ * It expects to receive `holes`, `tees`, and `yardages` data from its parent component. The parent is also 
+ * responsible for providing the `onSaveYardages` callback function to handle the actual persistence of the 
+ * yardage data.
+ * 
+ * @param {Object} props - The properties for the CourseYardageMatrix component.
+ * @param {Array<Object>} props.holes - An array of hole objects, each containing at least an `id` and `hole_number`.
+ * @param {Array<Object>} props.tees - An array of tee set objects, each containing at least an `id`, `name`, `color_label`, `rating`, and `slope`.
+ * @param {Array<Object>} props.yardages - An array of yardage objects, each containing `hole_id`, `tee_id`, and `yardage`.
+ * @param {function(Object): Promise<Object>} props.onSaveYardages - Callback function invoked when the yardage 
+ *   matrix is to be saved. It should accept the `yardageDraft` object and return a promise that resolves to a result object.
+ * @returns {React.Component} The `CourseYardageMatrix` component, rendering the yardage input interface.
+ */
 export default function CourseYardageMatrix({ holes, tees, yardages, onSaveYardages }) {
   const [yardageDraft, setYardageDraft] = useState({})
   const [matrixSaving, setMatrixSaving] = useState(false)
@@ -78,7 +115,6 @@ export default function CourseYardageMatrix({ holes, tees, yardages, onSaveYarda
                 {tees.map((t) => (
                   <th key={t.id} className="py-3 px-2 text-slate-300 font-semibold whitespace-nowrap min-w-[88px]">
                     <span>{t.name}</span>
-                    {t.color_label && <span className="block text-xs font-normal text-slate-500">{t.color_label}</span>}
                   </th>
                 ))}
               </tr>

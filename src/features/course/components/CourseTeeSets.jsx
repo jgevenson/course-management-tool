@@ -1,6 +1,40 @@
 import { useState } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
 
+/**
+ * ## CourseTeeSets Component
+ * 
+ * A React component for managing and displaying tee sets for a golf course. It allows 
+ * users to add, update, remove, and set default tee sets, as well as input course rating and slope values.
+ *
+ * ### Component Responsibilities
+ * - **Tee Management**: Provides a UI for managing multiple tee sets, including adding new ones, 
+ *   editing existing ones, and removing them.
+ * - **Default Tee Selection**: Allows the user to designate one tee set as the default, which is 
+ *   typically used for displaying scorecard yardage.
+ * - **Data Input**: Facilitates the input of various properties for each tee set, such as `name`, 
+ *   `color_label` (color/label), `rating`, and `slope`.
+ * - **User Feedback**: Displays status messages for operations like adding, updating, removing, 
+ *   or setting a default tee, indicating success or failure.
+ * - **Optimistic Updates**: The component updates the UI optimistically and uses a timeout to 
+ *   clear messages after a short duration.
+ *
+ * ### Usage Pattern
+ * This component is designed to be used as a child component within a larger course management interface. 
+ * It consumes props for data and callback functions to interact with the parent component for data persistence and state management.
+ * 
+ * @param {Object} props - The properties for the CourseTeeSets component.
+ * @param {Array<Object>} props.tees - An array of tee set objects, each representing a tee set for the course.
+ * @param {function(Object): Promise<Object>} props.onAddTee - Callback function to add a new tee set. 
+ *   It should accept a tee set payload and return a promise.
+ * @param {function(number, Object): Promise<Object>} props.onUpdateTee - Callback function to update an existing 
+ *   tee set. It should accept the tee ID and the update payload.
+ * @param {function(number): Promise<Object>} props.onRemoveTee - Callback function to remove a tee set. It should 
+ *   accept the tee ID.
+ * @param {function(number): Promise<Object>} props.onSetDefaultTee - Callback function to set a specific tee set 
+ *   as the default. It should accept the tee ID.
+ * @returns {React.Component} The `CourseTeeSets` component, rendering the interface for managing tee sets.
+ */
 export default function CourseTeeSets({ tees, onAddTee, onUpdateTee, onRemoveTee, onSetDefaultTee }) {
   const [newTee, setNewTee] = useState({ name: '', color_label: '', rating: '', slope: '' })
   const [teeBusy, setTeeBusy] = useState(false)
@@ -94,16 +128,14 @@ export default function CourseTeeSets({ tees, onAddTee, onUpdateTee, onRemoveTee
                 <label htmlFor={`tee-color-${tee.id}`} className="block text-xs font-medium text-slate-500 mb-1">Color / label</label>
                 <input
                   id={`tee-color-${tee.id}`}
-                  type="text"
-                  defaultValue={tee.color_label ?? ''}
-                  key={`color-${tee.id}-${tee.color_label ?? ''}`}
+                  type="color"
+                  defaultValue={tee.color_label?.startsWith('#') ? tee.color_label : '#ffffff'}
                   onBlur={(e) => {
-                    const v = e.target.value.trim()
-                    const next = v || null
-                    if (next !== (tee.color_label ?? null)) handleUpdateField(tee.id, { color_label: next })
+                    const v = e.target.value
+                    if (v !== (tee.color_label ?? null)) handleUpdateField(tee.id, { color_label: v })
                   }}
                   disabled={teeBusy}
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white text-sm"
+                  className="w-full h-[38px] p-0.5 bg-slate-900 border border-slate-600 rounded cursor-pointer"
                 />
               </div>
               <div className="lg:col-span-2">
@@ -191,11 +223,10 @@ export default function CourseTeeSets({ tees, onAddTee, onUpdateTee, onRemoveTee
           </label>
           <input
             id="new-tee-color"
-            type="text"
-            placeholder="Optional"
-            value={newTee.color_label}
+            type="color"
+            value={newTee.color_label?.startsWith('#') ? newTee.color_label : '#ffffff'}
             onChange={(e) => setNewTee((t) => ({ ...t, color_label: e.target.value }))}
-            className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white text-sm"
+            className="w-full h-[38px] p-0.5 bg-slate-900 border border-slate-600 rounded cursor-pointer"
           />
         </div>
         <div className="md:col-span-2">
