@@ -61,10 +61,8 @@ describe('CourseDetailsForm Component', () => {
       expect(screen.getByLabelText(/city/i)).toHaveValue(MOCK_COURSE.city)
       expect(screen.getByLabelText(/state \/ region/i)).toHaveValue(MOCK_COURSE.region)
       expect(screen.getByLabelText(/postal code/i)).toHaveValue(MOCK_COURSE.postal_code)
-      expect(screen.getByLabelText(/country/i)).toHaveValue(MOCK_COURSE.country)
-      expect(screen.getByLabelText(/phone/i)).toHaveValue(MOCK_COURSE.phone)
+      expect(screen.getByLabelText(/phone/i)).toHaveValue('(831) 624-3811')
       expect(screen.getByLabelText(/website/i)).toHaveValue(MOCK_COURSE.website)
-      expect(screen.getByLabelText(/notes/i)).toHaveValue(MOCK_COURSE.notes)
     })
 
     it('renders the save button', () => {

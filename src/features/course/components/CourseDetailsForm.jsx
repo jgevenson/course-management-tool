@@ -1,4 +1,59 @@
 import { useState, useEffect } from 'react'
+import { formatPhoneNumber, formatPhoneNumberAsYouType } from '../../../utils/phone'
+
+const US_STATES = [
+  { value: 'AL', label: 'Alabama' },
+  { value: 'AK', label: 'Alaska' },
+  { value: 'AZ', label: 'Arizona' },
+  { value: 'AR', label: 'Arkansas' },
+  { value: 'CA', label: 'California' },
+  { value: 'CO', label: 'Colorado' },
+  { value: 'CT', label: 'Connecticut' },
+  { value: 'DE', label: 'Delaware' },
+  { value: 'FL', label: 'Florida' },
+  { value: 'GA', label: 'Georgia' },
+  { value: 'HI', label: 'Hawaii' },
+  { value: 'ID', label: 'Idaho' },
+  { value: 'IL', label: 'Illinois' },
+  { value: 'IN', label: 'Indiana' },
+  { value: 'IA', label: 'Iowa' },
+  { value: 'KS', label: 'Kansas' },
+  { value: 'KY', label: 'Kentucky' },
+  { value: 'LA', label: 'Louisiana' },
+  { value: 'ME', label: 'Maine' },
+  { value: 'MD', label: 'Maryland' },
+  { value: 'MA', label: 'Massachusetts' },
+  { value: 'MI', label: 'Michigan' },
+  { value: 'MN', label: 'Minnesota' },
+  { value: 'MS', label: 'Mississippi' },
+  { value: 'MO', label: 'Missouri' },
+  { value: 'MT', label: 'Montana' },
+  { value: 'NE', label: 'Nebraska' },
+  { value: 'NV', label: 'Nevada' },
+  { value: 'NH', label: 'New Hampshire' },
+  { value: 'NJ', label: 'New Jersey' },
+  { value: 'NM', label: 'New Mexico' },
+  { value: 'NY', label: 'New York' },
+  { value: 'NC', label: 'North Carolina' },
+  { value: 'ND', label: 'North Dakota' },
+  { value: 'OH', label: 'Ohio' },
+  { value: 'OK', label: 'Oklahoma' },
+  { value: 'OR', label: 'Oregon' },
+  { value: 'PA', label: 'Pennsylvania' },
+  { value: 'RI', label: 'Rhode Island' },
+  { value: 'SC', label: 'South Carolina' },
+  { value: 'SD', label: 'South Dakota' },
+  { value: 'TN', label: 'Tennessee' },
+  { value: 'TX', label: 'Texas' },
+  { value: 'UT', label: 'Utah' },
+  { value: 'VT', label: 'Vermont' },
+  { value: 'VA', label: 'Virginia' },
+  { value: 'WA', label: 'Washington' },
+  { value: 'WV', label: 'West Virginia' },
+  { value: 'WI', label: 'Wisconsin' },
+  { value: 'WY', label: 'Wyoming' }
+]
+
 
 /**
  * ## CourseDetailsForm Component
@@ -59,7 +114,7 @@ export default function CourseDetailsForm({ course, onSave }) {
         region: course.region ?? '',
         postal_code: course.postal_code ?? '',
         country: course.country ?? '',
-        phone: course.phone ?? '',
+        phone: formatPhoneNumber(course.phone ?? ''),
         website: course.website ?? '',
         notes: course.notes ?? '',
       })
@@ -135,13 +190,19 @@ export default function CourseDetailsForm({ course, onSave }) {
           <label htmlFor="cd-region" className="block text-sm font-medium text-slate-400 mb-1">
             State / region
           </label>
-          <input
+          <select
             id="cd-region"
-            type="text"
             value={courseForm.region}
             onChange={(e) => setCourseForm((f) => ({ ...f, region: e.target.value }))}
-            className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-          />
+            className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 appearance-none"
+          >
+            <option value="">Select state...</option>
+            {US_STATES.map((state) => (
+              <option key={state.value} value={state.value}>
+                {state.label} ({state.value})
+              </option>
+            ))}
+          </select>
         </div>
         <div className="md:col-span-2">
           <label htmlFor="cd-postal" className="block text-sm font-medium text-slate-400 mb-1">
@@ -175,7 +236,7 @@ export default function CourseDetailsForm({ course, onSave }) {
             id="cd-phone"
             type="tel"
             value={courseForm.phone}
-            onChange={(e) => setCourseForm((f) => ({ ...f, phone: e.target.value }))}
+            onChange={(e) => setCourseForm((f) => ({ ...f, phone: formatPhoneNumberAsYouType(e.target.value) }))}
             className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
           />
         </div>
