@@ -37,6 +37,18 @@ export default function Header() {
               Dashboard
             </Link>
 
+            <Link 
+              to="/courses" 
+              className={`flex items-center gap-2 text-sm font-medium px-3 py-2 rounded-lg transition-all duration-200 ${
+                isActive('/courses') 
+                  ? 'bg-slate-800/80 text-emerald-400 shadow-sm' 
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+              }`}
+            >
+              <Flag className="w-4 h-4" />
+              Courses
+            </Link>
+
             {/* Future routes like /community or /leaderboard can drop in right here */}
           </nav>
 

@@ -2,14 +2,15 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { supabase } from './supabaseClient'
-
-// Components & Pages
+import { ThemeProvider, CssBaseline } from '@mui/material'
+import theme from './theme'// Components & Pages
 import Auth from './components/Auth'
 import Header from './components/Header'
 import MapCanvas from './features/map/components/MapCanvas'
 import Dashboard from './pages/Dashboard'
 import CourseDetails from './features/course/components/CourseDetails'
 import Profile from './pages/Profile'
+import Courses from './pages/Courses'
 
 export default function App() {
   const [session, setSession] = useState(null)
@@ -23,7 +24,9 @@ export default function App() {
   if (!session) return <Auth />
 
   return (
-    <Router>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Router>
       <div className="h-screen w-screen flex flex-col bg-slate-900 text-white overflow-hidden">
         <Header />
 
@@ -62,9 +65,18 @@ export default function App() {
               }
             />
 
+            <Route
+              path="/courses"
+              element={
+                <div className="h-full min-h-0 overflow-y-auto">
+                  <Courses />
+                </div>
+              }
+            />
           </Routes>
         </main>
       </div>
     </Router>
+    </ThemeProvider>
   )
 }

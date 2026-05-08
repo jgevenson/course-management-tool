@@ -4,6 +4,8 @@ import { supabase } from '../supabaseClient'
 import DigitalBagPanel from '../features/bag/components/DigitalBagPanel'
 import DispersionPanel from '../features/bag/components/dispersion/DispersionPanel'
 import { useClubs } from '../hooks/useClubs'
+import { Box, Typography } from '@mui/material'
+import Grid from '@mui/material/Grid'
 
 export default function Profile({ session }) {
   const [username, setUsername] = useState('')
@@ -78,9 +80,10 @@ export default function Profile({ session }) {
   if (loading) return <div className="p-8 text-slate-400">Loading profile...</div>
 
   return (
-    <div className="p-8 w-full mx-auto">
-      <h1 className="text-3xl font-bold text-white mb-6">Player Profile</h1>
-      
+    <Box sx={{ p: 4, width: '100%' }}>
+      <Typography variant="h4" component="h1" fontWeight="bold" color="text.primary" mb={3}>
+        Player Profile
+      </Typography>
       {/* Tabs */}
       <div className="flex border-b border-slate-700 mb-8">
         <button
@@ -206,8 +209,8 @@ export default function Profile({ session }) {
         )}
 
         {activeTab === 'bag' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div className="lg:col-span-6">
+          <Grid container spacing={4} alignItems="flex-start">
+            <Grid size={{ xs: 12, lg: 6 }}>
               <DigitalBagPanel 
                 userId={session.user.id} 
                 clubs={clubs}
@@ -218,18 +221,18 @@ export default function Profile({ session }) {
                 updateClub={updateClub}
                 removeClub={removeClub}
               />
-            </div>
-            <div className="lg:col-span-6 sticky top-8">
+            </Grid>
+            <Grid size={{ xs: 12, lg: 6 }} sx={{ position: 'sticky', top: 32 }}>
               <DispersionPanel 
                 clubs={clubs}
                 handedness={dexterity}
                 handicap={handicapIndex}
                 activeClubId={selectedClubId}
               />
-            </div>
-          </div>
+            </Grid>
+          </Grid>
         )}
       </div>
-    </div>
+    </Box>
   )
 }

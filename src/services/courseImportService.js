@@ -97,3 +97,115 @@ export async function importCourseToSupabase(parsedData) {
     throw error
   }
 }
+
+export async function importApiCourseToSupabase(courseData, userId) {
+  try {
+    const courseName = courseData.course_name || courseData.club_name;
+    const { data: courseDbData, error: courseError } = await supabase
+      .from('courses')
+      .insert({
+        name: courseName,
+        user_id: userId,
+        address_line: courseData.location?.address || null,
+        city: courseData.location?.city || null,
+        region: courseData.location?.state || null,
+        country: courseData.location?.country || null,
+        course_lat: courseData.location?.latitude || 0,
+        course_lng: courseData.location?.longitude || 0,
+        is_active: true
+      })
+      .select()
+      .single()
+
+    if (courseError) throw courseError
+
+    const courseId = courseDbData.id
+
+    if (courseData.location?.latitude && courseData.location?.longitude) {
+      const { error: locError } = await supabase.rpc('update_course_location', {
+        p_course_id: courseId,
+        p_lat: courseData.location.latitude,
+        p_lng: courseData.location.longitude
+      })
+      if (locError) throw locError
+    }
+
+    const maleTees = courseData.tees?.male || [];
+    if (maleTees.length === 0) {
+      return courseId;
+    }
+
+    const teesToInsert = maleTees.map((tee, index) => ({
+      course_id: courseId,
+      user_id: userId,
+      name: tee.tee_name,
+      rating: tee.course_rating,
+      slope: tee.slope_rating,
+      sort_order: index,
+      is_default: index === 0,
+      is_active: true
+    }));
+
+    const { data: teesData, error: teesError } = await supabase
+      .from('course_tees')
+      .insert(teesToInsert)
+      .select()
+
+    if (teesError) throw teesError
+
+    const primaryTee = maleTees[0];
+    const holesToInsert = primaryTee.holes.map((hole, index) => ({
+      course_id: courseId,
+      hole_number: index + 1,
+      par: hole.par,
+      stroke_index: hole.handicap,
+      is_active: true
+    }));
+
+    let insertedHoles = []
+    if (holesToInsert.length > 0) {
+      const { data: holesData, error: holesError } = await supabase
+        .from('holes')
+        .insert(holesToInsert)
+        .select()
+      
+      if (holesError) throw holesError
+      insertedHoles = holesData
+    }
+
+    const holeIdMap = {}
+    insertedHoles.forEach(h => {
+      holeIdMap[h.hole_number] = h.id
+    })
+
+    const yardagesToInsert = [];
+    maleTees.forEach((tee, teeIndex) => {
+      const teeDbId = teesData[teeIndex].id;
+      tee.holes.forEach((hole, holeIndex) => {
+        const holeNumber = holeIndex + 1;
+        const holeDbId = holeIdMap[holeNumber];
+        if (holeDbId && hole.yardage) {
+          yardagesToInsert.push({
+            hole_id: holeDbId,
+            tee_id: teeDbId,
+            yardage: hole.yardage,
+            is_active: true
+          });
+        }
+      });
+    });
+
+    if (yardagesToInsert.length > 0) {
+      const { error: yardagesError } = await supabase
+        .from('hole_tee_yardages')
+        .insert(yardagesToInsert)
+      
+      if (yardagesError) throw yardagesError
+    }
+
+    return courseId
+  } catch (error) {
+    console.error('Error importing API course to Supabase:', error)
+    throw error
+  }
+}
