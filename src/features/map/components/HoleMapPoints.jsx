@@ -7,6 +7,7 @@ import { Marker, Polyline, Polygon, useMap, useMapEvents } from 'react-leaflet'
 import { haversineDistanceYards, getBearing } from '../utils/geoDistance'
 import { HOLE_MARKER_KIND, activeMarkerLatLng, resolvePlanningMarkers } from '../utils/holeMarkers'
 import { getRecommendedClub, getDispersionPolygon } from '../../bag/utils/dispersion'
+import { disableAllMapInteractions, enableAllMapInteractions } from '../utils/mapInteractions'
 
 // ─── Icon builders ────────────────────────────────────────────────────────────
 
@@ -287,10 +288,27 @@ export default function HoleMapPoints({
             position={[Number(tee.lat), Number(tee.lng)]}
             icon={teeIcon}
             draggable={!activePointTool}
+            autoPan={false}
             eventHandlers={{
-              dragstart: () => map.dragging.disable(),
+              mouseover: () => disableAllMapInteractions(map),
+              mouseout: () => enableAllMapInteractions(map),
+              mousedown: (e) => {
+                disableAllMapInteractions(map)
+                if (e.originalEvent) {
+                  L.DomEvent.stopPropagation(e.originalEvent)
+                }
+              },
+              touchstart: (e) => {
+                disableAllMapInteractions(map)
+                if (e.originalEvent) {
+                  L.DomEvent.stopPropagation(e.originalEvent)
+                }
+              },
+              mouseup: () => enableAllMapInteractions(map),
+              touchend: () => enableAllMapInteractions(map),
+              dragstart: () => disableAllMapInteractions(map),
               dragend: (e) => {
-                map.dragging.enable()
+                enableAllMapInteractions(map)
                 handleMapMarkerDragEnd(HOLE_MARKER_KIND.TEE_BACK, e)
               },
             }}
@@ -301,10 +319,27 @@ export default function HoleMapPoints({
             position={[Number(green.lat), Number(green.lng)]}
             icon={greenIcon}
             draggable={!activePointTool}
+            autoPan={false}
             eventHandlers={{
-              dragstart: () => map.dragging.disable(),
+              mouseover: () => disableAllMapInteractions(map),
+              mouseout: () => enableAllMapInteractions(map),
+              mousedown: (e) => {
+                disableAllMapInteractions(map)
+                if (e.originalEvent) {
+                  L.DomEvent.stopPropagation(e.originalEvent)
+                }
+              },
+              touchstart: (e) => {
+                disableAllMapInteractions(map)
+                if (e.originalEvent) {
+                  L.DomEvent.stopPropagation(e.originalEvent)
+                }
+              },
+              mouseup: () => enableAllMapInteractions(map),
+              touchend: () => enableAllMapInteractions(map),
+              dragstart: () => disableAllMapInteractions(map),
               dragend: (e) => {
-                map.dragging.enable()
+                enableAllMapInteractions(map)
                 handleMapMarkerDragEnd(HOLE_MARKER_KIND.GREEN_CENTER, e)
               },
             }}
@@ -376,11 +411,28 @@ export default function HoleMapPoints({
             position={[Number(m.lat), lng]}
             icon={icon}
             draggable={!activePointTool}
+            autoPan={false}
             eventHandlers={{
-              dragstart: () => map.dragging.disable(),
+              mouseover: () => disableAllMapInteractions(map),
+              mouseout: () => enableAllMapInteractions(map),
+              mousedown: (e) => {
+                disableAllMapInteractions(map)
+                if (e.originalEvent) {
+                  L.DomEvent.stopPropagation(e.originalEvent)
+                }
+              },
+              touchstart: (e) => {
+                disableAllMapInteractions(map)
+                if (e.originalEvent) {
+                  L.DomEvent.stopPropagation(e.originalEvent)
+                }
+              },
+              mouseup: () => enableAllMapInteractions(map),
+              touchend: () => enableAllMapInteractions(map),
+              dragstart: () => disableAllMapInteractions(map),
               drag:    (e) => handlePlanningDrag(m, e),
               dragend: (e) => {
-                map.dragging.enable()
+                enableAllMapInteractions(map)
                 handlePlanningDragEnd(m, e)
               },
             }}

@@ -247,6 +247,99 @@ export function useHoles(courseId) {
   )
 
   /**
+   * Insert a landing area exactly between two markers.
+   */
+  const insertPlanningMarkerMidpoint = useCallback(
+    (startMarker, endMarker) => {
+      const hole = holes[selectedHoleIndex]
+      if (!hole) return null
+
+      setMarkerMessage(null)
+
+      const startLat = Number(startMarker.lat)
+      const startLng = Number(startMarker.long ?? startMarker.lng)
+      const endLat = Number(endMarker.lat)
+      const endLng = Number(endMarker.long ?? endMarker.lng)
+
+      const lat = (startLat + endLat) / 2
+      const lng = (startLng + endLng) / 2
+
+      let sequenceOrder
+      if (startMarker.marker_type === 'tee_shot_location') {
+        sequenceOrder = 1
+      } else {
+        sequenceOrder = (startMarker.sequence_order || 0) + 1
+      }
+
+      const tempId = `pending-${crypto.randomUUID()}`
+      const optimistic = {
+        id: tempId,
+        hole_id: hole.id,
+        marker_type: 'landing_area',
+        sequence_order: sequenceOrder,
+        lat,
+        lng,
+        long: lng,
+        elevation: null,
+        created_at: new Date().toISOString(),
+      }
+
+      setHoles((prev) =>
+        prev.map((h) => {
+          if (h.id !== hole.id) return h
+          let newMarkers = (h.planningMarkers ?? []).map(m => {
+            if (m.marker_type === 'landing_area' && m.sequence_order >= sequenceOrder) {
+              return { ...m, sequence_order: m.sequence_order + 1 }
+            }
+            return m
+          })
+          newMarkers.push(optimistic)
+          return {
+            ...h,
+            planningMarkers: newMarkers.sort((a, b) => a.sequence_order - b.sequence_order),
+          }
+        }),
+      )
+
+      void (async () => {
+        try {
+          const elevation = await fetchElevation(lat, lng)
+          const data = await mapApi.insertPlanningMarker(
+            hole.id,
+            'landing_area',
+            sequenceOrder,
+            lat,
+            lng,
+            elevation,
+          )
+          setHoles((prev) =>
+            prev.map((h) => {
+              if (h.id !== hole.id) return h
+              const pm = (h.planningMarkers ?? []).map((m) => (m.id === tempId ? data : m))
+              return {
+                ...h,
+                planningMarkers: pm.sort((a, b) => a.sequence_order - b.sequence_order),
+              }
+            }),
+          )
+        } catch (err) {
+          setMarkerMessage(err.message)
+          setHoles((prev) =>
+            prev.map((h) => {
+              if (h.id !== hole.id) return h
+              return {
+                ...h,
+                planningMarkers: (h.planningMarkers ?? []).filter((m) => m.id !== tempId),
+              }
+            }),
+          )
+        }
+      })()
+    },
+    [holes, selectedHoleIndex]
+  )
+
+  /**
    * Remove a planning marker by ID (hard delete).
    */
   const removePlanningMarker = useCallback(
@@ -402,6 +495,7 @@ export function useHoles(courseId) {
     selectedHole,
     selectHoleIndex,
     placeMarker,
+    insertPlanningMarkerMidpoint,
     movePlanningMarker,
     moveMapMarker,
     removePlanningMarker,

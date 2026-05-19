@@ -42,10 +42,18 @@ export function buildPlanningView(hole) {
       label = `L${startIdx} → Pin`
     }
 
+    const elevationDiffYards = (end.elevation || 0) - (start.elevation || 0)
+    const elevationDiffFeet = Math.round(elevationDiffYards * 3)
+    const playsLike = Math.max(1, yards + Math.round(elevationDiffYards))
+
     segments.push({
       id: `seg-${i}`,
       label,
       yards,
+      elevationDiffFeet,
+      playsLike,
+      start,
+      end,
     })
   }
 

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef } from 'react'
 import L from 'leaflet'
 import { useMap, useMapEvents } from 'react-leaflet'
 import { styleForRegionPhase } from '../utils/regionTerrain'
+import { disableAllMapInteractions, enableAllMapInteractions } from '../utils/mapInteractions'
 
 const dragHandleIcon = L.divIcon({
   html: `<div style="background: white; border: 2px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); cursor: move;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"></polyline><polyline points="9 5 12 2 15 5"></polyline><polyline points="19 9 22 12 19 15"></polyline><polyline points="9 19 12 22 15 19"></polyline><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line></svg></div>`,
@@ -137,7 +138,25 @@ export default function CourseTerrainOverlays({
         marker.off('drag')
         marker.off('dragend')
         
+        marker.on('mouseover', () => disableAllMapInteractions(map))
+        marker.on('mouseout', () => enableAllMapInteractions(map))
+        marker.on('mousedown', (e) => {
+          disableAllMapInteractions(map)
+          if (e.originalEvent) {
+            L.DomEvent.stopPropagation(e.originalEvent)
+          }
+        })
+        marker.on('touchstart', (e) => {
+          disableAllMapInteractions(map)
+          if (e.originalEvent) {
+            L.DomEvent.stopPropagation(e.originalEvent)
+          }
+        })
+        marker.on('mouseup', () => enableAllMapInteractions(map))
+        marker.on('touchend', () => enableAllMapInteractions(map))
+        
         marker.on('dragstart', (e) => {
+          disableAllMapInteractions(map)
           if (path.pm && path.pm.enabled()) {
             path.pm.disable()
           }
@@ -164,6 +183,7 @@ export default function CourseTerrainOverlays({
         })
         
         marker.on('dragend', () => {
+          enableAllMapInteractions(map)
           if (path.pm) {
             path.pm.enable({ snappable: true })
           }
@@ -176,6 +196,7 @@ export default function CourseTerrainOverlays({
         const marker = L.marker(center, {
           icon: dragHandleIcon,
           draggable: true,
+          autoPan: false,
           zIndexOffset: 1000
         })
         setupDragEvents(marker, selectedPath)

@@ -298,6 +298,7 @@ export default function MapCanvas() {
         onRemovePlanningMarker={holesState.removePlanningMarker}
         removePlanningSaving={holesState.removePlanningSaving}
         removePlanningMessage={holesState.removePlanningMessage}
+        onInsertPlanningMarker={holesState.insertPlanningMarkerMidpoint}
         onMarkerMove={holesState.movePlanningMarker}
         onMapMarkerMove={holesState.moveMapMarker}
         clubs={clubs}

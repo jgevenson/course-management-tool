@@ -197,6 +197,40 @@ export const mapApi = {
   },
 
   /**
+   * Insert a new planning marker and shift subsequent markers.
+   */
+  insertPlanningMarker: async (holeId, markerType, sequenceOrder, lat, long, elevation = null) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) throw new Error('Not authenticated')
+
+    let { data, error } = await supabase.rpc('insert_planning_marker', {
+      p_hole_id: holeId,
+      p_user_id: user.id,
+      p_marker_type: markerType,
+      p_sequence_order: sequenceOrder,
+      p_lat: lat,
+      p_lng: long,
+      p_elevation: elevation,
+    })
+
+    if (error && isLikelyMissingElevationRpcArg(error)) {
+      ;({ data, error } = await supabase.rpc('insert_planning_marker', {
+        p_hole_id: holeId,
+        p_user_id: user.id,
+        p_marker_type: markerType,
+        p_sequence_order: sequenceOrder,
+        p_lat: lat,
+        p_lng: long,
+      }))
+    }
+
+    if (error) throw error
+    return data
+  },
+
+  /**
    * Move an existing planning marker by ID.
    */
   movePlanningMarker: async (markerId, lat, long, elevation = null) => {

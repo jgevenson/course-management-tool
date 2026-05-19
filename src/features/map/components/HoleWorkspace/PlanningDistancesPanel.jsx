@@ -1,82 +1,80 @@
-// AI assisted development
 import { useMemo } from 'react'
-import { Trash2 } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { buildPlanningView } from '../../utils/planningSegments'
 import { getRecommendedClub } from '../../../bag/utils/dispersion'
 
-/**
- * @param {object} props
- * @param {object | null} props.hole
- * @param {(markerId: string) => Promise<void>} props.onRemoveMarker
- * @param {boolean} props.removing
- * @param {string | null} props.message
- * @param {Array<any>} props.clubs
- */
-export default function PlanningDistancesPanel({ hole, onRemoveMarker, removing, message, clubs = [] }) {
-  const { segments, markers } = useMemo(() => buildPlanningView(hole), [hole])
-
-  const landingAreas = useMemo(() => {
-    return markers.filter(m => m.marker_type === 'landing_area')
-  }, [markers])
+export default function PlanningDistancesPanel({ hole, onRemoveMarker, onInsertPlanningMarker, removing, message, clubs = [] }) {
+  const { segments } = useMemo(() => buildPlanningView(hole), [hole])
 
   return (
-    <div className="p-3 flex flex-col gap-5 flex-1 min-h-0 overflow-y-auto">
-      <div>
-        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Shots</h3>
-        {segments.length === 0 ? (
-          <p className="text-sm text-slate-500 leading-snug">
-            Add a <span className="text-slate-400">landing zone</span> or ensure mapping markers are set to see distances.
-          </p>
-        ) : (
-          <ul className="space-y-2">
-            {segments.map((s) => {
-              const recommendedClub = getRecommendedClub(s.yards, clubs)
-              const label = recommendedClub ? recommendedClub.short_name : s.label
+    <div className="p-4 flex flex-col gap-2 flex-1 min-h-0 overflow-y-auto">
+      {segments.length === 0 ? (
+        <p className="text-sm text-slate-500 leading-snug">
+          Add a <span className="text-slate-400">landing zone</span> or ensure mapping markers are set to see distances.
+        </p>
+      ) : (
+        <div className="flex flex-col">
+          {segments.map((s, idx) => {
+            const recommendedClub = getRecommendedClub(s.playsLike, clubs)
+            const clubLabel = recommendedClub ? recommendedClub.short_name : '--'
+            
+            let percentage = null
+            if (recommendedClub && recommendedClub.typical_distance) {
+              const pct = Math.round((s.playsLike / recommendedClub.typical_distance) * 100)
+              percentage = `${pct}%`
+            }
 
-              return (
-                <li
-                  key={s.id}
-                  className="flex justify-between items-start gap-3 rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2.5"
-                >
-                  <span className="text-sm text-slate-200 leading-snug">{label}</span>
-                  <span className="text-emerald-400 font-semibold tabular-nums shrink-0">{s.yards} yd</span>
-                </li>
-              )
-            })}
-          </ul>
-        )}
-      </div>
+            return (
+              <div key={s.id} className="flex flex-col">
+                <div className="flex items-center justify-between border-2 border-slate-700 bg-slate-900/80 p-3 rounded-md">
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-2xl font-medium text-slate-200">{clubLabel}</span>
+                    {percentage && (
+                      <span className="text-sm font-medium text-slate-400">{percentage}</span>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <div className="flex items-center gap-1">
+                      <span className="text-3xl font-medium text-slate-200 tabular-nums leading-none">
+                        {s.yards}y
+                      </span>
+                      {s.elevationDiffFeet !== 0 && (
+                        <div className="flex flex-col items-center justify-center leading-none text-slate-400 ml-1">
+                          <span className="text-[10px]">
+                            {s.elevationDiffFeet > 0 ? '^' : 'v'}
+                          </span>
+                          <span className="text-[10px] font-semibold tabular-nums">
+                            {Math.abs(s.elevationDiffFeet)}ft
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    {s.playsLike !== s.yards && (
+                      <span className="text-sm font-medium text-slate-500 tabular-nums mt-1">
+                        {s.playsLike}y
+                      </span>
+                    )}
+                  </div>
+                </div>
 
-      {landingAreas.length > 0 && (
-        <div>
-          <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Landing Areas</h3>
-          <p className="text-xs text-slate-500 mb-2 leading-snug">
-            Delete landing areas to simplify the strategy.
-          </p>
-          <ul className="space-y-2">
-            {landingAreas.map((m, idx) => (
-              <li
-                key={m.id}
-                className="flex items-center justify-between gap-2 rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2"
-              >
-                <span className="text-sm text-slate-300">L{idx + 1}</span>
-                <button
-                  type="button"
-                  disabled={removing}
-                  onClick={() => onRemoveMarker(m.id)}
-                  className="inline-flex items-center gap-1 rounded-md border border-red-900/50 px-2 py-1 text-xs font-medium text-red-400 hover:bg-red-950/40 disabled:opacity-45 transition-colors"
-                >
-                  <Trash2 className="w-3.5 h-3.5" aria-hidden />
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
+                {/* + button to split this segment */}
+                <div className="flex justify-center -my-3 z-10 relative py-3">
+                  <button
+                    onClick={() => onInsertPlanningMarker && onInsertPlanningMarker(s.start, s.end)}
+                    className="w-6 h-6 rounded-full bg-slate-950 border-2 border-slate-600 flex items-center justify-center hover:bg-slate-800 hover:border-emerald-500 hover:text-emerald-400 transition-colors text-slate-300 shadow-md"
+                    title="Split this shot"
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
+              </div>
+            )
+          })}
         </div>
       )}
-
+      
       {message && (
-        <p className={`text-xs ${message.toLowerCase().includes('removed') ? 'text-emerald-400' : 'text-red-400'}`}>
+        <p className={`text-xs mt-2 ${message.toLowerCase().includes('removed') ? 'text-emerald-400' : 'text-red-400'}`}>
           {message}
         </p>
       )}

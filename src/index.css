@@ -4,8 +4,15 @@
 .leaflet-hole-marker {
   background: transparent !important;
   border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
 }
 
 .leaflet-hole-marker .leaflet-hole-marker-inner {
   pointer-events: none;
+}
+
+.leaflet-container img {
+  max-width: none !important;
 }
