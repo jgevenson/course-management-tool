@@ -22,6 +22,16 @@ export function useMapTools(mapInstance) {
   const [autoDrawMessage, setAutoDrawMessage] = useState(null)
   const [osmToolActive, setOsmToolActive] = useState(false)
   const [osmFeaturesData, setOsmFeaturesData] = useState(null)
+  const [osmFilters, setOsmFilters] = useState({
+    tees: true,
+    greens: true,
+    fairways: true,
+    bunkers: true,
+    water: true,
+    rough: true,
+  })
+  const [osmLoading, setOsmLoading] = useState(false)
+  const [osmMessage, setOsmMessage] = useState(null)
   const [regionDraft, setRegionDraft] = useState(null)
   const [regionDraftKey, setRegionDraftKey] = useState(0)
 
@@ -102,6 +112,7 @@ export function useMapTools(mapInstance) {
   // --- OSM tool ---
 
   const toggleOsmTool = useCallback((active) => {
+    setOsmMessage(null)
     if (active) {
       setActivePointToolRaw(null)
       setRegionDrawActive(false)
@@ -113,7 +124,7 @@ export function useMapTools(mapInstance) {
     setOsmToolActive(active)
   }, [])
 
-  // Fetch OSM features when tool activates
+  // Fetch OSM features when tool activates or filters change
   useEffect(() => {
     if (osmToolActive && mapInstance) {
       const bounds = mapInstance.getBounds()
@@ -123,19 +134,38 @@ export function useMapTools(mapInstance) {
       const maxLon = bounds.getEast()
 
       setOsmFeaturesData(null)
-      fetchOSMFeaturesInBbox(minLat, minLon, maxLat, maxLon)
+      setOsmLoading(true)
+      setOsmMessage('Fetching OSM features...')
+
+      // Add client-side fetch timeout of 15 seconds to prevent indefinite hangs
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 15000)
+
+      fetchOSMFeaturesInBbox(minLat, minLon, maxLat, maxLon, osmFilters, { signal: controller.signal })
         .then((data) => {
+          clearTimeout(timeoutId)
+          setOsmLoading(false)
           if (data && data.features.length > 0) {
             setOsmFeaturesData(data)
+            setOsmMessage(null)
           } else {
-            console.log('No OSM features found in this area.')
+            setOsmToolActive(false)
+            setOsmMessage('No OSM features found in this map area.')
           }
         })
         .catch((err) => {
+          clearTimeout(timeoutId)
+          setOsmLoading(false)
+          setOsmToolActive(false)
+          if (err.name === 'AbortError') {
+            setOsmMessage('OpenStreetMap API timed out after 15 seconds. Please try again.')
+          } else {
+            setOsmMessage('Failed to fetch OSM features: API error or timeout.')
+          }
           console.error('Failed to fetch OSM features:', err)
         })
     }
-  }, [osmToolActive, mapInstance])
+  }, [osmToolActive, mapInstance, osmFilters])
 
   // --- Region draft ---
 
@@ -202,6 +232,12 @@ export function useMapTools(mapInstance) {
     osmToolActive,
     toggleOsmTool,
     osmFeaturesData,
+    osmFilters,
+    setOsmFilters,
+    osmLoading,
+    setOsmLoading,
+    osmMessage,
+    setOsmMessage,
     regionDraft,
     regionDraftKey,
     acceptRegionDraft,

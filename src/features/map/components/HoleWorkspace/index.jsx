@@ -56,6 +56,17 @@ export default function HoleWorkspace({
   autoDrawMessage,
   osmToolActive,
   onOsmToolActiveChange,
+  osmFilters = {
+    tees: true,
+    greens: true,
+    fairways: true,
+    bunkers: true,
+    water: true,
+    rough: true,
+  },
+  onOsmFiltersChange,
+  osmLoading = false,
+  osmMessage = null,
   regionDraft,
   regionDraftKey,
   onDiscardRegionDraft,
@@ -263,6 +274,65 @@ export default function HoleWorkspace({
             disabled={!selectedHole || Boolean(regionDraft)}
             onClick={() => onOsmToolActiveChange(!osmToolActive)}
           />
+          )}
+          {!isPlanning && (osmToolActive || osmLoading || osmMessage) && (
+            <div className="rounded-lg border border-emerald-500/30 bg-slate-900/80 p-3 text-xs text-slate-300 flex flex-col gap-2">
+              {osmToolActive && (
+                <>
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-1">
+                    <span className="font-semibold text-slate-200">OSM Feature Types</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const allTrue = Object.values(osmFilters).every(v => v)
+                        onOsmFiltersChange({
+                          tees: !allTrue,
+                          greens: !allTrue,
+                          fairways: !allTrue,
+                          bunkers: !allTrue,
+                          water: !allTrue,
+                          rough: !allTrue,
+                        })
+                      }}
+                      className="text-[10px] text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
+                    >
+                      {Object.values(osmFilters).every(v => v) ? 'Clear All' : 'Select All'}
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    {[
+                      { key: 'tees', label: 'Tees' },
+                      { key: 'greens', label: 'Greens' },
+                      { key: 'fairways', label: 'Fairways' },
+                      { key: 'bunkers', label: 'Bunkers' },
+                      { key: 'water', label: 'Water' },
+                      { key: 'rough', label: 'Rough' },
+                    ].map(({ key, label }) => (
+                      <label key={key} className="flex items-center gap-2 cursor-pointer select-none text-slate-300 hover:text-white transition-colors">
+                        <input
+                          type="checkbox"
+                          checked={osmFilters[key]}
+                          onChange={(e) => onOsmFiltersChange(prev => ({ ...prev, [key]: e.target.checked }))}
+                          className="rounded border-slate-600 bg-slate-950 text-emerald-500 focus:ring-emerald-500/50 w-3.5 h-3.5 accent-emerald-500 cursor-pointer"
+                        />
+                        <span>{label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </>
+              )}
+              {osmLoading && (
+                <div className="flex items-center gap-2 text-emerald-400 mt-1 font-medium">
+                  <div className="w-3.5 h-3.5 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                  <span>Fetching OSM features...</span>
+                </div>
+              )}
+              {osmMessage && !osmLoading && (
+                <p className={`leading-snug mt-1 ${osmMessage.includes('fail') || osmMessage.includes('error') || osmMessage.includes('time') ? 'text-rose-400 font-medium' : 'text-slate-400'}`}>
+                  {osmMessage}
+                </p>
+              )}
+            </div>
           )}
           {!isPlanning && autoDrawActive && (
             <div className="rounded-lg border border-emerald-500/30 bg-slate-900/80 p-3 text-xs text-slate-300">

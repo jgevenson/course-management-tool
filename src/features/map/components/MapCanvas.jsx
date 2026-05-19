@@ -278,6 +278,10 @@ export default function MapCanvas() {
         autoDrawMessage={tools.autoDrawMessage}
         osmToolActive={tools.osmToolActive}
         onOsmToolActiveChange={handleOsmToolActiveChange}
+        osmFilters={tools.osmFilters}
+        onOsmFiltersChange={tools.setOsmFilters}
+        osmLoading={tools.osmLoading}
+        osmMessage={tools.osmMessage}
         regionDraft={tools.regionDraft}
         regionDraftKey={tools.regionDraftKey}
         onDiscardRegionDraft={handleDiscardRegionDraft}
