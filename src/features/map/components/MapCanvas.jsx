@@ -89,10 +89,11 @@ export default function MapCanvas() {
   }, [courseState, mapInstance])
 
   const handleMarkerPick = useCallback(async (tool, lat, lng) => {
+    const isClickPlacement = Boolean(tools.activePointTool)
     const data = await holesState.placeMarker(tool, lat, lng)
     if (data) {
       tools.setActivePointTool(null)
-      if (!holesState.autoRotateHoleView && mapInstance) {
+      if (isClickPlacement && !holesState.autoRotateHoleView && mapInstance) {
         mapInstance.flyTo([lat, lng], Math.max(mapInstance.getZoom(), 17))
       }
     }

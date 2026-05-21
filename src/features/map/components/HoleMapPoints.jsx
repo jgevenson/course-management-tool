@@ -47,6 +47,14 @@ function buildTeeShotDivIcon() {
   })
 }
 
+const landingIconCache = {}
+function getMemoizedLandingIcon(number) {
+  if (!landingIconCache[number]) {
+    landingIconCache[number] = buildLandingDivIcon(number)
+  }
+  return landingIconCache[number]
+}
+
 function buildLandingDivIcon(number) {
   return L.divIcon({
     html: `<div style="display:flex;justify-content:center;align-items:center;width:28px;height:28px;background:#7c3aed;border:2px solid #a78bfa;border-radius:50%;color:white;font-size:12px;font-weight:bold;box-shadow:0 2px 4px rgba(0,0,0,0.4)">${number}</div>`,
@@ -288,27 +296,10 @@ export default function HoleMapPoints({
             position={[Number(tee.lat), Number(tee.lng)]}
             icon={teeIcon}
             draggable={!activePointTool}
+            keyboard={false}
             autoPan={false}
             eventHandlers={{
-              mouseover: () => disableAllMapInteractions(map),
-              mouseout: () => enableAllMapInteractions(map),
-              mousedown: (e) => {
-                disableAllMapInteractions(map)
-                if (e.originalEvent) {
-                  L.DomEvent.stopPropagation(e.originalEvent)
-                }
-              },
-              touchstart: (e) => {
-                disableAllMapInteractions(map)
-                if (e.originalEvent) {
-                  L.DomEvent.stopPropagation(e.originalEvent)
-                }
-              },
-              mouseup: () => enableAllMapInteractions(map),
-              touchend: () => enableAllMapInteractions(map),
-              dragstart: () => disableAllMapInteractions(map),
               dragend: (e) => {
-                enableAllMapInteractions(map)
                 handleMapMarkerDragEnd(HOLE_MARKER_KIND.TEE_BACK, e)
               },
             }}
@@ -319,27 +310,10 @@ export default function HoleMapPoints({
             position={[Number(green.lat), Number(green.lng)]}
             icon={greenIcon}
             draggable={!activePointTool}
+            keyboard={false}
             autoPan={false}
             eventHandlers={{
-              mouseover: () => disableAllMapInteractions(map),
-              mouseout: () => enableAllMapInteractions(map),
-              mousedown: (e) => {
-                disableAllMapInteractions(map)
-                if (e.originalEvent) {
-                  L.DomEvent.stopPropagation(e.originalEvent)
-                }
-              },
-              touchstart: (e) => {
-                disableAllMapInteractions(map)
-                if (e.originalEvent) {
-                  L.DomEvent.stopPropagation(e.originalEvent)
-                }
-              },
-              mouseup: () => enableAllMapInteractions(map),
-              touchend: () => enableAllMapInteractions(map),
-              dragstart: () => disableAllMapInteractions(map),
               dragend: (e) => {
-                enableAllMapInteractions(map)
                 handleMapMarkerDragEnd(HOLE_MARKER_KIND.GREEN_CENTER, e)
               },
             }}
@@ -369,6 +343,7 @@ export default function HoleMapPoints({
             position={seg.midpoint}
             icon={buildYardsLabel(seg.yards)}
             interactive={false}
+            keyboard={false}
             ref={(el) => {
               if (el) labelRefs.current[idx] = el
             }}
@@ -402,7 +377,7 @@ export default function HoleMapPoints({
           const landingIdx = planningSequence
             .slice(0, idx + 1)
             .filter(x => x.marker_type === 'landing_area').length
-          icon = buildLandingDivIcon(landingIdx)
+          icon = getMemoizedLandingIcon(landingIdx)
         }
 
         return (
@@ -411,28 +386,11 @@ export default function HoleMapPoints({
             position={[Number(m.lat), lng]}
             icon={icon}
             draggable={!activePointTool}
+            keyboard={false}
             autoPan={false}
             eventHandlers={{
-              mouseover: () => disableAllMapInteractions(map),
-              mouseout: () => enableAllMapInteractions(map),
-              mousedown: (e) => {
-                disableAllMapInteractions(map)
-                if (e.originalEvent) {
-                  L.DomEvent.stopPropagation(e.originalEvent)
-                }
-              },
-              touchstart: (e) => {
-                disableAllMapInteractions(map)
-                if (e.originalEvent) {
-                  L.DomEvent.stopPropagation(e.originalEvent)
-                }
-              },
-              mouseup: () => enableAllMapInteractions(map),
-              touchend: () => enableAllMapInteractions(map),
-              dragstart: () => disableAllMapInteractions(map),
               drag:    (e) => handlePlanningDrag(m, e),
               dragend: (e) => {
-                enableAllMapInteractions(map)
                 handlePlanningDragEnd(m, e)
               },
             }}
