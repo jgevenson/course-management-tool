@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo, useEffect, startTransition } from 'react'
 import { useTerrainOverlays } from './useTerrainOverlays'
 import { mapApi } from '../services/api/mapApi'
+import { terrainApi } from '../services/api/terrainApi'
 import { isValidTerrainType, terrainTypeOptionLabel } from '../features/map/utils/regionTerrain'
 
 /**

@@ -17,9 +17,10 @@ import Typography from '@mui/material/Typography'
  * @param {React.ComponentType} props.icon - The icon component to display in the button.
  * @param {string} props.label - The text label to display in the button.
  * @param {string} [props.hint] - Optional hint text to display as a tooltip for the button.
+ * @param {boolean} [props.isLoading] - Optional boolean flag indicating a loading state. Shows a spinner instead of the icon.
  * @returns {JSX.Element}
  */
-export default function ToolButton({ active, disabled, onClick, icon: Icon, label, hint }) {
+export default function ToolButton({ active, disabled, isLoading, onClick, icon: Icon, label, hint }) {
   return (
     <Button
       fullWidth
@@ -51,7 +52,11 @@ export default function ToolButton({ active, disabled, onClick, icon: Icon, labe
       }}
     >
       <Box sx={{ display: 'flex', mt: 0.5, shrink: 0 }}>
-        <Icon size={20} color={active ? '#34d399' : '#94a3b8'} aria-hidden="true" />
+        {isLoading ? (
+          <div className="w-5 h-5 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+        ) : (
+          <Icon size={20} color={active ? '#34d399' : '#94a3b8'} aria-hidden="true" />
+        )}
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', minWidth: 0 }}>
         <Typography variant="body2" sx={{ fontWeight: 600, color: active ? 'primary.light' : 'text.primary', display: 'block', wordBreak: 'break-word' }}>

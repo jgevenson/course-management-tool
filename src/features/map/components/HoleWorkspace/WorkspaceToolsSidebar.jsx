@@ -41,6 +41,7 @@ export default function WorkspaceToolsSidebar({
   regionError,
   showLidar,
   onShowLidarChange,
+  autoHealHole,
 }) {
   return (
     <Box
