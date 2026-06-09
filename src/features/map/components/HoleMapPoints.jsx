@@ -125,13 +125,15 @@ function updateLinesImperative(
     }
 
     const yards = Math.round(haversineDistanceYards(startLat, startLng, endLat, endLng))
+    const elevationDiffYards = (end.elevation || 0) - (start.elevation || 0)
+    const playsLike = Math.max(1, yards + Math.round(elevationDiffYards))
     if (label) {
       label.setLatLng([(startLat + endLat) / 2, (startLng + endLng) / 2])
       label.setIcon(buildYardsLabel(yards))
     }
 
     if (dispersion) {
-      const club = getRecommendedClub(yards, clubs)
+      const club = getRecommendedClub(playsLike, clubs)
       if (club) {
         const bearing = getBearing(startLat, startLng, endLat, endLng)
         const polyPoints = getDispersionPolygon(
@@ -258,8 +260,10 @@ export default function HoleMapPoints({
       const yards = Math.round(
         haversineDistanceYards(Number(start.lat), startLng, Number(end.lat), endLng),
       )
+      const elevationDiffYards = (end.elevation || 0) - (start.elevation || 0)
+      const playsLike = Math.max(1, yards + Math.round(elevationDiffYards))
 
-        const club = getRecommendedClub(yards, clubs)
+        const club = getRecommendedClub(playsLike, clubs)
         let dispersionPoints = []
         if (club) {
           const bearing = getBearing(Number(start.lat), startLng, Number(end.lat), endLng)
