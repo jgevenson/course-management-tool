@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import L from 'leaflet'
 import { useMap } from 'react-leaflet'
 import { styleForRegionPhase } from '../utils/regionTerrain'
+import { stripGeomanMarkerTabIndex } from '../utils/mapInteractions'
 
 /**
  * ## Region Draft Preview Component
@@ -68,6 +69,7 @@ export default function RegionDraftPreview({ feature, onFeatureChange }) {
 
       if (draftLayer.pm && !draftLayer.pm.enabled()) {
         draftLayer.pm.enable({ snappable: true })
+        stripGeomanMarkerTabIndex(draftLayer)
       }
       draftLayer.on('pm:edit', commitDraftGeometry)
       draftLayer.on('pm:update', commitDraftGeometry)

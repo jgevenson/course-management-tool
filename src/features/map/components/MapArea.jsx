@@ -23,8 +23,46 @@ const ESRI_ATTRIBUTION =
 function MapInstanceBridge({ onMapReady }) {
   const map = useMap()
   useEffect(() => {
+    // Disable keyboard focus on all Geoman edit markers to prevent CSS-transform
+    // layout shifts when the map is rotated via leaflet-rotate.
+    if (map.pm) {
+      map.pm.setGlobalOptions({
+        hintlineStyle: { color: '#38bdf8', dashArray: '6 6', weight: 1 },
+        templineStyle: { color: '#38bdf8', weight: 2 },
+        // Suppress tabindex / focus on all Geoman-generated markers
+        markerStyle:        { keyboard: false, autoPan: false },
+        vertexMarkerStyle:  { keyboard: false, autoPan: false },
+        middleMarkerStyle:  { keyboard: false, autoPan: false },
+        hintMarkerStyle:    { keyboard: false, autoPan: false },
+        snapMarkerStyle:    { keyboard: false, autoPan: false },
+      })
+    }
+
+    // Safety-net MutationObserver: Geoman creates markers asynchronously during
+    // pm.enable(). Strip tabindex from any marker icon that appears in the DOM
+    // to prevent browser focus → layout-shift on the rotated container.
+    const container = map.getContainer()
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (node.nodeType !== 1) continue
+          const el = /** @type {HTMLElement} */ (node)
+          if (el.classList?.contains('leaflet-marker-icon') && el.hasAttribute('tabindex')) {
+            el.removeAttribute('tabindex')
+          }
+          // Also check children (Geoman sometimes wraps markers in containers)
+          el.querySelectorAll?.('.leaflet-marker-icon[tabindex]')
+            ?.forEach((child) => child.removeAttribute('tabindex'))
+        }
+      }
+    })
+    observer.observe(container, { childList: true, subtree: true })
+
     onMapReady(map)
-    return () => onMapReady(null)
+    return () => {
+      observer.disconnect()
+      onMapReady(null)
+    }
   }, [map, onMapReady])
   return null
 }
