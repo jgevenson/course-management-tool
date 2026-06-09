@@ -1,6 +1,6 @@
 # 🗃️ Database Schema Documentation
 
-*Last Updated: 5/19/2026, 12:59:17 PM*
+*Last Updated: 6/9/2026, 12:22:31 PM*
 
 This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL.
 
@@ -148,6 +148,22 @@ This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL
 | **elevation** | `numeric` | - | - |
 | **is_active** | `boolean` | - | - |
 | **created_at** | `timestamp with time zone` | - | - |
+
+---
+## 📋 Table: `hole_planning_areas`
+> No table description provided.
+
+| Column | Type | Constraints / Refs | Description |
+| :--- | :--- | :--- | :--- |
+| **id** | `uuid` | **NOT NULL**<br>Default: `gen_random_uuid()` | - |
+| **hole_id** | `uuid` | **NOT NULL**<br>🔗 Refers to: holes | - |
+| **user_id** | `uuid` | **NOT NULL**<br>🔗 Refers to: profiles | - |
+| **label** | `text` | **NOT NULL** | - |
+| **description** | `text` | - | - |
+| **style** | `jsonb` | **NOT NULL** | - |
+| **geojson_data** | `jsonb` | **NOT NULL** | - |
+| **shape** | `USER-DEFINED` | - | - |
+| **created_at** | `timestamp with time zone` | Default: `now()` | - |
 
 ---
 ## 📋 Table: `hole_planning_markers`

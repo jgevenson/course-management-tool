@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard'
 import CourseDetails from './features/course/components/CourseDetails'
 import Profile from './pages/Profile'
 import Courses from './pages/Courses'
+import GreenLiDARInspector from './features/map/components/GreenLiDARInspector'
 
 export default function App() {
   const [session, setSession] = useState(null)
@@ -70,6 +71,14 @@ export default function App() {
               element={
                 <div className="h-full min-h-0 overflow-y-auto">
                   <Courses />
+                </div>
+              }
+            />
+            <Route
+              path="/inspector/green-lidar"
+              element={
+                <div className="h-full min-h-0 overflow-y-auto">
+                  <GreenLiDARInspector />
                 </div>
               }
             />

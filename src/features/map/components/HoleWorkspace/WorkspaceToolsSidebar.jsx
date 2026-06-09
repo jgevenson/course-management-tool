@@ -1,4 +1,4 @@
-import { Target, MapPin, Pentagon, Square, Circle, WandSparkles, DownloadCloud, Zap } from 'lucide-react'
+import { Target, MapPin, Pentagon, Square, Circle, WandSparkles, DownloadCloud, Zap, Layers } from 'lucide-react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 
@@ -39,6 +39,8 @@ export default function WorkspaceToolsSidebar({
   onSaveRegionDraft,
   regionSaving,
   regionError,
+  showLidar,
+  onShowLidarChange,
 }) {
   return (
     <Box
@@ -90,6 +92,19 @@ export default function WorkspaceToolsSidebar({
               onPlanningDrawShapeChange('Circle')
               onRegionDrawActiveChange(planningDrawShape === 'Circle' ? !regionDrawActive : true)
             }}
+          />
+        </Box>
+      )}
+
+      {isPlanning && (
+        <Box sx={{ mt: 1, borderTop: '1px solid', borderColor: 'divider', pt: 2 }}>
+          <ToolButton
+            icon={Layers}
+            label="Show LiDAR"
+            hint="Overlay 3DEP contours"
+            active={showLidar}
+            disabled={!selectedHole}
+            onClick={() => onShowLidarChange(!showLidar)}
           />
         </Box>
       )}

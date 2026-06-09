@@ -6,6 +6,7 @@ import RegionDraftPreview from './RegionDraftPreview'
 import HoleMapPoints from './HoleMapPoints'
 import OSMMapFeaturesLayer from './OSMMapFeaturesLayer'
 import HolePlanningAreas from './HolePlanningAreas'
+import GreenLidarMapOverlay from './GreenLidarMapOverlay'
 
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-rotate/dist/leaflet-rotate.js'
@@ -132,7 +133,8 @@ export default function MapArea({
   planningDrawShape = 'Polygon',
   onPlanningPolygonDrawn,
   onPlanningGeometryCommit,
-  onPlanningAreaDelete
+  onPlanningAreaDelete,
+  showLidar,
 }) {
   return (
     <div className="h-full w-full min-h-0 relative flex flex-col">
@@ -194,6 +196,9 @@ export default function MapArea({
           feature={regionDraft}
           onFeatureChange={onRegionDraftGeometryChange}
         />
+        {showLidar && selectedHole && (
+          <GreenLidarMapOverlay holeId={selectedHole.id} />
+        )}
         <HoleMapPoints
           selectedHole={selectedHole}
           activePointTool={activePointTool}

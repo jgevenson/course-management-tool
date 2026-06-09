@@ -22,6 +22,7 @@ export function useMapTools(mapInstance) {
   const [autoDrawMaxRadiusYards, setAutoDrawMaxRadiusYardsRaw] = useState(AUTO_DRAW_DEFAULT_RADIUS_YARDS)
   const [autoDrawMessage, setAutoDrawMessage] = useState(null)
   const [osmToolActive, setOsmToolActive] = useState(false)
+  const [showLidar, setShowLidar] = useState(false)
   const [osmFeaturesData, setOsmFeaturesData] = useState(null)
   const [osmFilters, setOsmFilters] = useState({
     tees: true,
@@ -48,6 +49,7 @@ export function useMapTools(mapInstance) {
       setOsmToolActive(false)
       setRegionDraft(null)
     } else {
+      setShowLidar(false)
       setActivePointToolRaw((prev) =>
         prev === 'tee_shot_location' ||
         prev === 'landing_area' ||
@@ -249,5 +251,7 @@ export function useMapTools(mapInstance) {
     clearRegionDraft,
     planningDrawShape,
     setPlanningDrawShape,
+    showLidar,
+    setShowLidar,
   }
 }

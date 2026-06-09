@@ -287,6 +287,7 @@ export default function MapCanvas() {
             onPlanningPolygonDrawn={handlePlanningPolygonDrawn}
             onPlanningGeometryCommit={(id, geojson) => planningAreasState.addOrUpdateArea({ id, geojsonData: geojson })}
             onPlanningAreaDelete={planningAreasState.removeArea}
+            showLidar={tools.showLidar && tools.workspaceMode === 'planning'}
           />
         }
         holes={holesState.holes}
@@ -318,6 +319,8 @@ export default function MapCanvas() {
         osmMessage={tools.osmMessage}
         regionDraft={tools.regionDraft}
         regionDraftKey={tools.regionDraftKey}
+        showLidar={tools.showLidar}
+        onShowLidarChange={tools.setShowLidar}
         onDiscardRegionDraft={handleDiscardRegionDraft}
         onSaveRegionDraft={handleSaveRegionDraft}
         regionSaving={terrainState.regionSaving}

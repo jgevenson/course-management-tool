@@ -73,6 +73,8 @@ export default function HoleWorkspace({
   onInsertPlanningMarker,
   clubs = [],
   profile = null,
+  showLidar,
+  onShowLidarChange,
 }) {
   /** @type {Hole | null} */
   const selectedHole = holes[selectedIndex] ?? null
@@ -162,6 +164,8 @@ export default function HoleWorkspace({
             onSaveRegionDraft={onSaveRegionDraft}
             regionSaving={regionSaving}
             regionError={regionError}
+            showLidar={showLidar}
+            onShowLidarChange={onShowLidarChange}
           />
 
           {/* Sub-column 2: Properties & Details */}
