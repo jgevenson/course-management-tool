@@ -13,8 +13,21 @@ function getBoundingBox(coordinates) {
   return { minLon, minLat, maxLon, maxLat }
 }
 
-export async function fetchGreenElevationMatrix(holeId) {
+export async function fetchGreenElevationMatrix(holeId, forceUpdate = false) {
   try {
+    if (!forceUpdate) {
+      // Check if we already have it stored in the database
+      const { data: existing, error: existingError } = await supabase
+        .from('green_contours')
+        .select('id')
+        .eq('hole_id', holeId)
+        .maybeSingle()
+
+      if (existing && !existingError) {
+        return existing // Data exists, so just return and let hooks fetch the cache
+      }
+    }
+
     // 1. Fetch green polygon for the hole
     const { data: mappingData, error: mappingError } = await supabase
       .from('terrain_overlay_holes')

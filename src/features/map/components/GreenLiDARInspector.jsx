@@ -38,7 +38,7 @@ export default function GreenLiDARInspector() {
     setFetching(true)
     setFetchError(null)
     try {
-      await fetchGreenElevationMatrix(selectedHoleId)
+      await fetchGreenElevationMatrix(selectedHoleId, true)
       await refresh()
     } catch (err) {
       setFetchError(err.message || 'Error fetching elevation data.')
