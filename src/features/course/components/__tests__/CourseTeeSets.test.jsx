@@ -84,7 +84,10 @@ describe('CourseTeeSets Component', () => {
       const { user, onAddTee } = setup()
       
       await user.type(screen.getByLabelText(/new tee name/i), 'Tips')
-      await user.type(screen.getByLabelText('Color label', { selector: '#new-tee-color' }), 'Black')
+      
+      const colorInput = screen.getByLabelText('Color label', { selector: '#new-tee-color' })
+      fireEvent.change(colorInput, { target: { value: '#000000' } })
+      
       await user.type(screen.getByLabelText('Rating', { selector: '#new-tee-rating' }), '74.5')
       await user.type(screen.getByLabelText('Slope', { selector: '#new-tee-slope' }), '135')
       
@@ -92,7 +95,7 @@ describe('CourseTeeSets Component', () => {
       
       expect(onAddTee).toHaveBeenCalledWith({
         name: 'Tips',
-        color_label: 'Black',
+        color_label: '#000000',
         rating: 74.5,
         slope: 135,
       })

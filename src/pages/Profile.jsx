@@ -21,6 +21,7 @@ export default function Profile({ session }) {
   const { 
     clubs, 
     loading: clubsLoading, 
+    error: clubsError,
     addClub, 
     updateClub, 
     removeClub 
@@ -215,6 +216,7 @@ export default function Profile({ session }) {
                 userId={session.user.id} 
                 clubs={clubs}
                 loading={clubsLoading}
+                fetchError={clubsError}
                 activeClubId={selectedClubId}
                 onSelectClub={setSelectedClubId}
                 addClub={addClub}

@@ -132,19 +132,19 @@ export default function CourseDetails() {
       <div className="space-y-8">
         <CourseDetailsForm course={course} onSave={updateCourse} />
         <CourseScorecard holes={holes} tees={tees} yardages={yardages} />
-        {/* <CourseTeeSets 
+        <CourseTeeSets 
           tees={tees} 
           onAddTee={addTee} 
           onUpdateTee={updateTee} 
           onRemoveTee={removeTee} 
           onSetDefaultTee={setDefaultTee} 
-        /> */}
-        {/* <CourseYardageMatrix 
+        />
+        <CourseYardageMatrix 
           holes={holes} 
           tees={tees} 
           yardages={yardages} 
           onSaveYardages={saveYardages} 
-        /> */}
+        />
       </div>
     </div>
   )

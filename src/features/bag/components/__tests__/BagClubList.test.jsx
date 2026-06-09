@@ -106,40 +106,21 @@ describe('BagClubList Component', () => {
   })
 
   // =========================================================================
-  // TABLE RENDERING
+  // CARD RENDERING
   // =========================================================================
-  describe('Table Rendering', () => {
-    it('renders a table when clubs exist', () => {
+  describe('Card Rendering', () => {
+    it('does not render a table when clubs exist', () => {
       setup()
-      expect(screen.getByRole('table')).toBeInTheDocument()
+      expect(screen.queryByRole('table')).not.toBeInTheDocument()
     })
 
-    it('renders table header columns', () => {
-      setup()
-      expect(screen.getByText('#')).toBeInTheDocument()
-      expect(screen.getByText('Abbr')).toBeInTheDocument()
-      expect(screen.getByText('Name')).toBeInTheDocument()
-      expect(screen.getByText('Type')).toBeInTheDocument()
-      expect(screen.getByText('Putter')).toBeInTheDocument()
-      expect(screen.getByText('Carry')).toBeInTheDocument()
-      expect(screen.getByText('Total')).toBeInTheDocument()
-      expect(screen.getByText('Actions')).toBeInTheDocument()
-    })
-
-    it('renders a row for each club', () => {
-      setup()
-      const rows = screen.getAllByRole('row')
-      // 1 header row + 2 club rows
-      expect(rows).toHaveLength(3)
-    })
-
-    it('displays club name in the row', () => {
+    it('renders correct layout for each club', () => {
       setup()
       expect(screen.getByText('7 Iron')).toBeInTheDocument()
       expect(screen.getByText('Scotty Cameron')).toBeInTheDocument()
     })
 
-    it('displays short name in the row', () => {
+    it('displays short name in the card', () => {
       setup()
       expect(screen.getByText('7i')).toBeInTheDocument()
       expect(screen.getByText('PT')).toBeInTheDocument()
@@ -151,27 +132,10 @@ describe('BagClubList Component', () => {
       expect(screen.getByText('putter')).toBeInTheDocument()
     })
 
-    it('displays carry and total distances', () => {
+    it('displays carry and total distances for non-putters', () => {
       setup()
-      expect(screen.getByText('155')).toBeInTheDocument()
       expect(screen.getByText('165')).toBeInTheDocument()
-    })
-
-    it('displays sort order', () => {
-      setup()
-      expect(screen.getByText('1')).toBeInTheDocument()
-      expect(screen.getByText('14')).toBeInTheDocument()
-    })
-
-    it('displays "Yes" for putter clubs', () => {
-      setup()
-      expect(screen.getByText('Yes')).toBeInTheDocument()
-    })
-
-    it('displays "—" for non-putter clubs', () => {
-      setup()
-      const dashes = screen.getAllByText('—')
-      expect(dashes.length).toBeGreaterThanOrEqual(1)
+      expect(screen.getByText('Carry: 155y')).toBeInTheDocument()
     })
 
     it('renders Edit button for each club', () => {
@@ -615,11 +579,10 @@ describe('BagClubList Component', () => {
       expect(screen.getByText('Scotty Cameron')).toBeInTheDocument()
     })
 
-    it('renders correct number of rows', () => {
+    it('renders correct number of items', () => {
       setup({ clubs: THREE_CLUBS })
-      const rows = screen.getAllByRole('row')
-      // 1 header + 3 data rows
-      expect(rows).toHaveLength(4)
+      const editButtons = screen.getAllByLabelText(/^Edit /)
+      expect(editButtons).toHaveLength(3)
     })
 
     it('editing one club does not affect display of others', async () => {
@@ -649,16 +612,5 @@ describe('BagClubList Component', () => {
     })
   })
 
-  // =========================================================================
-  // SORT ORDER DISPLAY
-  // =========================================================================
-  describe('Sort Order Display', () => {
-    it('displays "—" when sort_order is null', () => {
-      const club = { ...CLUB_IRON, sort_order: null }
-      setup({ clubs: [club] })
-      const dashes = screen.getAllByText('—')
-      // At least one dash for sort_order null, plus one for is_putter = false
-      expect(dashes.length).toBeGreaterThanOrEqual(2)
-    })
-  })
+
 })

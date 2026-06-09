@@ -232,8 +232,9 @@ export default function BagClubList({ clubs, activeClubId, onSelectClub, onUpdat
               <div className="p-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Club Name</label>
+                    <label htmlFor={`edit-name-${row.id}`} className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Club name</label>
                     <input
+                      id={`edit-name-${row.id}`}
                       type="text"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
@@ -242,8 +243,9 @@ export default function BagClubList({ clubs, activeClubId, onSelectClub, onUpdat
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Abbreviation</label>
+                    <label htmlFor={`edit-short-name-${row.id}`} className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Short name</label>
                     <input
+                      id={`edit-short-name-${row.id}`}
                       type="text"
                       value={editShortName}
                       onChange={(e) => setEditShortName(e.target.value)}
@@ -255,8 +257,9 @@ export default function BagClubList({ clubs, activeClubId, onSelectClub, onUpdat
 
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Type</label>
+                    <label htmlFor={`edit-type-${row.id}`} className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Club type</label>
                     <select
+                      id={`edit-type-${row.id}`}
                       value={editClubType}
                       onChange={(e) => {
                         const v = e.target.value
@@ -271,8 +274,9 @@ export default function BagClubList({ clubs, activeClubId, onSelectClub, onUpdat
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Sort Order</label>
+                    <label htmlFor={`edit-sort-${row.id}`} className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Sort order</label>
                     <input
+                      id={`edit-sort-${row.id}`}
                       type="number"
                       value={editSortOrder}
                       onChange={(e) => setEditSortOrder(e.target.value)}
@@ -280,8 +284,9 @@ export default function BagClubList({ clubs, activeClubId, onSelectClub, onUpdat
                     />
                   </div>
                   <div className="flex items-end pb-2">
-                    <label className="flex items-center gap-2 cursor-pointer">
+                    <label htmlFor={`edit-putter-${row.id}`} className="flex items-center gap-2 cursor-pointer">
                       <input
+                        id={`edit-putter-${row.id}`}
                         type="checkbox"
                         checked={editIsPutter}
                         onChange={(e) => {
@@ -291,7 +296,7 @@ export default function BagClubList({ clubs, activeClubId, onSelectClub, onUpdat
                         }}
                         className="size-4 rounded border-slate-600 bg-slate-900 text-emerald-600"
                       />
-                      <span className="text-xs text-slate-300">Is Putter</span>
+                      <span className="text-xs text-slate-300">Is putter</span>
                     </label>
                   </div>
                 </div>
@@ -299,8 +304,9 @@ export default function BagClubList({ clubs, activeClubId, onSelectClub, onUpdat
                 {!editIsPutter && (
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Carry (yds)</label>
+                      <label htmlFor={`edit-carry-${row.id}`} className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Carry yards</label>
                       <input
+                        id={`edit-carry-${row.id}`}
                         type="number"
                         value={editCarry}
                         onChange={(e) => setEditCarry(e.target.value)}
@@ -308,8 +314,9 @@ export default function BagClubList({ clubs, activeClubId, onSelectClub, onUpdat
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Total (yds)</label>
+                      <label htmlFor={`edit-total-${row.id}`} className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Total yards</label>
                       <input
+                        id={`edit-total-${row.id}`}
                         type="number"
                         value={editTotal}
                         onChange={(e) => setEditTotal(e.target.value)}
@@ -385,7 +392,8 @@ export default function BagClubList({ clubs, activeClubId, onSelectClub, onUpdat
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
-                    className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors"
+                    disabled={editSaving}
+                    className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors disabled:opacity-50"
                   >
                     Cancel
                   </button>
@@ -395,7 +403,7 @@ export default function BagClubList({ clubs, activeClubId, onSelectClub, onUpdat
                     disabled={editSaving}
                     className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
                   >
-                    {editSaving ? 'Saving...' : 'Save Changes'}
+                    {editSaving ? 'Saving…' : 'Save Changes'}
                   </button>
                 </div>
               </div>
@@ -439,7 +447,7 @@ export default function BagClubList({ clubs, activeClubId, onSelectClub, onUpdat
                       onClick={(e) => { e.stopPropagation(); handleRemove(row.id); }}
                       disabled={removingId === row.id}
                       className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-500/5 rounded-lg transition-all"
-                      aria-label={`Remove ${row.name}`}
+                      aria-label={`Remove ${row.name} from bag`}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

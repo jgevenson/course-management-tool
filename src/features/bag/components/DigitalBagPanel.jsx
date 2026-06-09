@@ -3,11 +3,11 @@ import { useClubs } from '../../../hooks/useClubs'
 import BagAddClubForm from './BagAddClubForm'
 import BagClubList from './BagClubList'
 
-export default function DigitalBagPanel({ userId, clubs, loading, activeClubId, onSelectClub, addClub, updateClub, removeClub }) {
+export default function DigitalBagPanel({ userId, clubs, loading, fetchError, activeClubId, onSelectClub, addClub, updateClub, removeClub }) {
   const [error, setError] = useState(null)
   const [message, setMessage] = useState(null)
 
-  const displayError = error
+  const displayError = error || fetchError
 
   return (
     <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">

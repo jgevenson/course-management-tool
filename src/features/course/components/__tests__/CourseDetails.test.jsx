@@ -254,7 +254,7 @@ describe('CourseDetails Component', () => {
 
     it('renders the "Open map" link with correct href', () => {
       renderWithRouter()
-      const mapLink = screen.getByRole('link', { name: /open map/i })
+      const mapLink = screen.getByRole('link', { name: /start planning/i })
       expect(mapLink).toHaveAttribute('href', '/course/course-1')
     })
 

@@ -63,6 +63,7 @@ describe('courseImportService', () => {
   it('successfully imports course data to supabase', async () => {
     // 1. Mock Course Insert
     insertMock.mockReturnValueOnce({ select: selectMock });
+    selectMock.mockReturnValueOnce({ single: singleMock, error: null });
     singleMock.mockResolvedValueOnce({ data: { id: 'course-123' }, error: null });
 
     // 2. Mock Tees Insert
@@ -114,6 +115,7 @@ describe('courseImportService', () => {
   it('handles missing location gracefully', async () => {
     const dataWithoutLoc = { ...mockCourseData, location: null };
     insertMock.mockReturnValueOnce({ select: selectMock });
+    selectMock.mockReturnValueOnce({ single: singleMock, error: null });
     singleMock.mockResolvedValueOnce({ data: { id: 'course-123' }, error: null });
     insertMock.mockReturnValueOnce({ select: selectMock });
     selectMock.mockResolvedValueOnce({ data: [{ id: 'tee-1' }], error: null });

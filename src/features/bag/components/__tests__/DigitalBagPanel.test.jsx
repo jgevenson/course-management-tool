@@ -85,7 +85,19 @@ function setupHook(overrides = {}) {
 
 function renderPanel(userId = 'user-123') {
   const user = userEvent.setup()
-  render(<DigitalBagPanel userId={userId} />)
+  render(
+    <DigitalBagPanel
+      userId={userId}
+      clubs={hookReturn.clubs}
+      loading={hookReturn.loading}
+      fetchError={hookReturn.error}
+      activeClubId={null}
+      onSelectClub={vi.fn()}
+      addClub={hookReturn.addClub}
+      updateClub={hookReturn.updateClub}
+      removeClub={hookReturn.removeClub}
+    />
+  )
   return { user }
 }
 
