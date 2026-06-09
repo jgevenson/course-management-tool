@@ -1,4 +1,4 @@
-import { Target, MapPin, Pentagon, WandSparkles, DownloadCloud, Zap } from 'lucide-react'
+import { Target, MapPin, Pentagon, Square, Circle, WandSparkles, DownloadCloud, Zap } from 'lucide-react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 
@@ -17,6 +17,8 @@ export default function WorkspaceToolsSidebar({
   onActivePointToolChange,
   regionDrawActive,
   onRegionDrawActiveChange,
+  planningDrawShape,
+  onPlanningDrawShapeChange,
   autoDrawActive,
   onAutoDrawActiveChange,
   autoDrawTolerance,
@@ -53,17 +55,44 @@ export default function WorkspaceToolsSidebar({
         minHeight: 0,
       }}
     >
-      <ToolButton
-        icon={Target}
-        label="Green center"
-          hint={greenOk ? 'Placed — click to move' : 'Click map to place'}
-          active={activePointTool === 'green_center'}
-          disabled={!selectedHole}
-          onClick={() =>
-            onActivePointToolChange(activePointTool === 'green_center' ? null : 'green_center')
-          }
-        />
 
+      {isPlanning && (
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <ToolButton
+            icon={Pentagon}
+            label="Polygon"
+            hint="Draw freeform area"
+            active={regionDrawActive && planningDrawShape === 'Polygon'}
+            disabled={!selectedHole}
+            onClick={() => {
+              onPlanningDrawShapeChange('Polygon')
+              onRegionDrawActiveChange(planningDrawShape === 'Polygon' ? !regionDrawActive : true)
+            }}
+          />
+          <ToolButton
+            icon={Square}
+            label="Rectangle"
+            hint="Draw rectangular area"
+            active={regionDrawActive && planningDrawShape === 'Rectangle'}
+            disabled={!selectedHole}
+            onClick={() => {
+              onPlanningDrawShapeChange('Rectangle')
+              onRegionDrawActiveChange(planningDrawShape === 'Rectangle' ? !regionDrawActive : true)
+            }}
+          />
+          <ToolButton
+            icon={Circle}
+            label="Circle"
+            hint="Draw circular area"
+            active={regionDrawActive && planningDrawShape === 'Circle'}
+            disabled={!selectedHole}
+            onClick={() => {
+              onPlanningDrawShapeChange('Circle')
+              onRegionDrawActiveChange(planningDrawShape === 'Circle' ? !regionDrawActive : true)
+            }}
+          />
+        </Box>
+      )}
 
       {!isPlanning && (
         <ToolButton

@@ -32,6 +32,8 @@ export default function HoleWorkspace({
   onAutoRotateHoleViewChange,
   regionDrawActive,
   onRegionDrawActiveChange,
+  planningDrawShape,
+  onPlanningDrawShapeChange,
   autoDrawActive,
   onAutoDrawActiveChange,
   autoDrawTolerance,
@@ -128,39 +130,39 @@ export default function HoleWorkspace({
 
         {/* Content split container - side-by-side on desktop, stacked on mobile */}
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, flex: 1, minHeight: 0 }}>
-          {!isPlanning && (
-            <WorkspaceToolsSidebar
-              isPlanning={isPlanning}
-              selectedHole={selectedHole}
-              landingCount={landingCount}
-              greenOk={greenOk}
-              teeOk={teeOk}
-              activePointTool={activePointTool}
-              onActivePointToolChange={onActivePointToolChange}
-              regionDrawActive={regionDrawActive}
-              onRegionDrawActiveChange={onRegionDrawActiveChange}
-              autoDrawActive={autoDrawActive}
-              onAutoDrawActiveChange={onAutoDrawActiveChange}
-              autoDrawTolerance={autoDrawTolerance}
-              onAutoDrawToleranceChange={onAutoDrawToleranceChange}
-              autoDrawMaxRadiusYards={autoDrawMaxRadiusYards}
-              onAutoDrawMaxRadiusYardsChange={onAutoDrawMaxRadiusYardsChange}
-              autoDrawMessage={autoDrawMessage}
-              osmToolActive={osmToolActive}
-              onOsmToolActiveChange={onOsmToolActiveChange}
-              osmFilters={osmFilters}
-              onOsmFiltersChange={onOsmFiltersChange}
-              osmLoading={osmLoading}
-              osmMessage={osmMessage}
-              regionDraft={regionDraft}
-              regionDraftKey={regionDraftKey}
-              holes={holes}
-              onDiscardRegionDraft={onDiscardRegionDraft}
-              onSaveRegionDraft={onSaveRegionDraft}
-              regionSaving={regionSaving}
-              regionError={regionError}
-            />
-          )}
+          <WorkspaceToolsSidebar
+            isPlanning={isPlanning}
+            selectedHole={selectedHole}
+            landingCount={landingCount}
+            greenOk={greenOk}
+            teeOk={teeOk}
+            activePointTool={activePointTool}
+            onActivePointToolChange={onActivePointToolChange}
+            regionDrawActive={regionDrawActive}
+            onRegionDrawActiveChange={onRegionDrawActiveChange}
+            planningDrawShape={planningDrawShape}
+            onPlanningDrawShapeChange={onPlanningDrawShapeChange}
+            autoDrawActive={autoDrawActive}
+            onAutoDrawActiveChange={onAutoDrawActiveChange}
+            autoDrawTolerance={autoDrawTolerance}
+            onAutoDrawToleranceChange={onAutoDrawToleranceChange}
+            autoDrawMaxRadiusYards={autoDrawMaxRadiusYards}
+            onAutoDrawMaxRadiusYardsChange={onAutoDrawMaxRadiusYardsChange}
+            autoDrawMessage={autoDrawMessage}
+            osmToolActive={osmToolActive}
+            onOsmToolActiveChange={onOsmToolActiveChange}
+            osmFilters={osmFilters}
+            onOsmFiltersChange={onOsmFiltersChange}
+            osmLoading={osmLoading}
+            osmMessage={osmMessage}
+            regionDraft={regionDraft}
+            regionDraftKey={regionDraftKey}
+            holes={holes}
+            onDiscardRegionDraft={onDiscardRegionDraft}
+            onSaveRegionDraft={onSaveRegionDraft}
+            regionSaving={regionSaving}
+            regionError={regionError}
+          />
 
           {/* Sub-column 2: Properties & Details */}
           <WorkspacePropertiesSidebar

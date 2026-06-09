@@ -8,9 +8,11 @@ import { useMapTerrainOverlays } from '../../../hooks/useMapTerrainOverlays'
 import { useMapViewControl } from '../../../hooks/useMapViewControl'
 import { useProfile } from '../../../hooks/useProfile'
 import { useClubs } from '../../../hooks/useClubs'
+import usePlanningAreas from '../../../hooks/usePlanningAreas'
 import MapEditorHeader from './MapEditorHeader'
 import MapArea from './MapArea'
 import HoleWorkspace from './HoleWorkspace'
+import PlanningAreaDialog from './PlanningAreaDialog'
 
 /**
  * ## Map Canvas Component
@@ -54,8 +56,13 @@ export default function MapCanvas() {
   const holesState = useHoles(courseState.course?.id)
   const terrainState = useMapTerrainOverlays(courseState.course?.id)
   const tools = useMapTools(mapInstance)
+  const planningAreasState = usePlanningAreas(holesState.selectedHole?.id)
   useMapViewControl(mapInstance, holesState, courseState.course)
 
+  // Dialog state for Planning Areas
+  const [planningDialogOpen, setPlanningDialogOpen] = useState(false)
+  const [planningDraftFeature, setPlanningDraftFeature] = useState(null)
+  
   // Non-admins are locked to planning mode — enforce it if the mode ever
   // gets set to 'mapping' while the user doesn't have the admin flag.
   useEffect(() => {
@@ -103,6 +110,25 @@ export default function MapCanvas() {
     tools.acceptRegionDraft(feature)
     terrainState.selectOverlay(null)
   }, [tools, terrainState])
+
+  const handlePlanningPolygonDrawn = useCallback((feature) => {
+    tools.toggleRegionDraw(false)
+    setPlanningDraftFeature(feature)
+    setPlanningDialogOpen(true)
+  }, [tools])
+
+  const handleSavePlanningArea = useCallback(async (details) => {
+    try {
+      await planningAreasState.addOrUpdateArea({
+        ...details,
+        geojsonData: planningDraftFeature
+      })
+      setPlanningDialogOpen(false)
+      setPlanningDraftFeature(null)
+    } catch (err) {
+      console.error('Failed to save planning area', err)
+    }
+  }, [planningAreasState, planningDraftFeature])
 
   const handleSaveRegionDraft = useCallback(async ({ terrainType, label, holeIds }) => {
     const result = await terrainState.saveRegionDraft(tools.regionDraft, { terrainType, label, holeIds })
@@ -217,7 +243,7 @@ export default function MapCanvas() {
             visibleTerrainOverlays={visibleTerrainOverlays}
             selectedTerrainOverlayId={isPlanning ? null : terrainState.selectedTerrainOverlayId}
             onSelectTerrainOverlayId={terrainState.selectOverlay}
-            regionDrawActive={tools.regionDrawActive && !isPlanning}
+            regionDrawActive={tools.regionDrawActive}
             suppressTerrainInteractions={
               isPlanning ||
               tools.autoDrawActive ||
@@ -256,6 +282,11 @@ export default function MapCanvas() {
             }
             profile={profile}
             clubs={clubs}
+            planningAreas={planningAreasState.areas}
+            planningDrawShape={tools.planningDrawShape}
+            onPlanningPolygonDrawn={handlePlanningPolygonDrawn}
+            onPlanningGeometryCommit={(id, geojson) => planningAreasState.addOrUpdateArea({ id, geojsonData: geojson })}
+            onPlanningAreaDelete={planningAreasState.removeArea}
           />
         }
         holes={holesState.holes}
@@ -270,6 +301,8 @@ export default function MapCanvas() {
         onAutoRotateHoleViewChange={holesState.setAutoRotateHoleView}
         regionDrawActive={tools.regionDrawActive}
         onRegionDrawActiveChange={handleRegionDrawActiveChange}
+        planningDrawShape={tools.planningDrawShape}
+        onPlanningDrawShapeChange={tools.setPlanningDrawShape}
         autoDrawActive={tools.autoDrawActive}
         onAutoDrawActiveChange={handleAutoDrawActiveChange}
         autoDrawTolerance={tools.autoDrawTolerance}
@@ -304,6 +337,14 @@ export default function MapCanvas() {
         onMapMarkerMove={holesState.moveMapMarker}
         clubs={clubs}
         profile={profile}
+      />
+      <PlanningAreaDialog
+        open={planningDialogOpen}
+        onClose={() => {
+          setPlanningDialogOpen(false)
+          setPlanningDraftFeature(null)
+        }}
+        onSave={handleSavePlanningArea}
       />
     </div>
   )

@@ -5,6 +5,7 @@ import AutoDrawRegionTool from './AutoDrawRegionTool'
 import RegionDraftPreview from './RegionDraftPreview'
 import HoleMapPoints from './HoleMapPoints'
 import OSMMapFeaturesLayer from './OSMMapFeaturesLayer'
+import HolePlanningAreas from './HolePlanningAreas'
 
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-rotate/dist/leaflet-rotate.js'
@@ -127,6 +128,11 @@ export default function MapArea({
   suppressHoleMapPick,
   profile,
   clubs,
+  planningAreas = [],
+  planningDrawShape = 'Polygon',
+  onPlanningPolygonDrawn,
+  onPlanningGeometryCommit,
+  onPlanningAreaDelete
 }) {
   return (
     <div className="h-full w-full min-h-0 relative flex flex-col">
@@ -156,7 +162,7 @@ export default function MapArea({
           overlays={visibleTerrainOverlays}
           selectedId={selectedTerrainOverlayId}
           onSelectId={onSelectTerrainOverlayId}
-          regionDrawActive={regionDrawActive}
+          regionDrawActive={regionDrawActive && workspaceMode !== 'planning'}
           suppressMapInteractions={suppressTerrainInteractions}
           onPolygonDrawn={onPolygonDrawn}
           onGeometryCommit={onGeometryCommit}
@@ -175,6 +181,14 @@ export default function MapArea({
           isActive={osmToolActive}
           geojsonData={osmFeaturesData}
           onFeatureSelect={onOSMFeatureSelect}
+        />
+        <HolePlanningAreas
+          areas={planningAreas}
+          regionDrawActive={regionDrawActive && workspaceMode === 'planning'}
+          planningDrawShape={planningDrawShape}
+          onPolygonDrawn={onPlanningPolygonDrawn}
+          onGeometryCommit={onPlanningGeometryCommit}
+          onDeleteArea={onPlanningAreaDelete}
         />
         <RegionDraftPreview
           feature={regionDraft}

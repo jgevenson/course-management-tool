@@ -16,6 +16,7 @@ export function useMapTools(mapInstance) {
   )
   const [activePointTool, setActivePointToolRaw] = useState(null)
   const [regionDrawActive, setRegionDrawActive] = useState(false)
+  const [planningDrawShape, setPlanningDrawShape] = useState('Polygon')
   const [autoDrawActive, setAutoDrawActive] = useState(false)
   const [autoDrawTolerance, setAutoDrawToleranceRaw] = useState(AUTO_DRAW_DEFAULT_TOLERANCE)
   const [autoDrawMaxRadiusYards, setAutoDrawMaxRadiusYardsRaw] = useState(AUTO_DRAW_DEFAULT_RADIUS_YARDS)
@@ -246,5 +247,7 @@ export function useMapTools(mapInstance) {
     cancelAllTools,
     acceptOSMFeatureAsDraft,
     clearRegionDraft,
+    planningDrawShape,
+    setPlanningDrawShape,
   }
 }
