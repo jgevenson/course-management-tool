@@ -145,7 +145,7 @@ export default function GeomanRegionManager({
         selectedPath = path
         selectedRegion = region
         if (path.pm && !path.pm.enabled()) {
-          path.pm.enable({ snappable: true })
+          path.pm.enable({ snappable: true, removeVertexOn: 'dblclick' })
           stripGeomanMarkerTabIndex(path)
         }
       } else if (path.pm?.enabled()) {
@@ -219,7 +219,7 @@ export default function GeomanRegionManager({
           marker.on('dragend', () => {
             enableAllMapInteractions(map)
             if (path.pm) {
-              path.pm.enable({ snappable: true })
+              path.pm.enable({ snappable: true, removeVertexOn: 'dblclick' })
               stripGeomanMarkerTabIndex(path)
             }
             dragStateRef.current = null

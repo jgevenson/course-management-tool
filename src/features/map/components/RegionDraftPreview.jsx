@@ -68,7 +68,7 @@ export default function RegionDraftPreview({ feature, onFeatureChange }) {
       }
 
       if (draftLayer.pm && !draftLayer.pm.enabled()) {
-        draftLayer.pm.enable({ snappable: true })
+        draftLayer.pm.enable({ snappable: true, removeVertexOn: 'dblclick' })
         stripGeomanMarkerTabIndex(draftLayer)
       }
       draftLayer.on('pm:edit', commitDraftGeometry)
