@@ -1,10 +1,11 @@
-import { Target, MapPin, Pentagon, Square, Circle, WandSparkles, DownloadCloud, Zap, Layers } from 'lucide-react'
+import { Target, MapPin, Pentagon, Square, Circle, DownloadCloud, Zap } from 'lucide-react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Switch from '@mui/material/Switch'
+import FormControlLabel from '@mui/material/FormControlLabel'
 
 import ToolButton from './ToolButton'
 import OSMFeaturePanel from './OSMFeaturePanel'
-import AutoDrawPanel from './AutoDrawPanel'
 import RegionOverlayAssignForm from './RegionOverlayAssignForm'
 
 export default function WorkspaceToolsSidebar({
@@ -19,13 +20,6 @@ export default function WorkspaceToolsSidebar({
   onRegionDrawActiveChange,
   planningDrawShape,
   onPlanningDrawShapeChange,
-  autoDrawActive,
-  onAutoDrawActiveChange,
-  autoDrawTolerance,
-  onAutoDrawToleranceChange,
-  autoDrawMaxRadiusYards,
-  onAutoDrawMaxRadiusYardsChange,
-  autoDrawMessage,
   osmToolActive,
   onOsmToolActiveChange,
   osmFilters,
@@ -39,7 +33,7 @@ export default function WorkspaceToolsSidebar({
   onSaveRegionDraft,
   regionSaving,
   regionError,
-  showLidar,
+  showLidar = false,
   onShowLidarChange,
   autoHealHole,
 }) {
@@ -99,13 +93,27 @@ export default function WorkspaceToolsSidebar({
 
       {isPlanning && (
         <Box sx={{ mt: 1, borderTop: '1px solid', borderColor: 'divider', pt: 2 }}>
-          <ToolButton
-            icon={Layers}
-            label="Show LiDAR"
-            hint="Overlay 3DEP contours"
-            active={showLidar}
-            disabled={!selectedHole}
-            onClick={() => onShowLidarChange(!showLidar)}
+          <FormControlLabel
+            control={
+              <Switch
+                checked={showLidar}
+                onChange={(e) => onShowLidarChange(e.target.checked)}
+                disabled={!selectedHole}
+                color="primary"
+              />
+            }
+            label="Show Green Map"
+            labelPlacement="start"
+            sx={{
+              width: '100%',
+              justifyContent: 'space-between',
+              mx: 0,
+              color: 'text.primary',
+              '& .MuiTypography-root': {
+                fontSize: '0.875rem',
+                fontWeight: 600,
+              },
+            }}
           />
         </Box>
       )}
@@ -138,20 +146,7 @@ export default function WorkspaceToolsSidebar({
         />
       )}
 
-      {!isPlanning && (
-        <ToolButton
-          icon={WandSparkles}
-          label="Auto draw"
-          hint={
-            autoDrawActive
-              ? 'Click a seed color inside the area'
-              : 'Experimental color trace from one seed point'
-          }
-          active={autoDrawActive}
-          disabled={!selectedHole || Boolean(regionDraft)}
-          onClick={() => onAutoDrawActiveChange(!autoDrawActive)}
-        />
-      )}
+
 
       {!isPlanning && (
         <ToolButton
@@ -178,26 +173,16 @@ export default function WorkspaceToolsSidebar({
         />
       )}
 
-      {!isPlanning && (
-        <AutoDrawPanel
-          autoDrawActive={autoDrawActive}
-          autoDrawTolerance={autoDrawTolerance}
-          onAutoDrawToleranceChange={onAutoDrawToleranceChange}
-          autoDrawMaxRadiusYards={autoDrawMaxRadiusYards}
-          onAutoDrawMaxRadiusYardsChange={onAutoDrawMaxRadiusYardsChange}
-          autoDrawMessage={autoDrawMessage}
-        />
-      )}
+
 
       {(activePointTool ||
-        (!isPlanning && (regionDrawActive || autoDrawActive || osmToolActive))) && (
+        (!isPlanning && (regionDrawActive || osmToolActive))) && (
         <Button
           variant="text"
           color="inherit"
           onClick={() => {
             onActivePointToolChange(null)
             onRegionDrawActiveChange(false)
-            onAutoDrawActiveChange(false)
             onOsmToolActiveChange(false)
           }}
           sx={{

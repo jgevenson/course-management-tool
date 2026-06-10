@@ -34,13 +34,6 @@ export default function HoleWorkspace({
   onRegionDrawActiveChange,
   planningDrawShape,
   onPlanningDrawShapeChange,
-  autoDrawActive,
-  onAutoDrawActiveChange,
-  autoDrawTolerance,
-  onAutoDrawToleranceChange,
-  autoDrawMaxRadiusYards,
-  onAutoDrawMaxRadiusYardsChange,
-  autoDrawMessage,
   osmToolActive,
   onOsmToolActiveChange,
   osmFilters = {
@@ -144,13 +137,6 @@ export default function HoleWorkspace({
             onRegionDrawActiveChange={onRegionDrawActiveChange}
             planningDrawShape={planningDrawShape}
             onPlanningDrawShapeChange={onPlanningDrawShapeChange}
-            autoDrawActive={autoDrawActive}
-            onAutoDrawActiveChange={onAutoDrawActiveChange}
-            autoDrawTolerance={autoDrawTolerance}
-            onAutoDrawToleranceChange={onAutoDrawToleranceChange}
-            autoDrawMaxRadiusYards={autoDrawMaxRadiusYards}
-            onAutoDrawMaxRadiusYardsChange={onAutoDrawMaxRadiusYardsChange}
-            autoDrawMessage={autoDrawMessage}
             osmToolActive={osmToolActive}
             onOsmToolActiveChange={onOsmToolActiveChange}
             osmFilters={osmFilters}

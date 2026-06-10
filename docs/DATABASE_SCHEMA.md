@@ -1,6 +1,6 @@
 # 🗃️ Database Schema Documentation
 
-*Last Updated: 6/9/2026, 12:22:31 PM*
+*Last Updated: 6/10/2026, 1:29:37 PM*
 
 This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL.
 
@@ -117,6 +117,19 @@ This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL
 | **coord_dimension** | `integer` | - | - |
 | **srid** | `integer` | - | - |
 | **type** | `character varying` | - | - |
+
+---
+## 📋 Table: `green_contours`
+> Caches high-density elevation matrix data (JSON) for generating contour lines via marching squares.
+
+| Column | Type | Constraints / Refs | Description |
+| :--- | :--- | :--- | :--- |
+| **id** | `bigint` | **NOT NULL** | - |
+| **hole_id** | `uuid` | **NOT NULL**<br>🔗 Refers to: holes | - |
+| **grid_spacing_feet** | `double precision` | **NOT NULL**<br>Default: `1.0` | - |
+| **matrix_data** | `jsonb` | **NOT NULL** | - |
+| **created_at** | `timestamp with time zone` | **NOT NULL**<br>Default: `timezone('utc'::text, now())` | - |
+| **updated_at** | `timestamp with time zone` | **NOT NULL**<br>Default: `timezone('utc'::text, now())` | - |
 
 ---
 ## 📋 Table: `hole_map_markers`

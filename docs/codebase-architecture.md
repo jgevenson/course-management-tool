@@ -59,12 +59,10 @@ graph TD
         Map -->|Hole Navigation| HW[Hole Workspace]
         Map -->|Satellite Tiles| LA[Leaflet Area]
         HW -->|Bag Selection| Bag[Bag & Dispersion]
-        HW -->|Auto Draw| AD[Auto Draw Utility]
     end
 
     subgraph API Services
         Map -->|Supabase API| SAPI[supabaseClient]
-        AD -->|USGS imagery| Imagery[USGS Imagery Server]
         HW -->|Elevation Query| EPQS[USGS EPQS]
     end
 
@@ -92,10 +90,7 @@ The editor core. It uses Leaflet to render satellite overlays, allowing administ
   - [MapArea.jsx](file:///c:/Users/Jacob.Evenson/course-managment-tool/course-management-tool/src/features/map/components/MapArea.jsx): Renders the interactive Leaflet map instance and custom drawing plugins.
   - [HoleWorkspace/index.jsx](file:///c:/Users/Jacob.Evenson/course-managment-tool/course-management-tool/src/features/map/components/HoleWorkspace/index.jsx): Sidebar panels including tool buttons, segment distances, and properties.
 
-### 3.4 Image-Based Auto Draw (`src/features/map/utils/autoDrawRegion.js`)
-An experimental feature that fetches satellite images directly from USGS servers based on seed points clicked on the map. It runs a flood-fill algorithm in memory to trace a boundary matching color tolerances, simplifies the resulting contour, and returns a GeoJSON Polygon.
-
-### 3.5 Elevation & Plays-Like Service
+### 3.4 Elevation & Plays-Like Service
 Combines horizontal PostGIS distance with vertical delta.
 - **USGS EPQS lookup**: `fetchElevation.js` calls the USGS endpoint to resolve elevation in meters and converts it to yards.
 - **Database logic**: The RPC `calculate_plays_like_distance` reads coordinates and elevations, converting geometry bounds to yards and applying the Pythagorean theorem $\sqrt{\text{distance}^2 + \Delta z^2}$.

@@ -8,7 +8,7 @@ Browser-based golf course mapping and strategy tooling built with React, Leaflet
 - **Course dashboard**: Lists active courses for the signed-in user.
 - **Hole mapping canvas**: Uses Esri World Imagery in Leaflet to place green-center and back-tee reference points per hole.
 - **Manual terrain regions**: Draws, edits, and deletes terrain polygons with Geoman, then saves terrain type, label, and linked holes.
-- **Experimental auto draw**: Lets mappers click a seed point, tune color tolerance and max radius, and generate a smoothed draft terrain polygon from nearby matching satellite imagery colors.
+
 
 ## Tech Stack
 
@@ -34,6 +34,3 @@ npm run lint
 npm run build
 ```
 
-## Mapping Notes
-
-The auto draw tool is intentionally isolated as an experiment. It generates normal `terrain_overlays.geojson_data` polygons and reuses the existing region assignment form, so saved regions continue to work if the tool is removed later.

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { MapContainer, TileLayer, useMap } from 'react-leaflet'
 import CourseTerrainOverlays from './CourseTerrainOverlays'
-import AutoDrawRegionTool from './AutoDrawRegionTool'
 import RegionDraftPreview from './RegionDraftPreview'
 import HoleMapPoints from './HoleMapPoints'
 import OSMMapFeaturesLayer from './OSMMapFeaturesLayer'
@@ -78,15 +77,13 @@ function MapInstanceBridge({ onMapReady }) {
  *   on the provided `center` coordinates with an initial `zoom` level.
  * - **Layer Composition**: Composes and manages the visibility of several distinct map layers:
  *   1.  **`CourseTerrainOverlays`**: Visualizes terrain regions with user interaction support.
- *   2.  **`AutoDrawRegionTool`**: Enables automated region generation based on AI predictions.
- *   3.  **`OSMMapFeaturesLayer`**: Displays OpenStreetMap features (e.g., water hazards).
- *   4.  **`RegionDraftPreview`**: Shows a live preview of a region currently being edited.
- *   5.  **`HoleMapPoints`**: Renders markers and tee boxes for individual holes.
+ *   2.  **`OSMMapFeaturesLayer`**: Displays OpenStreetMap features (e.g., water hazards).
+ *   3.  **`RegionDraftPreview`**: Shows a live preview of a region currently being edited.
+ *   4.  **`HoleMapPoints`**: Renders markers and tee boxes for individual holes.
  * 
  * ### Interaction & Control Flow
  * The component acts as a high-level controller for various map-based tools:
  * - **Terrain Tools**: Manages `regionDrawActive` and `suppressTerrainInteractions` flags to control drawing and editing modes.
- * - **Auto Draw**: Exposes configuration options (`autoDrawTolerance`, `autoDrawMaxRadiusYards`) and lifecycle events (`onAutoDrawFeatureCreated`).
  * - **OSM Tool**: Activates the `osmToolActive` state and passes `osmFeaturesData` for rendering.
  * - **Hole Points**: Coordinates marker placement (`onMarkerPick`), movement (`onMarkerMove`), and tool activation (`activePointTool`).
  * 
@@ -107,12 +104,6 @@ function MapInstanceBridge({ onMapReady }) {
  * @param {function} props.suppressTerrainInteractions - Function to suppress map interactions within terrain layers.
  * @param {function} props.onPolygonDrawn - Callback for when a polygon is drawn.
  * @param {function} props.onGeometryCommit - Callback for committing a geometry.
- * @param {boolean} props.autoDrawActive - Flag to enable the auto-draw tool.
- * @param {boolean} props.autoDrawDisabled - Flag to disable the auto-draw tool.
- * @param {number} props.autoDrawTolerance - Tolerance setting for auto-draw.
- * @param {number} props.autoDrawMaxRadiusYards - Maximum radius for auto-draw.
- * @param {function} props.onAutoDrawFeatureCreated - Callback for when an auto-drawn feature is created.
- * @param {function} props.onAutoDrawStatusChange - Callback for when auto-draw status changes.
  * @param {boolean} props.osmToolActive - Flag to enable the OSM tool.
  * @param {Object} props.osmFeaturesData - GeoJSON data for OSM features.
  * @param {function} props.onOSMFeatureSelect - Callback for when an OSM feature is selected.
@@ -143,13 +134,6 @@ export default function MapArea({
   suppressTerrainInteractions,
   onPolygonDrawn,
   onGeometryCommit,
-  // Auto draw
-  autoDrawActive,
-  autoDrawDisabled,
-  autoDrawTolerance,
-  autoDrawMaxRadiusYards,
-  onAutoDrawFeatureCreated,
-  onAutoDrawStatusChange,
   // OSM
   osmToolActive,
   osmFeaturesData,
@@ -206,16 +190,6 @@ export default function MapArea({
           suppressMapInteractions={suppressTerrainInteractions}
           onPolygonDrawn={onPolygonDrawn}
           onGeometryCommit={onGeometryCommit}
-        />
-        <AutoDrawRegionTool
-          active={autoDrawActive}
-          disabled={autoDrawDisabled}
-          tolerance={autoDrawTolerance}
-          maxRadiusYards={autoDrawMaxRadiusYards}
-          tileUrlTemplate={ESRI_TILE_URL}
-          maxNativeZoom={TILE_MAX_NATIVE_ZOOM}
-          onFeatureCreated={onAutoDrawFeatureCreated}
-          onStatusChange={onAutoDrawStatusChange}
         />
         <OSMMapFeaturesLayer
           isActive={osmToolActive}

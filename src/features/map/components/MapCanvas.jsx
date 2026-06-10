@@ -80,7 +80,6 @@ export default function MapCanvas() {
   // These thin handlers connect hooks that need to coordinate.
 
   const handleSelectHoleIndex = useCallback((idx) => {
-    tools.toggleAutoDraw(false)
     holesState.selectHoleIndex(idx)
     terrainState.selectOverlay(null)
   }, [holesState, tools, terrainState])
@@ -155,11 +154,6 @@ export default function MapCanvas() {
 
   const handleRegionDrawActiveChange = useCallback((active) => {
     tools.toggleRegionDraw(active)
-    if (active) terrainState.selectOverlay(null)
-  }, [tools, terrainState])
-
-  const handleAutoDrawActiveChange = useCallback((active) => {
-    tools.toggleAutoDraw(active)
     if (active) terrainState.selectOverlay(null)
   }, [tools, terrainState])
 
@@ -246,19 +240,12 @@ export default function MapCanvas() {
             regionDrawActive={tools.regionDrawActive}
             suppressTerrainInteractions={
               isPlanning ||
-              tools.autoDrawActive ||
               tools.osmToolActive ||
               Boolean(tools.regionDraft) ||
               Boolean(tools.activePointTool)
             }
             onPolygonDrawn={handlePolygonDrawn}
             onGeometryCommit={terrainState.commitGeometry}
-            autoDrawActive={tools.autoDrawActive && !isPlanning}
-            autoDrawDisabled={!holesState.selectedHole || Boolean(tools.regionDraft) || isPlanning}
-            autoDrawTolerance={tools.autoDrawTolerance}
-            autoDrawMaxRadiusYards={tools.autoDrawMaxRadiusYards}
-            onAutoDrawFeatureCreated={handlePolygonDrawn}
-            onAutoDrawStatusChange={tools.setAutoDrawMessage}
             osmToolActive={tools.osmToolActive && !isPlanning && !tools.regionDraft}
             osmFeaturesData={tools.osmFeaturesData}
             onOSMFeatureSelect={handleOSMFeatureSelect}
@@ -272,7 +259,6 @@ export default function MapCanvas() {
             workspaceMode={tools.workspaceMode}
             suppressHoleMapPick={
               tools.regionDrawActive ||
-              tools.autoDrawActive ||
               tools.osmToolActive ||
               Boolean(tools.regionDraft) ||
               (isPlanning &&
@@ -285,7 +271,18 @@ export default function MapCanvas() {
             planningAreas={planningAreasState.areas}
             planningDrawShape={tools.planningDrawShape}
             onPlanningPolygonDrawn={handlePlanningPolygonDrawn}
-            onPlanningGeometryCommit={(id, geojson) => planningAreasState.addOrUpdateArea({ id, geojsonData: geojson })}
+            onPlanningGeometryCommit={(id, geojson) => {
+              const existing = planningAreasState.areas.find(a => a.id === id)
+              if (existing) {
+                planningAreasState.addOrUpdateArea({
+                  id,
+                  label: existing.label,
+                  description: existing.description,
+                  style: existing.style,
+                  geojsonData: geojson
+                })
+              }
+            }}
             onPlanningAreaDelete={planningAreasState.removeArea}
             showLidar={tools.showLidar && tools.workspaceMode === 'planning'}
           />
@@ -304,13 +301,6 @@ export default function MapCanvas() {
         onRegionDrawActiveChange={handleRegionDrawActiveChange}
         planningDrawShape={tools.planningDrawShape}
         onPlanningDrawShapeChange={tools.setPlanningDrawShape}
-        autoDrawActive={tools.autoDrawActive}
-        onAutoDrawActiveChange={handleAutoDrawActiveChange}
-        autoDrawTolerance={tools.autoDrawTolerance}
-        onAutoDrawToleranceChange={tools.setAutoDrawTolerance}
-        autoDrawMaxRadiusYards={tools.autoDrawMaxRadiusYards}
-        onAutoDrawMaxRadiusYardsChange={tools.setAutoDrawMaxRadiusYards}
-        autoDrawMessage={tools.autoDrawMessage}
         osmToolActive={tools.osmToolActive}
         onOsmToolActiveChange={handleOsmToolActiveChange}
         osmFilters={tools.osmFilters}
