@@ -18,10 +18,10 @@ export function useMapTools(mapInstance) {
   const [osmFilters, setOsmFilters] = useState({
     tees: true,
     greens: true,
-    fairways: true,
+    fairways: false,
     bunkers: true,
     water: true,
-    rough: true,
+    rough: false,
   })
   const [osmLoading, setOsmLoading] = useState(false)
   const [osmMessage, setOsmMessage] = useState(null)
