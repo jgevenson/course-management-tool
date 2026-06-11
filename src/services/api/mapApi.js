@@ -337,21 +337,10 @@ export const mapApi = {
       p_terrain_type: terrainType,
       p_risk_tier: null,
       p_geojson_data: feature,
+      p_hole_ids: holeId ? [holeId] : [],
     })
 
     if (overlayErr) throw overlayErr
-
-    if (holeId && newOverlay?.id) {
-      const { error: linkErr } = await supabase
-        .from('terrain_overlay_holes')
-        .insert({
-          terrain_overlay_id: newOverlay.id,
-          hole_id: holeId,
-        })
-
-      if (linkErr) throw linkErr
-    }
-
     return newOverlay
   },
 }

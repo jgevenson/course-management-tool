@@ -23,6 +23,8 @@
     "@mui/icons-material": "^9.0.1",
     "@mui/material": "^9.0.1",
     "@supabase/supabase-js": "^2.104.1",
+    "@turf/helpers": "^7.3.5",
+    "@turf/intersect": "^7.3.5",
     "d3-contour": "^4.0.2",
     "d3-polygon": "^3.0.1",
     "dotenv": "^17.4.2",

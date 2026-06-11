@@ -17,6 +17,7 @@ export function useTerrainOverlays(courseId) {
         risk_tier: r.risk_tier,
         label: r.label,
         geojson_data: r.geojson_data,
+        geojson_data_raw: r.geojson_data_raw,
         holeIds: (r.terrain_overlay_holes ?? []).map((h) => h.hole_id),
       }))
       setTerrainOverlays(rows)

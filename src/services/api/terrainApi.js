@@ -2,14 +2,29 @@ import { supabase } from '../../supabaseClient'
 
 export const terrainApi = {
   getOverlays: async (courseId) => {
-    const { data, error } = await supabase
-      .from('terrain_overlays_view')
-      .select('id, course_id, terrain_type, risk_tier, label, geojson_data, terrain_overlay_holes(hole_id)')
+    const { data: overlays, error: oErr } = await supabase
+      .from('vw_planar_terrain_overlays')
+      .select('id, course_id, terrain_type, risk_tier, label, geojson_data, geojson_data_raw')
       .eq('course_id', courseId)
       .eq('is_active', true)
 
-    if (error) throw error
-    return data
+    if (oErr) throw oErr
+    if (!overlays || overlays.length === 0) return []
+
+    const overlayIds = overlays.map(o => o.id)
+    const { data: links, error: lErr } = await supabase
+      .from('terrain_overlay_holes')
+      .select('terrain_overlay_id, hole_id')
+      .in('terrain_overlay_id', overlayIds)
+
+    if (lErr) throw lErr
+
+    return overlays.map(o => ({
+      ...o,
+      terrain_overlay_holes: (links ?? [])
+        .filter(l => l.terrain_overlay_id === o.id)
+        .map(l => ({ hole_id: l.hole_id }))
+    }))
   },
 
   addOverlay: async (courseId, payload) => {
@@ -21,22 +36,11 @@ export const terrainApi = {
       p_terrain_type: terrainType,
       p_risk_tier: null,
       p_geojson_data: geojsonData,
+      p_hole_ids: holeIds || [],
     })
 
     if (error || !row?.id) throw error || new Error('Could not save region')
 
-    if (holeIds && holeIds.length > 0) {
-      const links = holeIds.map((hole_id) => ({
-        terrain_overlay_id: row.id,
-        hole_id,
-      }))
-      const { error: linkErr } = await supabase.from('terrain_overlay_holes').insert(links)
-      
-      if (linkErr) {
-        await supabase.from('terrain_overlays').update({ is_active: false }).eq('id', row.id)
-        throw linkErr
-      }
-    }
     return row
   },
 
@@ -49,21 +53,10 @@ export const terrainApi = {
       p_terrain_type: terrainType,
       p_risk_tier: null,
       p_geojson_data: geojsonData,
+      p_hole_ids: holeIds || [],
     })
 
     if (uErr) throw uErr
-
-    const { error: dErr } = await supabase.from('terrain_overlay_holes').delete().eq('terrain_overlay_id', id)
-    if (dErr) throw dErr
-
-    if (holeIds && holeIds.length > 0) {
-      const links = holeIds.map((hole_id) => ({
-        terrain_overlay_id: id,
-        hole_id,
-      }))
-      const { error: iErr } = await supabase.from('terrain_overlay_holes').insert(links)
-      if (iErr) throw iErr
-    }
   },
 
   updateOverlayGeometry: async (id, feature) => {

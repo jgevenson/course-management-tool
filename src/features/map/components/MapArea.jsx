@@ -6,6 +6,7 @@ import HoleMapPoints from './HoleMapPoints'
 import OSMMapFeaturesLayer from './OSMMapFeaturesLayer'
 import HolePlanningAreas from './HolePlanningAreas'
 import GreenLidarMapOverlay from './GreenLidarMapOverlay'
+import ElevationContourLayer from './ElevationContourLayer'
 
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-rotate/dist/leaflet-rotate.js'
@@ -37,10 +38,20 @@ function MapInstanceBridge({ onMapReady }) {
       })
     }
 
+    const container = map.getContainer()
+
+    // Prevent native browser scroll/jump by immediately blurring any leaflet-marker-icon
+    // that receives focus inside the rotated map container.
+    const handleFocus = (e) => {
+      if (e.target && e.target.classList?.contains('leaflet-marker-icon')) {
+        e.target.blur()
+      }
+    }
+    container.addEventListener('focus', handleFocus, true)
+
     // Safety-net MutationObserver: Geoman creates markers asynchronously during
     // pm.enable(). Strip tabindex from any marker icon that appears in the DOM
     // to prevent browser focus → layout-shift on the rotated container.
-    const container = map.getContainer()
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         for (const node of mutation.addedNodes) {
@@ -60,6 +71,7 @@ function MapInstanceBridge({ onMapReady }) {
     onMapReady(map)
     return () => {
       observer.disconnect()
+      container.removeEventListener('focus', handleFocus, true)
       onMapReady(null)
     }
   }, [map, onMapReady])
@@ -217,7 +229,13 @@ export default function MapArea({
           onFeatureChange={onRegionDraftGeometryChange}
         />
         {showLidar && selectedHole && (
-          <GreenLidarMapOverlay holeId={selectedHole.id} />
+          <>
+            <GreenLidarMapOverlay holeId={selectedHole.id} />
+            <ElevationContourLayer
+              holeId={selectedHole.id}
+              visibleTerrainOverlays={visibleTerrainOverlays}
+            />
+          </>
         )}
         <HoleMapPoints
           selectedHole={selectedHole}

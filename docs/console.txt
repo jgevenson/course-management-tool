@@ -1,5 +1,6 @@
 client:827 [vite] connecting...
 client:931 [vite] connected.
+a5895a33-8864-4bf3-80a1-239d732c2ff9:1 [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) <input placeholder=​"••••••••" class=​"w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:​outline-none focus:​border-emerald-500 focus:​ring-1 focus:​ring-emerald-500" type=​"password" value>​
 Fetch finished loading: GET "<URL>".
 Fetch finished loading: GET "<URL>".
 Fetch finished loading: GET "<URL>".
@@ -31,949 +32,290 @@ Fetch finished loading: GET "<URL>".
 Fetch finished loading: GET "<URL>".
 Fetch finished loading: GET "<URL>".
 Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: GET "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-Fetch finished loading: POST "<URL>".
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: true
-GeomanRegionManager.jsx:347 [GeomanRegionManager] Triggering onAlignFeatureClick for ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f
-MapCanvas.jsx:205 [Refine Shapes] Clicked shape ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f
-MapCanvas.jsx:207 [Refine Shapes] Selecting Master Anchor ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: true
-GeomanRegionManager.jsx:347 [GeomanRegionManager] Triggering onAlignFeatureClick for ID: c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:205 [Refine Shapes] Clicked shape ID: c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:214 [Refine Shapes] Selecting/Toggling Adjust Target ID: c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:217 [Refine Shapes] Adjust Target transitioning from null to c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:217 [Refine Shapes] Adjust Target transitioning from null to c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:224 [Refine Shapes] Executing alignment. Master: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f Adjust: c13a17da-0d97-4b28-b651-46e39758a6d4 Tolerance: 0.1524
-MapCanvas.jsx:233 [Refine Shapes] Calling supabase RPC with tolerance: 0.1524
-MapCanvas.jsx:239 [Refine Shapes] supabase RPC response returnedGeometry: {type: 'Polygon', coordinates: Array(2)}
-MapCanvas.jsx:260 [Refine Shapes] Original geometry coordinates string length: 1558
-MapCanvas.jsx:261 [Refine Shapes] Returned geometry coordinates string length: 1786
-MapCanvas.jsx:271 [Refine Shapes] Updating Leaflet layer natively. geom type: Polygon
-MapCanvas.jsx:277 [Refine Shapes] Found matching Leaflet layer: NewClass {options: {…}, _bounds: LatLngBounds, _latlngs: Array(2), _initHooksCalled: true, pm: NewClass, …}
-MapCanvas.jsx:281 [Refine Shapes] Calculated Leaflet LatLngs: (2) [Array(48), Array(30)]
-MapCanvas.jsx:285 [Refine Shapes] Leaflet layer redrawn.
-MapCanvas.jsx:294 [Refine Shapes] Native Leaflet layers updated count: 1
-MapCanvas.jsx:300 [Refine Shapes] Triggering state cache overlays reload...
-MapCanvas.jsx:302 [Refine Shapes] State cache overlays reload completed.
-MapCanvas.jsx:309 [Refine Shapes] Alignment successfully completed and states reset.
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: true
-GeomanRegionManager.jsx:347 [GeomanRegionManager] Triggering onAlignFeatureClick for ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f
-MapCanvas.jsx:205 [Refine Shapes] Clicked shape ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f
-MapCanvas.jsx:207 [Refine Shapes] Selecting Master Anchor ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: true
-GeomanRegionManager.jsx:347 [GeomanRegionManager] Triggering onAlignFeatureClick for ID: c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:205 [Refine Shapes] Clicked shape ID: c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:214 [Refine Shapes] Selecting/Toggling Adjust Target ID: c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:217 [Refine Shapes] Adjust Target transitioning from null to c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:217 [Refine Shapes] Adjust Target transitioning from null to c13a17da-0d97-4b28-b651-46e39758a6d4
-installHook.js:1 React does not recognize the `PaperProps` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `paperprops` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
-overrideMethod @ installHook.js:1
-validateProperty @ react-dom_client.js?v=73c23f2f:1894
-warnUnknownProperties @ react-dom_client.js?v=73c23f2f:1995
-validatePropertiesInDevelopment @ react-dom_client.js?v=73c23f2f:9501
-setInitialProperties @ react-dom_client.js?v=73c23f2f:9761
-completeWork @ react-dom_client.js?v=73c23f2f:6382
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-completeUnitOfWork @ react-dom_client.js?v=73c23f2f:8492
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8431
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<div>
-exports.createElement @ react.js?v=73c23f2f:606
-(anonymous) @ styled-B-amtACL.js?v=73c23f2f:3920
-MuiModal-root @ styled-B-amtACL.js?v=73c23f2f:3283
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<MuiModalRoot>
-exports.jsxs @ react_jsx-runtime.js?v=73c23f2f:197
-Modal @ Select-BUVWqLn3.js?v=73c23f2f:2355
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<ForwardRef(Modal)>
-exports.createElement @ react.js?v=73c23f2f:606
-(anonymous) @ styled-B-amtACL.js?v=73c23f2f:3920
-MuiPopover-root @ styled-B-amtACL.js?v=73c23f2f:3283
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<MuiPopoverRoot>
-exports.jsx @ react_jsx-runtime.js?v=73c23f2f:193
-Popover @ Select-BUVWqLn3.js?v=73c23f2f:2762
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<ForwardRef(Popover)>
-exports.createElement @ react.js?v=73c23f2f:606
-(anonymous) @ styled-B-amtACL.js?v=73c23f2f:3920
-MuiMenu-root @ styled-B-amtACL.js?v=73c23f2f:3283
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<MuiMenuRoot>
-exports.jsx @ react_jsx-runtime.js?v=73c23f2f:193
-Menu @ Select-BUVWqLn3.js?v=73c23f2f:3080
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<ForwardRef(Menu)>
-exports.jsx @ react_jsx-runtime.js?v=73c23f2f:193
-SelectInput @ Select-BUVWqLn3.js?v=73c23f2f:3917
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<ForwardRef(SelectInput)>
-exports.createElement @ react.js?v=73c23f2f:606
-(anonymous) @ styled-B-amtACL.js?v=73c23f2f:3920
-MuiOutlinedInput-input @ styled-B-amtACL.js?v=73c23f2f:3283
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<MuiOutlinedInputInput>
-exports.jsx @ react_jsx-runtime.js?v=73c23f2f:193
-InputBase @ Select-BUVWqLn3.js?v=73c23f2f:4650
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<ForwardRef(InputBase)>
-exports.jsx @ react_jsx-runtime.js?v=73c23f2f:193
-OutlinedInput @ Select-BUVWqLn3.js?v=73c23f2f:5904
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<ForwardRef(OutlinedInput)>
-exports.createElement @ react.js?v=73c23f2f:606
-(anonymous) @ styled-B-amtACL.js?v=73c23f2f:3920
-MuiSelect-root @ styled-B-amtACL.js?v=73c23f2f:3283
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<MuiSelectRoot>
-exports.jsx @ react_jsx-runtime.js?v=73c23f2f:193
-Select @ Select-BUVWqLn3.js?v=73c23f2f:6131
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<ForwardRef(Select)>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=73c23f2f:193
-(anonymous) @ MapCanvas.jsx:518
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateFunctionComponent @ react-dom_client.js?v=73c23f2f:5569
-beginWork @ react-dom_client.js?v=73c23f2f:6140
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-MapCanvas.jsx:224 [Refine Shapes] Executing alignment. Master: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f Adjust: c13a17da-0d97-4b28-b651-46e39758a6d4 Tolerance: 0.3048
-MapCanvas.jsx:233 [Refine Shapes] Calling supabase RPC with tolerance: 0.3048
-MapCanvas.jsx:239 [Refine Shapes] supabase RPC response returnedGeometry: {type: 'Polygon', coordinates: Array(2)}
-MapCanvas.jsx:260 [Refine Shapes] Original geometry coordinates string length: 1786
-MapCanvas.jsx:261 [Refine Shapes] Returned geometry coordinates string length: 2014
-MapCanvas.jsx:271 [Refine Shapes] Updating Leaflet layer natively. geom type: Polygon
-MapCanvas.jsx:277 [Refine Shapes] Found matching Leaflet layer: NewClass {options: {…}, _bounds: LatLngBounds, _latlngs: Array(2), _initHooksCalled: true, pm: NewClass, …}
-MapCanvas.jsx:281 [Refine Shapes] Calculated Leaflet LatLngs: (2) [Array(52), Array(36)]
-MapCanvas.jsx:285 [Refine Shapes] Leaflet layer redrawn.
-MapCanvas.jsx:294 [Refine Shapes] Native Leaflet layers updated count: 1
-MapCanvas.jsx:300 [Refine Shapes] Triggering state cache overlays reload...
-MapCanvas.jsx:302 [Refine Shapes] State cache overlays reload completed.
-MapCanvas.jsx:309 [Refine Shapes] Alignment successfully completed and states reset.
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: true
-GeomanRegionManager.jsx:347 [GeomanRegionManager] Triggering onAlignFeatureClick for ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f
-MapCanvas.jsx:205 [Refine Shapes] Clicked shape ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f
-MapCanvas.jsx:207 [Refine Shapes] Selecting Master Anchor ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: true
-GeomanRegionManager.jsx:347 [GeomanRegionManager] Triggering onAlignFeatureClick for ID: c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:205 [Refine Shapes] Clicked shape ID: c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:214 [Refine Shapes] Selecting/Toggling Adjust Target ID: c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:217 [Refine Shapes] Adjust Target transitioning from null to c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:217 [Refine Shapes] Adjust Target transitioning from null to c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:224 [Refine Shapes] Executing alignment. Master: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f Adjust: c13a17da-0d97-4b28-b651-46e39758a6d4 Tolerance: 0.1524
-MapCanvas.jsx:233 [Refine Shapes] Calling supabase RPC with tolerance: 0.1524
-MapCanvas.jsx:239 [Refine Shapes] supabase RPC response returnedGeometry: {type: 'Polygon', coordinates: Array(2)}
-MapCanvas.jsx:260 [Refine Shapes] Original geometry coordinates string length: 2014
-MapCanvas.jsx:261 [Refine Shapes] Returned geometry coordinates string length: 2014
-installHook.js:1 [Refine Shapes] Snap completed but geometry is identical. No vertices were within tolerance.
-overrideMethod @ installHook.js:1
-(anonymous) @ MapCanvas.jsx:264
+ElevationContourLayer.jsx:90 [ElevationContourLayer] No gridData or empty grid, skipping raw contours
+installHook.js:1 [ElevationContourLayer] No gridData or empty grid, skipping raw contours
+ElevationContourLayer.jsx:146 [ElevationContourLayer] Running clippedContourGeoJson useMemo
+ElevationContourLayer.jsx:147 [ElevationContourLayer] rawContoursGeoJson length: undefined
+ElevationContourLayer.jsx:148 [ElevationContourLayer] visibleTerrainOverlays length: 8
+installHook.js:1 [ElevationContourLayer] Running clippedContourGeoJson useMemo
+installHook.js:1 [ElevationContourLayer] rawContoursGeoJson length: undefined
+installHook.js:1 [ElevationContourLayer] visibleTerrainOverlays length: 8
+ElevationContourLayer.jsx:35 [ElevationContourLayer] Loading elevation grid for holeId=1eaa3f80-94fc-448b-a9a8-f1e1fbf7878c
+installHook.js:1 [ElevationContourLayer] Loading elevation grid for holeId=1eaa3f80-94fc-448b-a9a8-f1e1fbf7878c
+ElevationContourLayer.jsx:59 [ElevationContourLayer] Cache miss. Invoking generate-elevation-grid Edge Function...
+ElevationContourLayer.jsx:59 [ElevationContourLayer] Cache miss. Invoking generate-elevation-grid Edge Function...
+ElevationContourLayer.jsx:68 [ElevationContourLayer] Edge function succeeded, grid data: {width: 25, height: 137, extent: {…}}
+ElevationContourLayer.jsx:61 Fetch finished loading: POST "https://lpxkvkhlvdrmhnrirjoj.supabase.co/functions/v1/generate-elevation-grid".
+(anonymous) @ @supabase_supabase-js.js?v=b6db1337:20004
+(anonymous) @ @supabase_supabase-js.js?v=b6db1337:20018
 await in (anonymous)
-handleClick @ ButtonBase-DCXQbqnZ.js?v=73c23f2f:344
-executeDispatch @ react-dom_client.js?v=73c23f2f:9141
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-processDispatchQueue @ react-dom_client.js?v=73c23f2f:9167
-(anonymous) @ react-dom_client.js?v=73c23f2f:9454
-batchedUpdates$1 @ react-dom_client.js?v=73c23f2f:2044
-dispatchEventForPluginEventSystem @ react-dom_client.js?v=73c23f2f:9240
-dispatchEvent @ react-dom_client.js?v=73c23f2f:11319
-dispatchDiscreteEvent @ react-dom_client.js?v=73c23f2f:11301
-<button>
-exports.createElement @ react.js?v=73c23f2f:606
-(anonymous) @ styled-B-amtACL.js?v=73c23f2f:3920
-MuiButtonBase-root @ styled-B-amtACL.js?v=73c23f2f:3283
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<MuiButtonBaseRoot>
-exports.jsxs @ react_jsx-runtime.js?v=73c23f2f:197
-ButtonBase @ ButtonBase-DCXQbqnZ.js?v=73c23f2f:953
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<ForwardRef(ButtonBase)>
-exports.createElement @ react.js?v=73c23f2f:606
-(anonymous) @ styled-B-amtACL.js?v=73c23f2f:3920
-MuiButton-root @ styled-B-amtACL.js?v=73c23f2f:3283
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<MuiButtonRoot>
-exports.jsxs @ react_jsx-runtime.js?v=73c23f2f:197
-Button @ Button-CiroSe8I.js?v=73c23f2f:517
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-extensions::setIcon:11 Fetch finished loading: GET "chrome-extension://hdokiejnpimakedhajhdlcegeplioahd/images/iconset2/19x19_Red.png".
-loadImagePathForServiceWorker @ extensions::setIcon:11
-loadImagePath @ extensions::setIcon:65
-setIcon @ extensions::setIcon:121
-(anonymous) @ extensions::setIcon:162
-setIcon @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-l @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-l @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-Fw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-l @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-Fw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-lw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-Fw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-l @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-lw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-l @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-Fw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-lw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-l @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-Fw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-lw @ background-redux-new.js:2
-Bw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-vY @ background-redux-new.js:2
-await in vY
-(anonymous) @ background-redux-new.js:2
+(anonymous) @ @supabase_supabase-js.js?v=b6db1337:40
+(anonymous) @ @supabase_supabase-js.js?v=b6db1337:346
+(anonymous) @ @supabase_supabase-js.js?v=b6db1337:34
+__awaiter @ @supabase_supabase-js.js?v=b6db1337:16
+invoke @ @supabase_supabase-js.js?v=b6db1337:309
+(anonymous) @ ElevationContourLayer.jsx:61
 await in (anonymous)
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-extensions::setIcon:11 Fetch finished loading: GET "chrome-extension://hdokiejnpimakedhajhdlcegeplioahd/images/iconset2/19x19_Red_2x.png".
-loadImagePathForServiceWorker @ extensions::setIcon:11
-loadImagePath @ extensions::setIcon:65
-setIcon @ extensions::setIcon:121
-(anonymous) @ extensions::setIcon:162
-setIcon @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-l @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-l @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-Fw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-l @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-Fw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-lw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-Fw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-l @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-lw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-l @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-Fw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-lw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-l @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-Fw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-lw @ background-redux-new.js:2
-Bw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-vY @ background-redux-new.js:2
-await in vY
-(anonymous) @ background-redux-new.js:2
+(anonymous) @ ElevationContourLayer.jsx:83
+react_stack_bottom_frame @ react-dom_client.js?v=b6db1337:12904
+runWithFiberInDEV @ react-dom_client.js?v=b6db1337:851
+commitHookEffectListMount @ react-dom_client.js?v=b6db1337:6617
+commitHookPassiveMountEffects @ react-dom_client.js?v=b6db1337:6652
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7618
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7617
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7672
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=b6db1337:7606
+commitPassiveMountOnFiber @ react-dom_client.js?v=b6db1337:7627
+flushPassiveEffects @ react-dom_client.js?v=b6db1337:8808
+flushPendingEffects @ react-dom_client.js?v=b6db1337:8769
+flushSpawnedWork @ react-dom_client.js?v=b6db1337:8747
+commitRoot @ react-dom_client.js?v=b6db1337:8585
+commitRootWhenReady @ react-dom_client.js?v=b6db1337:8079
+performWorkOnRoot @ react-dom_client.js?v=b6db1337:8051
+performSyncWorkOnRoot @ react-dom_client.js?v=b6db1337:9067
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=b6db1337:8984
+flushSyncWork$1 @ react-dom_client.js?v=b6db1337:8122
+batchedUpdates$1 @ react-dom_client.js?v=b6db1337:2047
+dispatchEventForPluginEventSystem @ react-dom_client.js?v=b6db1337:9240
+dispatchEvent @ react-dom_client.js?v=b6db1337:11319
+dispatchDiscreteEvent @ react-dom_client.js?v=b6db1337:11301
+<ElevationContourLayer>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=b6db1337:193
+(anonymous) @ MapArea.jsx:223
+react_stack_bottom_frame @ react-dom_client.js?v=b6db1337:12868
+renderWithHooksAgain @ react-dom_client.js?v=b6db1337:4268
+renderWithHooks @ react-dom_client.js?v=b6db1337:4219
+updateFunctionComponent @ react-dom_client.js?v=b6db1337:5569
+beginWork @ react-dom_client.js?v=b6db1337:6140
+runWithFiberInDEV @ react-dom_client.js?v=b6db1337:851
+performUnitOfWork @ react-dom_client.js?v=b6db1337:8429
+workLoopSync @ react-dom_client.js?v=b6db1337:8325
+renderRootSync @ react-dom_client.js?v=b6db1337:8309
+performWorkOnRoot @ react-dom_client.js?v=b6db1337:7957
+performSyncWorkOnRoot @ react-dom_client.js?v=b6db1337:9067
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=b6db1337:8984
+flushSyncWork$1 @ react-dom_client.js?v=b6db1337:8122
+batchedUpdates$1 @ react-dom_client.js?v=b6db1337:2047
+dispatchEventForPluginEventSystem @ react-dom_client.js?v=b6db1337:9240
+dispatchEvent @ react-dom_client.js?v=b6db1337:11319
+dispatchDiscreteEvent @ react-dom_client.js?v=b6db1337:11301
+ElevationContourLayer.jsx:61 Fetch finished loading: POST "https://lpxkvkhlvdrmhnrirjoj.supabase.co/functions/v1/generate-elevation-grid".
+(anonymous) @ @supabase_supabase-js.js?v=b6db1337:20004
+(anonymous) @ @supabase_supabase-js.js?v=b6db1337:20018
 await in (anonymous)
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-background-redux-new.js:2 Fetch finished loading: GET "chrome-extension://hdokiejnpimakedhajhdlcegeplioahd/static/media/en_US.a1813ee3f237436d9cee.json".
-CK @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-l @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-l @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-Fw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-lw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-Fw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-l @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-lw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-l @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-m @ background-redux-new.js:2
-d @ background-redux-new.js:2
-Fw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-lw @ background-redux-new.js:2
-Bw @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
+(anonymous) @ @supabase_supabase-js.js?v=b6db1337:40
+(anonymous) @ @supabase_supabase-js.js?v=b6db1337:346
+(anonymous) @ @supabase_supabase-js.js?v=b6db1337:34
+__awaiter @ @supabase_supabase-js.js?v=b6db1337:16
+invoke @ @supabase_supabase-js.js?v=b6db1337:309
+(anonymous) @ ElevationContourLayer.jsx:61
 await in (anonymous)
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-(anonymous) @ background-redux-new.js:2
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: true
-GeomanRegionManager.jsx:347 [GeomanRegionManager] Triggering onAlignFeatureClick for ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f
-MapCanvas.jsx:205 [Refine Shapes] Clicked shape ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f
-MapCanvas.jsx:207 [Refine Shapes] Selecting Master Anchor ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: true
-GeomanRegionManager.jsx:347 [GeomanRegionManager] Triggering onAlignFeatureClick for ID: c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:205 [Refine Shapes] Clicked shape ID: c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:214 [Refine Shapes] Selecting/Toggling Adjust Target ID: c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:217 [Refine Shapes] Adjust Target transitioning from null to c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:217 [Refine Shapes] Adjust Target transitioning from null to c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:224 [Refine Shapes] Executing alignment. Master: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f Adjust: c13a17da-0d97-4b28-b651-46e39758a6d4 Tolerance: 0.1524
-MapCanvas.jsx:233 [Refine Shapes] Calling supabase RPC with tolerance: 0.1524
-MapCanvas.jsx:239 [Refine Shapes] supabase RPC response returnedGeometry: {type: 'Polygon', coordinates: Array(2)}
-MapCanvas.jsx:260 [Refine Shapes] Original geometry coordinates string length: 2057
-MapCanvas.jsx:261 [Refine Shapes] Returned geometry coordinates string length: 2057
-installHook.js:1 [Refine Shapes] Snap completed but geometry is identical. No vertices were within tolerance.
-overrideMethod @ installHook.js:1
-(anonymous) @ MapCanvas.jsx:264
-await in (anonymous)
-handleClick @ ButtonBase-DCXQbqnZ.js?v=73c23f2f:344
-executeDispatch @ react-dom_client.js?v=73c23f2f:9141
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-processDispatchQueue @ react-dom_client.js?v=73c23f2f:9167
-(anonymous) @ react-dom_client.js?v=73c23f2f:9454
-batchedUpdates$1 @ react-dom_client.js?v=73c23f2f:2044
-dispatchEventForPluginEventSystem @ react-dom_client.js?v=73c23f2f:9240
-dispatchEvent @ react-dom_client.js?v=73c23f2f:11319
-dispatchDiscreteEvent @ react-dom_client.js?v=73c23f2f:11301
-<button>
-exports.createElement @ react.js?v=73c23f2f:606
-(anonymous) @ styled-B-amtACL.js?v=73c23f2f:3920
-MuiButtonBase-root @ styled-B-amtACL.js?v=73c23f2f:3283
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<MuiButtonBaseRoot>
-exports.jsxs @ react_jsx-runtime.js?v=73c23f2f:197
-ButtonBase @ ButtonBase-DCXQbqnZ.js?v=73c23f2f:953
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<ForwardRef(ButtonBase)>
-exports.createElement @ react.js?v=73c23f2f:606
-(anonymous) @ styled-B-amtACL.js?v=73c23f2f:3920
-MuiButton-root @ styled-B-amtACL.js?v=73c23f2f:3283
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<MuiButtonRoot>
-exports.jsxs @ react_jsx-runtime.js?v=73c23f2f:197
-Button @ Button-CiroSe8I.js?v=73c23f2f:517
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateForwardRef @ react-dom_client.js?v=73c23f2f:5396
-beginWork @ react-dom_client.js?v=73c23f2f:6204
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-<ForwardRef(Button)>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=73c23f2f:193
-(anonymous) @ MapCanvas.jsx:602
-react_stack_bottom_frame @ react-dom_client.js?v=73c23f2f:12868
-renderWithHooksAgain @ react-dom_client.js?v=73c23f2f:4268
-renderWithHooks @ react-dom_client.js?v=73c23f2f:4219
-updateFunctionComponent @ react-dom_client.js?v=73c23f2f:5569
-beginWork @ react-dom_client.js?v=73c23f2f:6140
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-performUnitOfWork @ react-dom_client.js?v=73c23f2f:8429
-workLoopSync @ react-dom_client.js?v=73c23f2f:8325
-renderRootSync @ react-dom_client.js?v=73c23f2f:8309
-performWorkOnRoot @ react-dom_client.js?v=73c23f2f:7957
-performSyncWorkOnRoot @ react-dom_client.js?v=73c23f2f:9067
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=73c23f2f:8984
-processRootScheduleInMicrotask @ react-dom_client.js?v=73c23f2f:9005
-(anonymous) @ react-dom_client.js?v=73c23f2f:9078
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: false
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f isAlignMode: true
-GeomanRegionManager.jsx:347 [GeomanRegionManager] Triggering onAlignFeatureClick for ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f
-MapCanvas.jsx:205 [Refine Shapes] Clicked shape ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f
-MapCanvas.jsx:207 [Refine Shapes] Selecting Master Anchor ID: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f
-GeomanRegionManager.jsx:343 [GeomanRegionManager] Layer clicked. Region ID: c13a17da-0d97-4b28-b651-46e39758a6d4 isAlignMode: true
-GeomanRegionManager.jsx:347 [GeomanRegionManager] Triggering onAlignFeatureClick for ID: c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:205 [Refine Shapes] Clicked shape ID: c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:214 [Refine Shapes] Selecting/Toggling Adjust Target ID: c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:217 [Refine Shapes] Adjust Target transitioning from null to c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:217 [Refine Shapes] Adjust Target transitioning from null to c13a17da-0d97-4b28-b651-46e39758a6d4
-MapCanvas.jsx:224 [Refine Shapes] Executing alignment. Master: 98ff7c45-7b23-4088-aad7-5cf7a19bac3f Adjust: c13a17da-0d97-4b28-b651-46e39758a6d4 Tolerance: 0.0762
-MapCanvas.jsx:233 [Refine Shapes] Calling supabase RPC with tolerance: 0.0762
-MapCanvas.jsx:239 [Refine Shapes] supabase RPC response returnedGeometry: {type: 'GeometryCollection', geometries: Array(2)}
-installHook.js:1 [Refine Shapes] Geometry has no coordinates: {type: 'GeometryCollection', geometries: Array(2)}
-overrideMethod @ installHook.js:1
-(anonymous) @ MapCanvas.jsx:296
-await in (anonymous)
-handleClick @ ButtonBase-DCXQbqnZ.js?v=73c23f2f:344
-executeDispatch @ react-dom_client.js?v=73c23f2f:9141
-runWithFiberInDEV @ react-dom_client.js?v=73c23f2f:851
-processDispatchQueue @ react-dom_client.js?v=73c23f2f:9167
-(anonymous) @ react-dom_client.js?v=73c23f2f:9454
-batchedUpdates$1 @ react-dom_client.js?v=73c23f2f:2044
-dispatchEventForPluginEventSystem @ react-dom_client.js?v=73c23f2f:9240
-dispatchEvent @ react-dom_client.js?v=73c23f2f:11319
-dispatchDiscreteEvent @ react-dom_client.js?v=73c23f2f:11301
-MapCanvas.jsx:300 [Refine Shapes] Triggering state cache overlays reload...
-MapCanvas.jsx:302 [Refine Shapes] State cache overlays reload completed.
-MapCanvas.jsx:309 [Refine Shapes] Alignment successfully completed and states reset.
+(anonymous) @ ElevationContourLayer.jsx:83
+react_stack_bottom_frame @ react-dom_client.js?v=b6db1337:12904
+runWithFiberInDEV @ react-dom_client.js?v=b6db1337:851
+commitHookEffectListMount @ react-dom_client.js?v=b6db1337:6617
+commitHookPassiveMountEffects @ react-dom_client.js?v=b6db1337:6652
+reconnectPassiveEffects @ react-dom_client.js?v=b6db1337:7701
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=b6db1337:7688
+reconnectPassiveEffects @ react-dom_client.js?v=b6db1337:7713
+doubleInvokeEffectsOnFiber @ react-dom_client.js?v=b6db1337:8924
+runWithFiberInDEV @ react-dom_client.js?v=b6db1337:851
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8917
+commitDoubleInvokeEffectsInDEV @ react-dom_client.js?v=b6db1337:8932
+flushPassiveEffects @ react-dom_client.js?v=b6db1337:8809
+flushPendingEffects @ react-dom_client.js?v=b6db1337:8769
+flushSpawnedWork @ react-dom_client.js?v=b6db1337:8747
+commitRoot @ react-dom_client.js?v=b6db1337:8585
+commitRootWhenReady @ react-dom_client.js?v=b6db1337:8079
+performWorkOnRoot @ react-dom_client.js?v=b6db1337:8051
+performSyncWorkOnRoot @ react-dom_client.js?v=b6db1337:9067
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=b6db1337:8984
+flushSyncWork$1 @ react-dom_client.js?v=b6db1337:8122
+batchedUpdates$1 @ react-dom_client.js?v=b6db1337:2047
+dispatchEventForPluginEventSystem @ react-dom_client.js?v=b6db1337:9240
+dispatchEvent @ react-dom_client.js?v=b6db1337:11319
+dispatchDiscreteEvent @ react-dom_client.js?v=b6db1337:11301
+<ElevationContourLayer>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=b6db1337:193
+(anonymous) @ MapArea.jsx:223
+react_stack_bottom_frame @ react-dom_client.js?v=b6db1337:12868
+renderWithHooksAgain @ react-dom_client.js?v=b6db1337:4268
+renderWithHooks @ react-dom_client.js?v=b6db1337:4219
+updateFunctionComponent @ react-dom_client.js?v=b6db1337:5569
+beginWork @ react-dom_client.js?v=b6db1337:6140
+runWithFiberInDEV @ react-dom_client.js?v=b6db1337:851
+performUnitOfWork @ react-dom_client.js?v=b6db1337:8429
+workLoopSync @ react-dom_client.js?v=b6db1337:8325
+renderRootSync @ react-dom_client.js?v=b6db1337:8309
+performWorkOnRoot @ react-dom_client.js?v=b6db1337:7957
+performSyncWorkOnRoot @ react-dom_client.js?v=b6db1337:9067
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=b6db1337:8984
+flushSyncWork$1 @ react-dom_client.js?v=b6db1337:8122
+batchedUpdates$1 @ react-dom_client.js?v=b6db1337:2047
+dispatchEventForPluginEventSystem @ react-dom_client.js?v=b6db1337:9240
+dispatchEvent @ react-dom_client.js?v=b6db1337:11319
+dispatchDiscreteEvent @ react-dom_client.js?v=b6db1337:11301
+ElevationContourLayer.jsx:68 [ElevationContourLayer] Edge function succeeded, grid data: {width: 25, height: 137, extent: {…}}
+ElevationContourLayer.jsx:90 [ElevationContourLayer] No gridData or empty grid, skipping raw contours
+installHook.js:1 [ElevationContourLayer] No gridData or empty grid, skipping raw contours
+ElevationContourLayer.jsx:146 [ElevationContourLayer] Running clippedContourGeoJson useMemo
+ElevationContourLayer.jsx:147 [ElevationContourLayer] rawContoursGeoJson length: undefined
+ElevationContourLayer.jsx:148 [ElevationContourLayer] visibleTerrainOverlays length: 8
+installHook.js:1 [ElevationContourLayer] Running clippedContourGeoJson useMemo
+installHook.js:1 [ElevationContourLayer] rawContoursGeoJson length: undefined
+installHook.js:1 [ElevationContourLayer] visibleTerrainOverlays length: 8
+ElevationContourLayer.jsx:35 [ElevationContourLayer] Loading elevation grid for holeId=1eaa3f80-94fc-448b-a9a8-f1e1fbf7878c
+installHook.js:1 [ElevationContourLayer] Loading elevation grid for holeId=1eaa3f80-94fc-448b-a9a8-f1e1fbf7878c
+ElevationContourLayer.jsx:52 [ElevationContourLayer] Grid data found in database cache: {width: 25, height: 137, extent: {…}}
+ElevationContourLayer.jsx:52 [ElevationContourLayer] Grid data found in database cache: {width: 25, height: 137, extent: {…}}
+ElevationContourLayer.jsx:94 [ElevationContourLayer] Generating raw contours for grid: {width: 25, height: 137, extent: {…}}
+ElevationContourLayer.jsx:109 [ElevationContourLayer] Grid Z range: min=259.37698846176147, max=280.8667687173462
+ElevationContourLayer.jsx:117 [ElevationContourLayer] Generated contour thresholds: (21) [260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280]
+ElevationContourLayer.jsx:140 [ElevationContourLayer] Generated 21 raw contour features
+installHook.js:1 [ElevationContourLayer] Generating raw contours for grid: {width: 25, height: 137, extent: {…}}
+installHook.js:1 [ElevationContourLayer] Grid Z range: min=259.37698846176147, max=280.8667687173462
+installHook.js:1 [ElevationContourLayer] Generated contour thresholds: (21) [260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280]
+installHook.js:1 [ElevationContourLayer] Generated 21 raw contour features
+ElevationContourLayer.jsx:146 [ElevationContourLayer] Running clippedContourGeoJson useMemo
+ElevationContourLayer.jsx:147 [ElevationContourLayer] rawContoursGeoJson length: 21
+ElevationContourLayer.jsx:148 [ElevationContourLayer] visibleTerrainOverlays length: 8
+ElevationContourLayer.jsx:157 [ElevationContourLayer] Playable shape found: type=green, id=84ada90d-f36e-4139-ad4e-88ce6c1a0272, geometryType=Polygon {type: 'Polygon', coordinates: Array(1)}
+ElevationContourLayer.jsx:157 [ElevationContourLayer] Playable shape found: type=tee, id=3cd79f75-9c3f-4817-90e5-7be0f54829da, geometryType=Polygon {type: 'Polygon', coordinates: Array(1)}
+ElevationContourLayer.jsx:157 [ElevationContourLayer] Playable shape found: type=tee, id=32414420-69de-467b-aa86-e5493ce6f7ff, geometryType=Polygon {type: 'Polygon', coordinates: Array(1)}
+ElevationContourLayer.jsx:157 [ElevationContourLayer] Playable shape found: type=tee, id=cc2c7b6e-4841-4d91-bb64-86fb4491b900, geometryType=Polygon {type: 'Polygon', coordinates: Array(1)}
+ElevationContourLayer.jsx:157 [ElevationContourLayer] Playable shape found: type=tee, id=39727f82-cf4e-41ca-bdc0-e35757787ce6, geometryType=Polygon {type: 'Polygon', coordinates: Array(1)}
+ElevationContourLayer.jsx:157 [ElevationContourLayer] Playable shape found: type=fairway, id=058531cd-9a11-4762-9b96-440c32fdd315, geometryType=Polygon {type: 'Polygon', coordinates: Array(1)}
+ElevationContourLayer.jsx:165 [ElevationContourLayer] Total playableFeatures: 6
+ElevationContourLayer.jsx:193 [ElevationContourLayer] Intersection results: {success: 100, nullResults: 26, errors: 0, totalClippedFeatures: 100}
+installHook.js:1 [ElevationContourLayer] Running clippedContourGeoJson useMemo
+installHook.js:1 [ElevationContourLayer] rawContoursGeoJson length: 21
+installHook.js:1 [ElevationContourLayer] visibleTerrainOverlays length: 8
+installHook.js:1 [ElevationContourLayer] Playable shape found: type=green, id=84ada90d-f36e-4139-ad4e-88ce6c1a0272, geometryType=Polygon {type: 'Polygon', coordinates: Array(1)}
+installHook.js:1 [ElevationContourLayer] Playable shape found: type=tee, id=3cd79f75-9c3f-4817-90e5-7be0f54829da, geometryType=Polygon {type: 'Polygon', coordinates: Array(1)}
+installHook.js:1 [ElevationContourLayer] Playable shape found: type=tee, id=32414420-69de-467b-aa86-e5493ce6f7ff, geometryType=Polygon {type: 'Polygon', coordinates: Array(1)}
+installHook.js:1 [ElevationContourLayer] Playable shape found: type=tee, id=cc2c7b6e-4841-4d91-bb64-86fb4491b900, geometryType=Polygon {type: 'Polygon', coordinates: Array(1)}
+installHook.js:1 [ElevationContourLayer] Playable shape found: type=tee, id=39727f82-cf4e-41ca-bdc0-e35757787ce6, geometryType=Polygon {type: 'Polygon', coordinates: Array(1)}
+installHook.js:1 [ElevationContourLayer] Playable shape found: type=fairway, id=058531cd-9a11-4762-9b96-440c32fdd315, geometryType=Polygon {type: 'Polygon', coordinates: Array(1)}
+installHook.js:1 [ElevationContourLayer] Total playableFeatures: 6
+installHook.js:1 [ElevationContourLayer] Intersection results: {success: 100, nullResults: 26, errors: 0, totalClippedFeatures: 100}
+react-dom_client.js?v=b6db1337:16 [Violation] 'message' handler took 631ms

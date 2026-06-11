@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useMemo } from 'react'
 import GeomanRegionManager from './GeomanRegionManager'
 
 export default function HolePlanningAreas({
@@ -29,6 +29,12 @@ export default function HolePlanningAreas({
     return `<b>${area.label}</b><br/>${area.description || ''}`
   }, [])
 
+  const drawOptions = useMemo(() => ({
+    pathOptions: { color: '#38bdf8', weight: 2, fillOpacity: 0.35 },
+    templineStyle: { color: '#38bdf8', weight: 2 },
+    hintlineStyle: { color: '#38bdf8', dashArray: '6 6', weight: 1 },
+  }), [])
+
   return (
     <GeomanRegionManager
       regions={areas}
@@ -36,11 +42,7 @@ export default function HolePlanningAreas({
       onSelectId={setSelectedAreaId}
       isDrawingEnabled={regionDrawActive}
       drawShape={planningDrawShape || 'Polygon'}
-      drawOptions={{
-        pathOptions: { color: '#38bdf8', weight: 2, fillOpacity: 0.35 },
-        templineStyle: { color: '#38bdf8', weight: 2 },
-        hintlineStyle: { color: '#38bdf8', dashArray: '6 6', weight: 1 },
-      }}
+      drawOptions={drawOptions}
       onPolygonDrawn={onPolygonDrawn}
       onGeometryCommit={onGeometryCommit}
       onDeleteArea={onDeleteArea}

@@ -297,6 +297,7 @@ export default function HoleMapPoints({
       <>
         {tee && (
           <Marker
+            key="tee_back"
             position={[Number(tee.lat), Number(tee.lng)]}
             icon={teeIcon}
             draggable={!activePointTool}
@@ -311,6 +312,7 @@ export default function HoleMapPoints({
         )}
         {green && (
           <Marker
+            key="green_center"
             position={[Number(green.lat), Number(green.lng)]}
             icon={greenIcon}
             draggable={!activePointTool}
@@ -386,7 +388,7 @@ export default function HoleMapPoints({
 
         return (
           <Marker
-            key={m.id || `default-${m.marker_type}`}
+            key={m.clientKey || m.id || `default-${m.marker_type}`}
             position={[Number(m.lat), lng]}
             icon={icon}
             draggable={!activePointTool}

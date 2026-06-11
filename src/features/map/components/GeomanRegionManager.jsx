@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react'
 import L from 'leaflet'
 import { useMap, useMapEvents } from 'react-leaflet'
-import { disableAllMapInteractions, enableAllMapInteractions, stripGeomanMarkerTabIndex } from '../utils/mapInteractions'
+import { disableAllMapInteractions, enableAllMapInteractions, stripGeomanMarkerTabIndex, setupGeomanEditMarkers } from '../utils/mapInteractions'
 
 export const dragHandleIcon = L.divIcon({
   html: `<div style="background: white; border: 2px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); cursor: move;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"></polyline><polyline points="9 5 12 2 15 5"></polyline><polyline points="19 9 22 12 19 15"></polyline><polyline points="9 19 12 22 15 19"></polyline><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line></svg></div>`,
@@ -79,6 +79,7 @@ export default function GeomanRegionManager({
   const masterFeatureIdRef = useRef(masterFeatureId)
   const adjustFeatureIdRef = useRef(adjustFeatureId)
   const onAlignFeatureClickRef = useRef(onAlignFeatureClick)
+  const drawOptionsRef = useRef(drawOptions)
 
   useEffect(() => {
     selectedRef.current = selectedId
@@ -91,6 +92,7 @@ export default function GeomanRegionManager({
     masterFeatureIdRef.current = masterFeatureId
     adjustFeatureIdRef.current = adjustFeatureId
     onAlignFeatureClickRef.current = onAlignFeatureClick
+    drawOptionsRef.current = drawOptions
   }, [
     selectedId,
     suppressInteractions,
@@ -102,6 +104,7 @@ export default function GeomanRegionManager({
     masterFeatureId,
     adjustFeatureId,
     onAlignFeatureClick,
+    drawOptions,
   ])
 
   useEffect(() => {
@@ -170,7 +173,7 @@ export default function GeomanRegionManager({
         selectedRegion = region
         if (path.pm && !path.pm.enabled()) {
           path.pm.enable({ snappable: true, removeVertexOn: 'dblclick' })
-          stripGeomanMarkerTabIndex(path)
+          setupGeomanEditMarkers(path)
         }
       } else if (path.pm?.enabled()) {
         path.pm.disable()
@@ -244,7 +247,7 @@ export default function GeomanRegionManager({
             enableAllMapInteractions(map)
             if (path.pm) {
               path.pm.enable({ snappable: true, removeVertexOn: 'dblclick' })
-              stripGeomanMarkerTabIndex(path)
+              setupGeomanEditMarkers(path)
             }
             dragStateRef.current = null
             path.fire('pm:update') // trigger save
@@ -300,7 +303,7 @@ export default function GeomanRegionManager({
   useEffect(() => {
     // Generate a simple signature to avoid recreating layers needlessly
     const sig = regions
-      .map((r) => `${r.id}\t${JSON.stringify(r.geojson_data)}`)
+      .map((r) => `${r.id}\t${JSON.stringify(r.id === selectedId ? r.geojson_data_raw : r.geojson_data)}`)
       .join('\n')
       
     if (sig === regionsSigRef.current && groupRef.current) {
@@ -314,7 +317,9 @@ export default function GeomanRegionManager({
     hoverRef.current = null
 
     for (const region of regions) {
-      const feature = normalizeToFeature(region.geojson_data)
+      const isSelected = selectedRef.current === region.id
+      const activeGeojson = isSelected ? region.geojson_data_raw : region.geojson_data
+      const feature = normalizeToFeature(activeGeojson || region.geojson_data)
       if (!feature?.geometry) continue
 
       const gjLayer = L.geoJSON(feature, {
@@ -393,7 +398,19 @@ export default function GeomanRegionManager({
             }, 450)
           }
           path.on('pm:update', handleGeomUpdate)
-          path.on('pm:dragend', handleGeomUpdate)
+          path.on('pm:dragstart', () => {
+            map.dragging.disable()
+          })
+          path.on('pm:dragend', () => {
+            map.dragging.enable()
+            handleGeomUpdate()
+          })
+          path.on('pm:markerdragstart', () => {
+            map.dragging.disable()
+          })
+          path.on('pm:markerdragend', () => {
+            map.dragging.enable()
+          })
         },
       })
       gjLayer.eachLayer((ly) => g.addLayer(ly))
@@ -401,7 +418,7 @@ export default function GeomanRegionManager({
 
     refreshSelectionStyles()
     applyPlanningPointerPassthrough()
-  }, [regions, map, applyStyleToLayer, refreshSelectionStyles, applyPlanningPointerPassthrough, getStyle, getTooltip, isAlignMode])
+  }, [regions, selectedId, map, applyStyleToLayer, refreshSelectionStyles, applyPlanningPointerPassthrough, getStyle, getTooltip, isAlignMode])
 
   useEffect(() => {
     refreshSelectionStyles()
@@ -418,13 +435,13 @@ export default function GeomanRegionManager({
     
     map.pm.enableDraw(drawShape, {
       snappable: true,
-      ...drawOptions
+      ...drawOptionsRef.current
     })
     
     return () => {
       map.pm.disableDraw(drawShape)
     }
-  }, [isDrawingEnabled, drawShape, drawOptions, map])
+  }, [isDrawingEnabled, drawShape, map])
 
   useEffect(() => {
     const onCreate = (e) => {
@@ -437,9 +454,24 @@ export default function GeomanRegionManager({
         onPolygonDrawnRef.current(/** @type {GeoJSON.Feature} */ (gj))
       }
     }
+
+    const onCut = (e) => {
+      const { layer, originalLayer } = e
+      const region = originalLayer?.__region
+      if (region && onGeometryCommitRef.current) {
+        layer.__region = region
+        const gj = layer.toGeoJSON()
+        if (gj.type === 'Feature') {
+          onGeometryCommitRef.current(region.id, gj)
+        }
+      }
+    }
+
     map.on('pm:create', onCreate)
+    map.on('pm:cut', onCut)
     return () => {
       map.off('pm:create', onCreate)
+      map.off('pm:cut', onCut)
     }
   }, [map])
 

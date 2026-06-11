@@ -104,7 +104,7 @@ export default function WorkspaceToolsSidebar({
                 color="primary"
               />
             }
-            label="Show Green Map"
+            label="Show Elevation Contours"
             labelPlacement="start"
             sx={{
               width: '100%',

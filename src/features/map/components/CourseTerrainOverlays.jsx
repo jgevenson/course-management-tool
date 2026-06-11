@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import GeomanRegionManager from './GeomanRegionManager'
 import { styleForRegionPhase, terrainFillColor } from '../utils/regionTerrain'
 
@@ -78,6 +78,12 @@ export default function CourseTerrainOverlays({
     return styleForRegionPhase({ terrainType: region.terrain_type, phase })
   }, [isAlignMode, masterFeatureId, adjustFeatureId])
 
+  const drawOptions = useMemo(() => ({
+    pathOptions: styleForRegionPhase({ terrainType: 'fairway', phase: 'drawing' }),
+    templineStyle: { color: '#38bdf8', weight: 2 },
+    hintlineStyle: { color: '#38bdf8', dashArray: '6 6', weight: 1 },
+  }), [])
+
   return (
     <GeomanRegionManager
       regions={overlays}
@@ -85,11 +91,7 @@ export default function CourseTerrainOverlays({
       onSelectId={onSelectId}
       isDrawingEnabled={regionDrawActive}
       drawShape="Polygon"
-      drawOptions={{
-        pathOptions: styleForRegionPhase({ terrainType: 'fairway', phase: 'drawing' }),
-        templineStyle: { color: '#38bdf8', weight: 2 },
-        hintlineStyle: { color: '#38bdf8', dashArray: '6 6', weight: 1 },
-      }}
+      drawOptions={drawOptions}
       onPolygonDrawn={onPolygonDrawn}
       onGeometryCommit={onGeometryCommit}
       onDeleteArea={onDeleteOverlay}

@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import L from 'leaflet'
 import { useMap } from 'react-leaflet'
 import { styleForRegionPhase } from '../utils/regionTerrain'
-import { stripGeomanMarkerTabIndex } from '../utils/mapInteractions'
+import { stripGeomanMarkerTabIndex, setupGeomanEditMarkers } from '../utils/mapInteractions'
 
 /**
  * ## Region Draft Preview Component
@@ -69,18 +69,46 @@ export default function RegionDraftPreview({ feature, onFeatureChange }) {
 
       if (draftLayer.pm && !draftLayer.pm.enabled()) {
         draftLayer.pm.enable({ snappable: true, removeVertexOn: 'dblclick' })
-        stripGeomanMarkerTabIndex(draftLayer)
+        setupGeomanEditMarkers(draftLayer)
       }
       draftLayer.on('pm:edit', commitDraftGeometry)
       draftLayer.on('pm:update', commitDraftGeometry)
+      draftLayer.on('pm:markerdragstart', () => {
+        map.dragging.disable()
+      })
+      draftLayer.on('pm:markerdragend', () => {
+        map.dragging.enable()
+      })
+      draftLayer.on('pm:dragstart', () => {
+        map.dragging.disable()
+      })
+      draftLayer.on('pm:dragend', () => {
+        map.dragging.enable()
+      })
     })
+
+    const onCut = (e) => {
+      const { layer, originalLayer } = e
+      if (layers.includes(originalLayer)) {
+        const gj = layer.toGeoJSON()
+        if (gj.type === 'Feature') {
+          onFeatureChange(/** @type {GeoJSON.Feature} */ (gj))
+        }
+      }
+    }
+    map.on('pm:cut', onCut)
 
     return () => {
       layers.forEach((draftLayer) => {
         if (draftLayer.pm?.enabled()) draftLayer.pm.disable()
         draftLayer.off('pm:edit')
         draftLayer.off('pm:update')
+        draftLayer.off('pm:markerdragstart')
+        draftLayer.off('pm:markerdragend')
+        draftLayer.off('pm:dragstart')
+        draftLayer.off('pm:dragend')
       })
+      map.off('pm:cut', onCut)
       map.removeLayer(layer)
     }
   }, [feature, map, onFeatureChange])
