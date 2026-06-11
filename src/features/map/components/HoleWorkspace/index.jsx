@@ -68,6 +68,8 @@ export default function HoleWorkspace({
   profile = null,
   showLidar,
   onShowLidarChange,
+  isAlignMode = false,
+  onToggleAlignMode,
 }) {
   /** @type {Hole | null} */
   const selectedHole = holes[selectedIndex] ?? null
@@ -152,6 +154,8 @@ export default function HoleWorkspace({
             regionError={regionError}
             showLidar={showLidar}
             onShowLidarChange={onShowLidarChange}
+            isAlignMode={isAlignMode}
+            onToggleAlignMode={onToggleAlignMode}
           />
 
           {/* Sub-column 2: Properties & Details */}

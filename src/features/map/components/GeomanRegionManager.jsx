@@ -55,6 +55,10 @@ export default function GeomanRegionManager({
   getStyle,
   getTooltip,
   suppressInteractions = false,
+  isAlignMode = false,
+  masterFeatureId = null,
+  adjustFeatureId = null,
+  onAlignFeatureClick = null,
 }) {
   const map = useMap()
   const groupRef = useRef(/** @type {L.FeatureGroup | null} */ (null))
@@ -71,6 +75,11 @@ export default function GeomanRegionManager({
   const onPolygonDrawnRef = useRef(onPolygonDrawn)
   const onDeleteAreaRef = useRef(onDeleteArea)
 
+  const isAlignModeRef = useRef(isAlignMode)
+  const masterFeatureIdRef = useRef(masterFeatureId)
+  const adjustFeatureIdRef = useRef(adjustFeatureId)
+  const onAlignFeatureClickRef = useRef(onAlignFeatureClick)
+
   useEffect(() => {
     selectedRef.current = selectedId
     suppressRef.current = suppressInteractions
@@ -78,7 +87,22 @@ export default function GeomanRegionManager({
     onSelectIdRef.current = onSelectId
     onPolygonDrawnRef.current = onPolygonDrawn
     onDeleteAreaRef.current = onDeleteArea
-  }, [selectedId, suppressInteractions, onGeometryCommit, onSelectId, onPolygonDrawn, onDeleteArea])
+    isAlignModeRef.current = isAlignMode
+    masterFeatureIdRef.current = masterFeatureId
+    adjustFeatureIdRef.current = adjustFeatureId
+    onAlignFeatureClickRef.current = onAlignFeatureClick
+  }, [
+    selectedId,
+    suppressInteractions,
+    onGeometryCommit,
+    onSelectId,
+    onPolygonDrawn,
+    onDeleteArea,
+    isAlignMode,
+    masterFeatureId,
+    adjustFeatureId,
+    onAlignFeatureClick,
+  ])
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -104,7 +128,7 @@ export default function GeomanRegionManager({
   const applyPlanningPointerPassthrough = useCallback(() => {
     const g = groupRef.current
     if (!g) return
-    const passthrough = suppressRef.current
+    const passthrough = suppressRef.current && !isAlignModeRef.current
     g.eachLayer((ly) => {
       const path = /** @type {L.Path} */ (ly)
       if (!(path instanceof L.Path)) return
@@ -130,10 +154,10 @@ export default function GeomanRegionManager({
       if (!region) return
       
       const id = region.id
-      path.options.interactive = !sup
-      path.options.pmIgnore = Boolean(sup)
+      path.options.interactive = isAlignMode ? true : !sup
+      path.options.pmIgnore = isAlignMode ? true : Boolean(sup)
       
-      if (sup) {
+      if (sup || isAlignMode) {
         applyStyleToLayer(path, region, false)
         if (path.pm?.enabled()) path.pm.disable()
         return
@@ -295,13 +319,13 @@ export default function GeomanRegionManager({
 
       const gjLayer = L.geoJSON(feature, {
         style: () => getStyle(region, selectedRef.current === region.id, false),
-        interactive: !suppressRef.current,
-        pmIgnore: Boolean(suppressRef.current),
+        interactive: !suppressRef.current || isAlignMode,
+        pmIgnore: Boolean(suppressRef.current) || isAlignMode,
         onEachFeature(_feat, layer) {
           const path = /** @type {L.Path & { __region?: object }} */ (layer)
           path.__region = region
           if (path.options) {
-            path.options.pmIgnore = Boolean(suppressRef.current)
+            path.options.pmIgnore = Boolean(suppressRef.current) || isAlignMode
           }
           
           if (getTooltip) {
@@ -316,12 +340,29 @@ export default function GeomanRegionManager({
           }
 
           path.on('click', (ev) => {
+            console.log('[GeomanRegionManager] Layer clicked. Region ID:', region.id, 'isAlignMode:', isAlignModeRef.current)
+            if (isAlignModeRef.current) {
+              L.DomEvent.stopPropagation(ev)
+              if (onAlignFeatureClickRef.current) {
+                console.log('[GeomanRegionManager] Triggering onAlignFeatureClick for ID:', region.id)
+                onAlignFeatureClickRef.current(region.id)
+              } else {
+                console.warn('[GeomanRegionManager] onAlignFeatureClickRef is null!')
+              }
+              return
+            }
             if (suppressRef.current) return
             L.DomEvent.stopPropagation(ev)
             onSelectIdRef.current(region.id)
           })
           
           path.on('mouseover', () => {
+            if (isAlignModeRef.current) {
+              if (region.id !== masterFeatureIdRef.current && region.id !== adjustFeatureIdRef.current) {
+                applyStyleToLayer(path, region, true)
+              }
+              return
+            }
             if (suppressRef.current) return
             hoverRef.current = region.id
             if (selectedRef.current === region.id) return
@@ -329,6 +370,12 @@ export default function GeomanRegionManager({
           })
           
           path.on('mouseout', () => {
+            if (isAlignModeRef.current) {
+              if (region.id !== masterFeatureIdRef.current && region.id !== adjustFeatureIdRef.current) {
+                applyStyleToLayer(path, region, false)
+              }
+              return
+            }
             if (suppressRef.current) return
             if (hoverRef.current === region.id) hoverRef.current = null
             if (selectedRef.current === region.id) return
@@ -354,11 +401,11 @@ export default function GeomanRegionManager({
 
     refreshSelectionStyles()
     applyPlanningPointerPassthrough()
-  }, [regions, map, applyStyleToLayer, refreshSelectionStyles, applyPlanningPointerPassthrough, getStyle, getTooltip])
+  }, [regions, map, applyStyleToLayer, refreshSelectionStyles, applyPlanningPointerPassthrough, getStyle, getTooltip, isAlignMode])
 
   useEffect(() => {
     refreshSelectionStyles()
-  }, [selectedId, suppressInteractions, refreshSelectionStyles])
+  }, [selectedId, suppressInteractions, isAlignMode, masterFeatureId, adjustFeatureId, refreshSelectionStyles])
 
   useEffect(() => {
     // Geoman drawing modes

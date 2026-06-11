@@ -36,6 +36,8 @@ export default function WorkspaceToolsSidebar({
   showLidar = false,
   onShowLidarChange,
   autoHealHole,
+  isAlignMode = false,
+  onToggleAlignMode,
 }) {
   return (
     <Box
@@ -146,6 +148,21 @@ export default function WorkspaceToolsSidebar({
         />
       )}
 
+      {!isPlanning && (
+        <ToolButton
+          icon={Zap}
+          label="Refine Shapes"
+          hint={
+            isAlignMode
+              ? 'Select master anchor, then adjust target'
+              : 'Snap adjacent region borders together (6 in. tolerance)'
+          }
+          active={isAlignMode}
+          disabled={!selectedHole || Boolean(regionDraft)}
+          onClick={onToggleAlignMode}
+        />
+      )}
+
 
 
       {!isPlanning && (
@@ -176,7 +193,7 @@ export default function WorkspaceToolsSidebar({
 
 
       {(activePointTool ||
-        (!isPlanning && (regionDrawActive || osmToolActive))) && (
+        (!isPlanning && (regionDrawActive || osmToolActive || isAlignMode))) && (
         <Button
           variant="text"
           color="inherit"
@@ -184,6 +201,9 @@ export default function WorkspaceToolsSidebar({
             onActivePointToolChange(null)
             onRegionDrawActiveChange(false)
             onOsmToolActiveChange(false)
+            if (isAlignMode) {
+              onToggleAlignMode()
+            }
           }}
           sx={{
             fontSize: '0.75rem',

@@ -92,5 +92,16 @@ export const terrainApi = {
 
     const { error: overlayErr } = await supabase.from('terrain_overlays').delete().eq('id', id)
     if (overlayErr) throw overlayErr
+  },
+
+  alignSelectedFeatures: async (masterId, adjustId, toleranceMeters) => {
+    const { data, error } = await supabase.rpc('align_selected_features', {
+      master_id: masterId,
+      adjust_id: adjustId,
+      tolerance_meters: toleranceMeters,
+    })
+
+    if (error) throw error
+    return data
   }
 }

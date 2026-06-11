@@ -157,6 +157,10 @@ export default function MapArea({
   onPlanningGeometryCommit,
   onPlanningAreaDelete,
   showLidar,
+  isAlignMode = false,
+  masterFeatureId = null,
+  adjustFeatureId = null,
+  onAlignFeatureClick,
 }) {
   return (
     <div className="h-full w-full min-h-0 relative flex flex-col">
@@ -190,6 +194,10 @@ export default function MapArea({
           suppressMapInteractions={suppressTerrainInteractions}
           onPolygonDrawn={onPolygonDrawn}
           onGeometryCommit={onGeometryCommit}
+          isAlignMode={isAlignMode}
+          masterFeatureId={masterFeatureId}
+          adjustFeatureId={adjustFeatureId}
+          onAlignFeatureClick={onAlignFeatureClick}
         />
         <OSMMapFeaturesLayer
           isActive={osmToolActive}
