@@ -46,15 +46,21 @@ export async function fetchGreenElevationMatrix(holeId, forceUpdate = false) {
       throw new Error('No green terrain overlay found for this hole.')
     }
 
-    const greenFeature = mappingData[0].terrain_overlays.geojson_data
-    if (!greenFeature || !greenFeature.geometry || !greenFeature.geometry.coordinates) {
+    const overlay = Array.isArray(mappingData[0].terrain_overlays)
+      ? mappingData[0].terrain_overlays[0]
+      : mappingData[0].terrain_overlays
+
+    const greenFeature = overlay?.geojson_data
+    const geom = greenFeature?.geometry || greenFeature
+
+    if (!geom || !geom.coordinates) {
       throw new Error('Green overlay is missing valid GeoJSON geometry.')
     }
 
     // Assuming a single outer ring for the polygon
-    const coordinates = greenFeature.geometry.type === 'Polygon' 
-      ? greenFeature.geometry.coordinates[0] 
-      : greenFeature.geometry.coordinates[0][0]; // For MultiPolygon
+    const coordinates = geom.type === 'Polygon' 
+      ? geom.coordinates[0] 
+      : geom.coordinates[0][0]; // For MultiPolygon
 
     const bbox = getBoundingBox(coordinates)
     
@@ -122,11 +128,6 @@ export async function fetchGreenElevationMatrix(holeId, forceUpdate = false) {
         // Map pixel back to lat/lon (USGS exportImage returns top-down image)
         const lon = bbox.minLon + (x / (imgWidth - 1)) * (bbox.maxLon - bbox.minLon)
         const lat = bbox.maxLat - (y / (imgHeight - 1)) * (bbox.maxLat - bbox.minLat)
-
-        // Point-in-polygon check
-        if (!polygonContains(coordinates, [lon, lat])) {
-          continue; // Skip points outside the green
-        }
 
         const z = getZ(x, y)
         if (z === null) continue

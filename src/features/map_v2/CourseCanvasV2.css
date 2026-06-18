@@ -1,0 +1,410 @@
+/* MapLibre GL CSS — required for canvas rendering */
+@import 'maplibre-gl/dist/maplibre-gl.css';
+
+/* ── V2 Canvas Layout ──────────────────────────────────── */
+
+.v2-canvas {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: #0f172a; /* slate-900 */
+  color: #f8fafc;
+}
+
+/* ── Header ────────────────────────────────────────────── */
+
+.v2-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  background: rgba(15, 23, 42, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  flex-shrink: 0;
+  min-height: 48px;
+}
+
+.v2-header__title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.v2-header__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(59, 130, 246, 0.25));
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  color: #a78bfa;
+  flex-shrink: 0;
+}
+
+.v2-header__badge::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #a78bfa;
+  animation: v2-pulse 2s ease-in-out infinite;
+}
+
+@keyframes v2-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.v2-header__back {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  text-decoration: none;
+  transition: color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.v2-header__back:hover {
+  color: #e2e8f0;
+}
+
+/* ── Body (sidebar + map) ──────────────────────────────── */
+
+.v2-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Sidebar Placeholders ──────────────────────────────── */
+
+.v2-sidebar {
+  width: 20%;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: rgba(15, 23, 42, 0.92);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(4px);
+}
+
+.v2-sidebar--right {
+  border-right: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.v2-sidebar__placeholder {
+  font-size: 0.75rem;
+  color: #475569;
+  text-align: center;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* ── Map Container ─────────────────────────────────────── */
+
+.v2-map-wrap {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+}
+
+.v2-map-container {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Loading / Error States ────────────────────────────── */
+
+.v2-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  gap: 16px;
+  background: #0f172a;
+  color: #94a3b8;
+}
+
+.v2-state__spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(148, 163, 184, 0.2);
+  border-top-color: #a78bfa;
+  border-radius: 50%;
+  animation: v2-spin 0.8s linear infinite;
+}
+
+@keyframes v2-spin {
+  to { transform: rotate(360deg); }
+}
+
+.v2-state__link {
+  color: #34d399;
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: color 0.15s ease;
+}
+
+.v2-state__link:hover {
+  color: #6ee7b7;
+}
+
+/* ── MapLibre Overrides ────────────────────────────────── */
+
+/* Navigation controls styling for dark theme */
+.v2-map-container .maplibregl-ctrl-group {
+  background: rgba(15, 23, 42, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+.v2-map-container .maplibregl-ctrl-group button {
+  background-color: transparent !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.v2-map-container .maplibregl-ctrl-group button + button {
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.v2-map-container .maplibregl-ctrl-group button span {
+  filter: invert(1) !important;
+}
+
+.v2-map-container .maplibregl-ctrl-attrib {
+  background: rgba(15, 23, 42, 0.75) !important;
+  color: #64748b !important;
+  font-size: 0.65rem !important;
+}
+
+.v2-map-container .maplibregl-ctrl-attrib a {
+  color: #94a3b8 !important;
+}
+
+/* ── Terrain Legend ────────────────────────────────────── */
+
+.v2-legend {
+  position: absolute;
+  bottom: 32px;
+  left: 12px;
+  z-index: 10;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 12px 16px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  min-width: 150px;
+}
+
+.v2-legend__title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.v2-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+}
+
+.v2-legend__swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+}
+
+.v2-legend__label {
+  font-size: 0.75rem;
+  color: #cbd5e1;
+  font-weight: 500;
+}
+
+/* ── Pitch Indicator ───────────────────────────────────── */
+
+.v2-pitch-hint {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.7rem;
+  color: #94a3b8;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.6s ease;
+}
+
+.v2-pitch-hint--hidden {
+  opacity: 0;
+}
+
+/* ── Workspace Tools ───────────────────────────────────── */
+
+.v2-tools-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.v2-tools-panel__title {
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.v2-tools-panel__buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.v2-tool-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.v2-tool-btn:hover:not(:disabled) {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+  transform: translateY(-1px);
+}
+
+.v2-tool-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.v2-tool-btn--active {
+  background: rgba(16, 185, 129, 0.1) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  color: #10b981 !important;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
+}
+
+/* Sky styling for planning mode active buttons */
+.v2-canvas .v2-tools-panel__buttons button.v2-tool-btn--active:has(.text-sky-400),
+.v2-canvas .v2-tools-panel__buttons button.v2-tool-btn--active:has(.text-violet-400) {
+  background: rgba(14, 165, 233, 0.1) !important;
+  border-color: rgba(14, 165, 233, 0.4) !important;
+  color: #0ea5e9 !important;
+  box-shadow: 0 0 12px rgba(14, 165, 233, 0.15);
+}
+
+.v2-cancel-btn {
+  margin-top: 4px;
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px;
+  align-self: flex-start;
+  transition: color 0.15s ease;
+}
+
+.v2-cancel-btn:hover {
+  color: #f87171;
+}
+
+/* ── Phase 5: Vector Editing & Drawing Styles ────────────── */
+
+.v2-edit-handle {
+  width: 24px;
+  height: 24px;
+  background-color: #10b981; /* emerald-500 */
+  border: 5px solid transparent; /* invisible hit area */
+  background-clip: padding-box;
+  border-radius: 50%;
+  cursor: grab;
+  pointer-events: auto;
+  transform: translate(-50%, -50%);
+}
+
+/* The actual visual white border and shadow */
+.v2-edit-handle::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+.v2-edit-handle:active {
+  cursor: grabbing;
+}
+
+.v2-edit-handle--midpoint {
+  width: 18px;
+  height: 18px;
+  background-color: #a78bfa; /* violet-400 */
+  opacity: 0.8;
+}
+
+.v2-edit-handle--midpoint:hover {
+  opacity: 1.0;
+  background-color: #8b5cf6; /* violet-500 */
+}
+
+.v2-draw-badge {
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+

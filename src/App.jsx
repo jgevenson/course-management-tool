@@ -12,6 +12,7 @@ import CourseDetails from './features/course/components/CourseDetails'
 import Profile from './pages/Profile'
 import Courses from './pages/Courses'
 import GreenLiDARInspector from './features/map/components/GreenLiDARInspector'
+import CourseCanvasV2 from './features/map_v2/CourseCanvasV2'
 
 export default function App() {
   const [session, setSession] = useState(null)
@@ -62,6 +63,14 @@ export default function App() {
               element={
                 <div className="h-full min-h-0 flex flex-col">
                   <MapCanvas />
+                </div>
+              }
+            />
+            <Route
+              path="/v2/course/:id"
+              element={
+                <div className="h-full min-h-0 flex flex-col">
+                  <CourseCanvasV2 />
                 </div>
               }
             />

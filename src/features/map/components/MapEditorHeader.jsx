@@ -81,6 +81,15 @@ export default function MapEditorHeader({
           <span className="text-slate-600 hidden sm:inline" aria-hidden>
             |
           </span>
+          <Link
+            to={`/v2/course/${courseId}`}
+            className="inline-flex items-center gap-1.5 shrink-0 text-sm font-medium text-purple-400 hover:text-purple-300 transition-colors"
+          >
+            Try MapLibre V2
+          </Link>
+          <span className="text-slate-600 hidden sm:inline" aria-hidden>
+            |
+          </span>
           <h1 className="text-lg font-semibold text-white truncate min-w-0">{courseName}</h1>
         </div>
 

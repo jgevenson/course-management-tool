@@ -19,6 +19,8 @@ BEGIN
     RETURN geom_a;
   END IF;
   
+  -- Snap geom_a to geom_b with a 0.000001 degree tolerance (~11cm) to fix Leaflet's 6 decimal 
+  -- place precision loss upon save, ensuring perfect boundaries and no vertex shifting.
   RETURN ST_Difference(ST_MakeValid(geom_a), ST_MakeValid(geom_b));
 EXCEPTION WHEN OTHERS THEN
   -- Fallback to original geom_a if ST_Difference fails due to topology issues

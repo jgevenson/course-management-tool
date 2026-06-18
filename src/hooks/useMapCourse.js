@@ -55,7 +55,11 @@ export function useMapCourse(courseId) {
       const coords = await mapApi.saveCourseLocation(course.id, lat, lng)
 
       setCourse((c) => (c ? { ...c, ...coords } : c))
-      mapInstance.setView([coords.course_lat, coords.course_lng], COURSE_ZOOM)
+      if (typeof mapInstance.setView === 'function') {
+        mapInstance.setView([coords.course_lat, coords.course_lng], COURSE_ZOOM)
+      } else if (typeof mapInstance.jumpTo === 'function') {
+        mapInstance.jumpTo({ center: [coords.course_lng, coords.course_lat], zoom: COURSE_ZOOM })
+      }
       if (typeof mapInstance.setBearing === 'function') {
         mapInstance.setBearing(0)
       }

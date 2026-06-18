@@ -1,6 +1,6 @@
 # 🗃️ Database Schema Documentation
 
-*Last Updated: 6/10/2026, 1:29:37 PM*
+*Last Updated: 6/16/2026, 3:18:13 PM*
 
 This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL.
 
@@ -130,6 +130,19 @@ This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL
 | **matrix_data** | `jsonb` | **NOT NULL** | - |
 | **created_at** | `timestamp with time zone` | **NOT NULL**<br>Default: `timezone('utc'::text, now())` | - |
 | **updated_at** | `timestamp with time zone` | **NOT NULL**<br>Default: `timezone('utc'::text, now())` | - |
+
+---
+## 📋 Table: `hole_elevation_grids`
+> No table description provided.
+
+| Column | Type | Constraints / Refs | Description |
+| :--- | :--- | :--- | :--- |
+| **id** | `uuid` | **NOT NULL**<br>Default: `gen_random_uuid()` | - |
+| **hole_id** | `uuid` | **NOT NULL**<br>🔗 Refers to: holes | - |
+| **resolution_meters** | `integer` | **NOT NULL**<br>Default: `3` | - |
+| **bbox** | `USER-DEFINED` | **NOT NULL** | - |
+| **grid_data** | `jsonb` | **NOT NULL** | - |
+| **created_at** | `timestamp with time zone` | **NOT NULL**<br>Default: `now()` | - |
 
 ---
 ## 📋 Table: `hole_map_markers`
@@ -347,5 +360,21 @@ This document is auto-generated. To update descriptions, use `COMMENT ON` in SQL
 | **geojson_data** | `jsonb` | - | - |
 | **is_active** | `boolean` | - | - |
 | **created_at** | `timestamp with time zone` | - | - |
+
+---
+## 📋 Table: `vw_planar_terrain_overlays`
+> No table description provided.
+
+| Column | Type | Constraints / Refs | Description |
+| :--- | :--- | :--- | :--- |
+| **id** | `uuid` | - | - |
+| **course_id** | `uuid` | - | - |
+| **terrain_type** | `text` | - | - |
+| **risk_tier** | `smallint` | - | - |
+| **label** | `text` | - | - |
+| **is_active** | `boolean` | - | - |
+| **created_at** | `timestamp with time zone` | - | - |
+| **geojson_data** | `jsonb` | - | - |
+| **geojson_data_raw** | `jsonb` | - | - |
 
 ---

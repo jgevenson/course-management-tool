@@ -4,6 +4,13 @@ import { mapApi } from '../services/api/mapApi'
 import { HOLE_MARKER_KIND } from '../features/map/utils/holeMarkers'
 import { fetchElevation } from '../features/map/utils/fetchElevation'
 
+function generateTempId() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+}
+
 /**
  * ## useHoles Hook
  * 
@@ -193,7 +200,7 @@ export function useHoles(courseId) {
         return null
       }
 
-      const tempId = `pending-${crypto.randomUUID()}`
+      const tempId = `pending-${generateTempId()}`
       const optimistic = {
         id: tempId,
         hole_id: hole.id,
@@ -319,7 +326,7 @@ export function useHoles(courseId) {
         sequenceOrder = (startMarker.sequence_order || 0) + 1
       }
 
-      const tempId = `pending-${crypto.randomUUID()}`
+      const tempId = `pending-${generateTempId()}`
       const optimistic = {
         id: tempId,
         hole_id: hole.id,
@@ -613,6 +620,7 @@ export function useHoles(courseId) {
     statsSaving,
     statsMessage,
     markerMessage,
+    setMarkerMessage,
     removePlanningSaving,
     removePlanningMessage,
     autoRotateHoleView,

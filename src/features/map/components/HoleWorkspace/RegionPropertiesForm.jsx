@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react'
-import { Pentagon, Trash2 } from 'lucide-react'
+import { Pentagon, Trash2, RefreshCw } from 'lucide-react'
 import { TERRAIN_TYPE_OPTIONS, isValidTerrainType, terrainTypeOptionLabel } from '../../utils/regionTerrain'
+import { supabase } from '../../../../supabaseClient'
+import { fetchGreenElevationMatrix } from '../../../../services/api/greenElevationApi'
   
 /**
  * ## Region Properties Form
@@ -57,6 +59,48 @@ export default function RegionPropertiesForm({ overlay, holes, onSave, onDelete,
   const [terrainType, setTerrainType] = useState(overlay.terrain_type)
   const [label, setLabel] = useState(overlay.label ?? '')
   const [holeIds, setHoleIds] = useState(() => [...(overlay.holeIds || [])])
+  const [recalibrating, setRecalibrating] = useState(false)
+  const [recalibrateMessage, setRecalibrateMessage] = useState('')
+
+  const handleRecalibrate = async () => {
+    if (holeIds.length === 0) return
+    setRecalibrating(true)
+    setRecalibrateMessage('Recalibrating...')
+    console.log(`[Recalibrate] Starting recalibration for holes:`, holeIds)
+    console.time('[Recalibrate] Total Time')
+    try {
+      for (const holeId of holeIds) {
+        console.log(`[Recalibrate] Processing hole ${holeId}...`)
+        
+        console.time(`[Recalibrate] Hole ${holeId} - Delete Cache`)
+        await supabase.from('green_contours').delete().eq('hole_id', holeId)
+        await supabase.from('hole_elevation_grids').delete().eq('hole_id', holeId)
+        console.timeEnd(`[Recalibrate] Hole ${holeId} - Delete Cache`)
+
+        console.time(`[Recalibrate] Hole ${holeId} - Generate General Grid`)
+        await supabase.functions.invoke('generate-elevation-grid', {
+          body: { hole_id: holeId, resolution: 3 }
+        })
+        console.timeEnd(`[Recalibrate] Hole ${holeId} - Generate General Grid`)
+
+        console.time(`[Recalibrate] Hole ${holeId} - Generate Green Grid`)
+        try {
+          await fetchGreenElevationMatrix(holeId, true)
+        } catch (err) {
+          console.warn(`[Recalibrate] Green contour fetch failed (expected if no green exists):`, err.message)
+        }
+        console.timeEnd(`[Recalibrate] Hole ${holeId} - Generate Green Grid`)
+      }
+      setRecalibrateMessage('Recalibration complete! See console.')
+    } catch (err) {
+      console.error('[Recalibrate] Error recalibrating contours:', err)
+      setRecalibrateMessage('Error during recalibration.')
+    } finally {
+      console.timeEnd('[Recalibrate] Total Time')
+      setRecalibrating(false)
+      setTimeout(() => setRecalibrateMessage(''), 5000)
+    }
+  }
 
   const toggleHole = useCallback((holeId) => {
     setHoleIds((prev) => {
@@ -156,25 +200,37 @@ export default function RegionPropertiesForm({ overlay, holes, onSave, onDelete,
       <button
         type="button"
         onClick={handleSave}
-        disabled={saving || holeIds.length === 0}
+        disabled={saving || holeIds.length === 0 || recalibrating}
         className="mt-auto w-full rounded-lg bg-emerald-600 px-3 py-2.5 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50 transition-all duration-200"
       >
         {saving ? 'Saving…' : 'Save changes'}
       </button>
+
+      <button
+        type="button"
+        onClick={handleRecalibrate}
+        disabled={saving || recalibrating || holeIds.length === 0}
+        className="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-blue-500/50 px-3 py-2.5 text-sm font-medium text-blue-300 hover:bg-blue-950/40 hover:border-blue-400 disabled:opacity-50 transition-all duration-200"
+      >
+        <RefreshCw className={`w-4 h-4 ${recalibrating ? 'animate-spin' : ''}`} aria-hidden />
+        {recalibrating ? 'Recalibrating...' : 'Recalibrate Contours'}
+      </button>
+
       <button
         type="button"
         onClick={() => void onDelete()}
-        disabled={saving}
+        disabled={saving || recalibrating}
         className="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-red-500/50 px-3 py-2.5 text-sm font-medium text-red-200 hover:bg-red-950/40 hover:border-red-400 disabled:opacity-50 transition-all duration-200"
       >
         <Trash2 className="w-4 h-4" aria-hidden />
         Delete region
       </button>
-      {message && (
+      
+      {(message || recalibrateMessage) && (
         <p
-          className={`text-xs ${message === 'Saved' || message.startsWith('Saved') ? 'text-emerald-400' : 'text-red-400'}`}
+          className={`text-xs ${message === 'Saved' || message?.startsWith('Saved') || recalibrateMessage.includes('complete') ? 'text-emerald-400' : 'text-amber-400'}`}
         >
-          {message}
+          {recalibrateMessage || message}
         </p>
       )}
     </div>
