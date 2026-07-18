@@ -1,7 +1,7 @@
 // AI assisted development
 import { useRef, useEffect, useCallback, useState } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { Crosshair, FlagTriangleLeft, MapPin } from 'lucide-react'
+import { Crosshair, FlagTriangleLeft, MapPin, Compass } from 'lucide-react'
 import maplibregl from 'maplibre-gl'
 import { getHoleBounds } from '../utils/bbox'
 import { HOLE_MARKER_KIND, activeMarkerLatLng, resolvePlanningMarkers } from '../../map/utils/holeMarkers'
@@ -69,6 +69,32 @@ function overlaysToFeatureCollection(overlays) {
   return { type: 'FeatureCollection', features }
 }
 
+function makeCirclePolygon(center, radiusInMeters, points = 64) {
+  const coords = []
+  const latRad = (center.lat * Math.PI) / 180
+  const metersPerDegLat = 111132.92 - 559.82 * Math.cos(2 * latRad) + 1.175 * Math.cos(4 * latRad)
+  const metersPerDegLng = 111412.84 * Math.cos(latRad) - 93.5 * Math.cos(3 * latRad)
+
+  const rLat = radiusInMeters / metersPerDegLat
+  const rLng = radiusInMeters / metersPerDegLng
+
+  for (let i = 0; i < points; i++) {
+    const angle = (i * 2 * Math.PI) / points
+    const lat = center.lat + rLat * Math.sin(angle)
+    const lng = center.lng + rLng * Math.cos(angle)
+    coords.push([lng, lat])
+  }
+  coords.push(coords[0])
+  return {
+    type: 'Feature',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [coords],
+    },
+    properties: {},
+  }
+}
+
 /**
  * ## V2MapArea
  *
@@ -85,6 +111,7 @@ export default function V2MapArea({
   clubs = [],
   profile = null,
   selectedTerrainOverlayId = null,
+  selectedTerrainOverlayIds = [],
   onSelectTerrainOverlayId = noop,
   activePointTool = null,
   onPick = noop,
@@ -99,6 +126,12 @@ export default function V2MapArea({
   onCommitGeometry = noop,
   osmFeaturesData = null,
   onOsmFeatureSelect = noop,
+  autoRotateHoleView = false,
+  setAutoRotateHoleView = noop,
+  showGreenCircle = false,
+  greenCircleRadius = 20,
+  showDistanceCircle = false,
+  distanceCircleRadius = 100,
 }) {
   const mapContainerRef = useRef(null)
   const mapRef = useRef(null)
@@ -162,6 +195,11 @@ export default function V2MapArea({
     selectedTerrainOverlayIdRef.current = selectedTerrainOverlayId
   }, [selectedTerrainOverlayId])
 
+  const selectedTerrainOverlayIdsRef = useRef(selectedTerrainOverlayIds)
+  useEffect(() => {
+    selectedTerrainOverlayIdsRef.current = selectedTerrainOverlayIds
+  }, [selectedTerrainOverlayIds])
+
   // Helper for Poly-Alignment Snap
   const getSnapPointPixel = useCallback((ePoint, ignoreId) => {
     const map = mapRef.current
@@ -207,15 +245,14 @@ export default function V2MapArea({
     const map = mapRef.current
     if (!map || !mapLoaded) return
 
-    const selectedId = selectedTerrainOverlayId || ''
-
+    const selectedIds = selectedTerrainOverlayIds.length > 0 ? selectedTerrainOverlayIds : (selectedTerrainOverlayId ? [selectedTerrainOverlayId] : [])
     if (map.getLayer('terrain-fills-selected')) {
-      map.setFilter('terrain-fills-selected', ['==', ['get', 'id'], selectedId])
+      map.setFilter('terrain-fills-selected', ['in', ['get', 'id'], ['literal', selectedIds]])
     }
     if (map.getLayer('terrain-outlines-selected')) {
-      map.setFilter('terrain-outlines-selected', ['==', ['get', 'id'], selectedId])
+      map.setFilter('terrain-outlines-selected', ['in', ['get', 'id'], ['literal', selectedIds]])
     }
-  }, [selectedTerrainOverlayId, mapLoaded])
+  }, [selectedTerrainOverlayId, selectedTerrainOverlayIds, mapLoaded])
 
   // ── Sync Hovered Overlay Highlight ────────────────────────
   useEffect(() => {
@@ -549,7 +586,25 @@ export default function V2MapArea({
       map.dragPan.disable()
       isDragging = true
       startLngLat = e.lngLat
-      initialCoordinates = JSON.parse(JSON.stringify(geometry.coordinates))
+
+      const selectedIds = selectedTerrainOverlayIdsRef.current.length > 0 
+        ? selectedTerrainOverlayIdsRef.current 
+        : (selectedTerrainOverlayIdRef.current ? [selectedTerrainOverlayIdRef.current] : [])
+
+      initialCoordinates = selectedIds.map(id => {
+        const overlay = filteredOverlays.find(o => o.id === id)
+        if (!overlay) return null
+        const activeGeojson = overlay.id === selectedTerrainOverlayIdRef.current ? overlay.geojson_data_raw : overlay.geojson_data
+        const gj = activeGeojson || overlay.geojson_data
+        if (!gj) return null
+        const geometry = gj.geometry || gj
+        return {
+          id,
+          gj,
+          geometry,
+          coordinates: JSON.parse(JSON.stringify(geometry?.coordinates || []))
+        }
+      }).filter(Boolean)
 
       // Hide handles during drag
       editMarkersRef.current.forEach((m) => m.remove())
@@ -558,38 +613,43 @@ export default function V2MapArea({
     }
 
     const onMouseMove = (e) => {
-      if (!isDragging) return
+      if (!isDragging || !initialCoordinates) return
       
       const currentLngLat = e.lngLat
       const dLng = currentLngLat.lng - startLngLat.lng
       const dLat = currentLngLat.lat - startLngLat.lat
 
-      const newCoordinates = JSON.parse(JSON.stringify(initialCoordinates))
-      const applyDelta = (coords) => {
-        if (typeof coords[0] === 'number') {
-          coords[0] += dLng
-          coords[1] += dLat
-        } else {
-          coords.forEach(applyDelta)
-        }
-      }
-      applyDelta(newCoordinates)
+      const updatedOverlays = filteredOverlays.map(o => {
+        const init = initialCoordinates.find(item => item.id === o.id)
+        if (!init) return o
 
-      const updatedFeature = gj.type === 'Feature' 
-        ? { ...gj, geometry: { ...geometry, coordinates: newCoordinates } }
-        : { ...gj, coordinates: newCoordinates }
+        const newCoordinates = JSON.parse(JSON.stringify(init.coordinates))
+        const applyDelta = (coords) => {
+          if (typeof coords[0] === 'number') {
+            coords[0] += dLng
+            coords[1] += dLat
+          } else {
+            coords.forEach(applyDelta)
+          }
+        }
+        applyDelta(newCoordinates)
+
+        const geom = init.geometry
+        const updatedFeature = init.gj.type === 'Feature'
+          ? { ...init.gj, geometry: { ...geom, coordinates: newCoordinates } }
+          : { ...init.gj, coordinates: newCoordinates }
+
+        return { ...o, geojson_data: updatedFeature }
+      })
         
       const terrainSource = map.getSource('course-terrain')
       if (terrainSource) {
-        const updatedOverlays = filteredOverlays.map(o => 
-          o.id === selectedTerrainOverlayId ? { ...o, geojson_data: updatedFeature } : o
-        )
         terrainSource.setData(overlaysToFeatureCollection(updatedOverlays))
       }
     }
 
     const onMouseUp = async (e) => {
-      if (!isDragging) return
+      if (!isDragging || !initialCoordinates) return
       isDragging = false
       map.dragPan.enable()
       map.getCanvas().style.cursor = ''
@@ -604,23 +664,25 @@ export default function V2MapArea({
         return
       }
 
-      const newCoordinates = JSON.parse(JSON.stringify(initialCoordinates))
-      const applyDelta = (coords) => {
-        if (typeof coords[0] === 'number') {
-          coords[0] = Math.round((coords[0] + dLng) * 1e7) / 1e7
-          coords[1] = Math.round((coords[1] + dLat) * 1e7) / 1e7
-        } else {
-          coords.forEach(applyDelta)
+      await Promise.all(initialCoordinates.map(async (init) => {
+        const newCoordinates = JSON.parse(JSON.stringify(init.coordinates))
+        const applyDelta = (coords) => {
+          if (typeof coords[0] === 'number') {
+            coords[0] = Math.round((coords[0] + dLng) * 1e7) / 1e7
+            coords[1] = Math.round((coords[1] + dLat) * 1e7) / 1e7
+          } else {
+            coords.forEach(applyDelta)
+          }
         }
-      }
-      applyDelta(newCoordinates)
+        applyDelta(newCoordinates)
 
-      const updatedFeature = gj.type === 'Feature' 
-        ? { ...gj, geometry: { ...geometry, coordinates: newCoordinates } }
-        : { ...gj, coordinates: newCoordinates }
+        const geom = init.geometry
+        const updatedFeature = init.gj.type === 'Feature'
+          ? { ...init.gj, geometry: { ...geom, coordinates: newCoordinates } }
+          : { ...init.gj, coordinates: newCoordinates }
 
-      await onCommitGeometryRef.current(selectedTerrainOverlayId, updatedFeature)
-      // useEffect will re-run on dependency change and rebuild handles
+        await onCommitGeometryRef.current(init.id, updatedFeature)
+      }))
     }
 
     map.on('mousedown', 'terrain-fills-selected', onMouseDown)
@@ -640,7 +702,7 @@ export default function V2MapArea({
         map.getCanvas().style.cursor = ''
       }
     }
-  }, [selectedTerrainOverlayId, workspaceMode, mapLoaded, filteredOverlays])
+  }, [selectedTerrainOverlayId, selectedTerrainOverlayIds, workspaceMode, mapLoaded, filteredOverlays])
 
   // ── Initialize MapLibre ──────────────────────────────────
   useEffect(() => {
@@ -673,8 +735,8 @@ export default function V2MapArea({
       },
       center: courseCenter,
       zoom: courseZoom,
-      pitchWithRotate: true,
-      dragRotate: true,
+      pitchWithRotate: false,
+      dragRotate: false,
       boxZoom: false,
       maxZoom: 22,
       minZoom: 2,
@@ -915,7 +977,8 @@ export default function V2MapArea({
           }
 
           const id = features[nextIndex].properties.id
-          selectOverlayRef.current(id)
+          const isMultiSelect = Boolean(e.originalEvent?.ctrlKey || e.originalEvent?.shiftKey || e.originalEvent?.metaKey)
+          selectOverlayRef.current(id, isMultiSelect)
         } else {
           selectOverlayRef.current(null)
         }
@@ -1044,6 +1107,59 @@ export default function V2MapArea({
         },
       })
     }
+
+    if (!map.getSource('planning-green-circle')) {
+      map.addSource('planning-green-circle', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      })
+      map.addLayer({
+        id: 'planning-green-circle-fill',
+        type: 'fill',
+        source: 'planning-green-circle',
+        paint: {
+          'fill-color': '#10b981',
+          'fill-opacity': 0.15,
+        },
+      })
+      map.addLayer({
+        id: 'planning-green-circle-outline',
+        type: 'line',
+        source: 'planning-green-circle',
+        paint: {
+          'line-color': '#10b981',
+          'line-width': 2,
+          'line-opacity': 0.8,
+        },
+      })
+    }
+
+    if (!map.getSource('planning-distance-circle')) {
+      map.addSource('planning-distance-circle', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      })
+      map.addLayer({
+        id: 'planning-distance-circle-fill',
+        type: 'fill',
+        source: 'planning-distance-circle',
+        paint: {
+          'fill-color': '#6366f1',
+          'fill-opacity': 0.08,
+        },
+      })
+      map.addLayer({
+        id: 'planning-distance-circle-outline',
+        type: 'line',
+        source: 'planning-distance-circle',
+        paint: {
+          'line-color': '#6366f1',
+          'line-width': 2,
+          'line-opacity': 0.8,
+          'line-dasharray': [2, 3],
+        },
+      })
+    }
   }, [])
 
   // Wire up terrain injection to map load event
@@ -1081,7 +1197,7 @@ export default function V2MapArea({
     livePositionsRef.current.clear()
 
     // 2. Setup helper to update geojson layers
-    const updateGeoJsonLayers = (linesFc, dispersionsFc) => {
+    const updateGeoJsonLayers = (linesFc, dispersionsFc, greenCircleFc, distanceCircleFc) => {
       if (!mapLoaded) return
       const emptyCollection = { type: 'FeatureCollection', features: [] }
 
@@ -1090,6 +1206,12 @@ export default function V2MapArea({
       }
       if (map.getSource('planning-dispersions')) {
         map.getSource('planning-dispersions').setData(dispersionsFc || emptyCollection)
+      }
+      if (map.getSource('planning-green-circle')) {
+        map.getSource('planning-green-circle').setData(greenCircleFc || emptyCollection)
+      }
+      if (map.getSource('planning-distance-circle')) {
+        map.getSource('planning-distance-circle').setData(distanceCircleFc || emptyCollection)
       }
     }
 
@@ -1187,6 +1309,40 @@ export default function V2MapArea({
         type: 'FeatureCollection',
         features: liveDispersionFeatures,
       })
+
+      // Update Green and Distance Circles imperatively during drag
+      let liveGreenCircleFc = { type: 'FeatureCollection', features: [] }
+      let liveDistanceCircleFc = { type: 'FeatureCollection', features: [] }
+
+      const lastMarker = sequence[sequence.length - 1]
+      if (lastMarker) {
+        const lastKey = lastMarker.id || `default-${lastMarker.marker_type}`
+        const lastLive = livePositionsRef.current.get(lastKey)
+
+        const lat = lastLive ? lastLive.lat : Number(lastMarker.lat)
+        const lng = lastLive ? lastLive.lng : Number(lastMarker.long ?? lastMarker.lng)
+
+        if (!isNaN(lat) && !isNaN(lng)) {
+          if (showGreenCircle) {
+            const greenRadiusMeters = greenCircleRadius * 0.3048
+            const feat = makeCirclePolygon({ lat, lng }, greenRadiusMeters)
+            liveGreenCircleFc = { type: 'FeatureCollection', features: [feat] }
+          }
+
+          if (showDistanceCircle) {
+            const distanceRadiusMeters = distanceCircleRadius * 0.9144
+            const feat = makeCirclePolygon({ lat, lng }, distanceRadiusMeters)
+            liveDistanceCircleFc = { type: 'FeatureCollection', features: [feat] }
+          }
+        }
+      }
+
+      if (map.getSource('planning-green-circle')) {
+        map.getSource('planning-green-circle').setData(liveGreenCircleFc)
+      }
+      if (map.getSource('planning-distance-circle')) {
+        map.getSource('planning-distance-circle').setData(liveDistanceCircleFc)
+      }
     }
 
     // 3. Render Mapping Mode Markers
@@ -1365,9 +1521,35 @@ export default function V2MapArea({
         }
       }
 
+      // C. Draw green and distance circles
+      let greenCircleFc = { type: 'FeatureCollection', features: [] }
+      let distanceCircleFc = { type: 'FeatureCollection', features: [] }
+
+      const lastMarker = sequence[sequence.length - 1]
+      if (lastMarker) {
+        const lastLng = Number(lastMarker.long ?? lastMarker.lng)
+        const lastLat = Number(lastMarker.lat)
+
+        if (!isNaN(lastLng) && !isNaN(lastLat)) {
+          if (showGreenCircle) {
+            const greenRadiusMeters = greenCircleRadius * 0.3048
+            const feat = makeCirclePolygon({ lat: lastLat, lng: lastLng }, greenRadiusMeters)
+            greenCircleFc = { type: 'FeatureCollection', features: [feat] }
+          }
+
+          if (showDistanceCircle) {
+            const distanceRadiusMeters = distanceCircleRadius * 0.9144
+            const feat = makeCirclePolygon({ lat: lastLat, lng: lastLng }, distanceRadiusMeters)
+            distanceCircleFc = { type: 'FeatureCollection', features: [feat] }
+          }
+        }
+      }
+
       updateGeoJsonLayers(
         { type: 'FeatureCollection', features: linesFeatures },
-        { type: 'FeatureCollection', features: dispersionFeatures }
+        { type: 'FeatureCollection', features: dispersionFeatures },
+        greenCircleFc,
+        distanceCircleFc
       )
     }
 
@@ -1376,48 +1558,89 @@ export default function V2MapArea({
       markersRef.current = []
       labelMarkersRef.current = []
     }
-  }, [selectedHole, workspaceMode, clubs, profile, mapLoaded, activePointTool])
+  }, [selectedHole, workspaceMode, clubs, profile, mapLoaded, activePointTool, showGreenCircle, greenCircleRadius, showDistanceCircle, distanceCircleRadius])
 
   // ── Fly-To-Hole camera control ───────────────────────────
   useEffect(() => {
     const map = mapRef.current
     if (!map || !selectedHole) return
 
-    // Prevent flying to default U.S. coordinates on initial load if course location exists
     const bounds = getHoleBounds(selectedHole, filteredOverlays)
+    const green = activeMarkerLatLng(selectedHole, HOLE_MARKER_KIND.GREEN_CENTER)
+    const tee = activeMarkerLatLng(selectedHole, HOLE_MARKER_KIND.TEE_BACK)
 
-    if (bounds) {
-      map.fitBounds(bounds, {
+    if (autoRotateHoleView && green && tee) {
+      const bearing = getBearing(Number(tee.lat), Number(tee.lng), Number(green.lat), Number(green.lng))
+      const minLng = Math.min(Number(tee.lng), Number(green.lng))
+      const maxLng = Math.max(Number(tee.lng), Number(green.lng))
+      const minLat = Math.min(Number(tee.lat), Number(green.lat))
+      const maxLat = Math.max(Number(tee.lat), Number(green.lat))
+
+      const markerBounds = [
+        [minLng, minLat],
+        [maxLng, maxLat]
+      ]
+      
+      const camera = map.cameraForBounds(markerBounds, {
         padding: { top: 80, bottom: 80, left: 80, right: 80 },
-        duration: 1200,
-        maxZoom: 20,
+        bearing: bearing,
       })
-    } else {
-      // Fallback: green center marker or tee back marker
-      const greenMarker = selectedHole.mapMarkers?.find(
-        (m) => m.marker_kind === 'green_center' && m.is_active !== false
-      )
-      const teeMarker = selectedHole.mapMarkers?.find(
-        (m) => m.marker_kind === 'tee_back' && m.is_active !== false
-      )
-      const targetMarker = greenMarker || teeMarker
 
-      if (targetMarker && targetMarker.lat && targetMarker.lng) {
+      if (camera && typeof camera.zoom === 'number' && camera.zoom >= 10 && camera.center) {
         map.flyTo({
-          center: [Number(targetMarker.lng), Number(targetMarker.lat)],
-          zoom: 17,
+          center: camera.center,
+          zoom: Math.min(camera.zoom, 20),
+          bearing: bearing,
           duration: 1200,
         })
-      } else if (courseCenter && courseCenter[0] !== -98.5795) {
-        // Only fly to course center if it is a real course center location
-        map.flyTo({
-          center: courseCenter,
-          zoom: 16,
+      } else {
+        map.setBearing(0)
+        map.fitBounds(markerBounds, {
+          padding: { top: 80, bottom: 80, left: 80, right: 80 },
           duration: 1200,
+          maxZoom: 20,
         })
+        map.setBearing(bearing)
+      }
+    } else {
+      map.setBearing(0)
+      if (bounds) {
+        map.fitBounds(bounds, {
+          padding: { top: 80, bottom: 80, left: 80, right: 80 },
+          duration: 1200,
+          maxZoom: 20,
+        })
+      } else {
+        // Fallback: green center marker or tee back marker
+        const greenMarker = selectedHole.mapMarkers?.find(
+          (m) => m.marker_kind === 'green_center' && m.is_active !== false
+        )
+        const teeMarker = selectedHole.mapMarkers?.find(
+          (m) => m.marker_kind === 'tee_back' && m.is_active !== false
+        )
+        const targetMarker = greenMarker || teeMarker
+
+        if (targetMarker && targetMarker.lat && targetMarker.lng) {
+          map.flyTo({
+            center: [Number(targetMarker.lng), Number(targetMarker.lat)],
+            zoom: 17,
+            duration: 1200,
+          })
+        } else if (courseCenter && courseCenter[0] !== -98.5795) {
+          // Only fly to course center if it is a real course center location
+          map.flyTo({
+            center: courseCenter,
+            zoom: 16,
+            duration: 1200,
+          })
+        }
       }
     }
-  }, [selectedHole?.id, courseCenter])
+  }, [selectedHole?.id, courseCenter, autoRotateHoleView])
+
+  const green = selectedHole ? activeMarkerLatLng(selectedHole, HOLE_MARKER_KIND.GREEN_CENTER) : null
+  const tee = selectedHole ? activeMarkerLatLng(selectedHole, HOLE_MARKER_KIND.TEE_BACK) : null
+  const hasMarkers = Boolean(green && tee)
 
   // ── Compute Legend active items ──────────────────────────
   const activeTerrainTypes = [
@@ -1428,14 +1651,28 @@ export default function V2MapArea({
     <div className="v2-map-wrap">
       <div ref={mapContainerRef} className="v2-map-container" />
 
-      {/* Pitch/Rotate hint */}
-      {showPitchHint && (
-        <div
-          className={`v2-pitch-hint ${
-            !showPitchHint ? 'v2-pitch-hint--hidden' : ''
-          }`}
-        >
-          Right-click + drag to pitch &amp; rotate
+      {/* Floating Orient Map Control */}
+      {selectedHole && (
+        <div className="absolute top-[120px] right-[10px] z-10">
+          <button
+            type="button"
+            onClick={() => setAutoRotateHoleView(!autoRotateHoleView)}
+            disabled={!hasMarkers}
+            className={`w-[29px] h-[29px] rounded-lg border flex items-center justify-center transition-all duration-200 shadow-md ${
+              autoRotateHoleView
+                ? 'bg-emerald-600 border-emerald-500 text-white hover:bg-emerald-500'
+                : 'bg-slate-900 border-slate-700/50 text-slate-400 hover:bg-slate-800 hover:text-white'
+            } disabled:opacity-40 disabled:cursor-not-allowed`}
+            title={
+              !hasMarkers
+                ? "Place Tee and Green markers to orient"
+                : autoRotateHoleView
+                ? "Auto-Orient Active (Green at Top)"
+                : "Orient Map (Green at Top)"
+            }
+          >
+            <Compass size={14} />
+          </button>
         </div>
       )}
 

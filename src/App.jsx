@@ -6,7 +6,6 @@ import { ThemeProvider, CssBaseline } from '@mui/material'
 import theme from './theme'// Components & Pages
 import Auth from './components/Auth'
 import Header from './components/Header'
-import MapCanvas from './features/map/components/MapCanvas'
 import Dashboard from './pages/Dashboard'
 import CourseDetails from './features/course/components/CourseDetails'
 import Profile from './pages/Profile'
@@ -60,14 +59,6 @@ export default function App() {
             />
             <Route
               path="/course/:id"
-              element={
-                <div className="h-full min-h-0 flex flex-col">
-                  <MapCanvas />
-                </div>
-              }
-            />
-            <Route
-              path="/v2/course/:id"
               element={
                 <div className="h-full min-h-0 flex flex-col">
                   <CourseCanvasV2 />

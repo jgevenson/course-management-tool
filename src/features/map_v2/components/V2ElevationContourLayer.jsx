@@ -13,7 +13,7 @@ const CONTOUR_STYLES = {
   baseFillOpacity: 0.008,
   maxAdditionalFillOpacity: 0.012,
   resolutionMeters: 1,
-  intervalYards: 0.5,
+  intervalYards: .65,
 }
 
 const LAYER_ID_FILLS = 'contour-fills'

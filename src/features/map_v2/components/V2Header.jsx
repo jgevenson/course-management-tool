@@ -51,18 +51,6 @@ export default function V2Header({
       </div>
 
       <div className="flex items-center gap-3 shrink-0">
-        {/* Save Default Center Button */}
-        {isMappingAdmin && (
-          <button
-            type="button"
-            onClick={onSaveCourseLocation}
-            disabled={savingLocation}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md border border-slate-700 bg-slate-900/80 text-slate-300 hover:text-white hover:border-slate-500 transition-colors disabled:opacity-50"
-          >
-            {savingLocation ? 'Saving…' : locationFeedback || 'Save Default Center'}
-          </button>
-        )}
-
         {/* Mode Toggle (Admin only) */}
         {isMappingAdmin && (
           <div
@@ -94,10 +82,6 @@ export default function V2Header({
             </button>
           </div>
         )}
-
-        <Link to={`/course/${courseId}`} className="v2-header__back font-medium text-slate-400 hover:text-emerald-400 transition-colors">
-          ← Back to Leaflet v1
-        </Link>
       </div>
     </header>
   )

@@ -14,7 +14,7 @@ import V2MapArea from './components/V2MapArea'
 import RegionPropertiesForm from '../map/components/HoleWorkspace/RegionPropertiesForm'
 import PlanningDistancesPanel from '../map/components/HoleWorkspace/PlanningDistancesPanel'
 import RegionOverlayAssignForm from '../map/components/HoleWorkspace/RegionOverlayAssignForm'
-import { MapPin, Crosshair, Plus, Pentagon, Layers, RefreshCw, DownloadCloud } from 'lucide-react'
+import { MapPin, Crosshair, Plus, Pentagon, Layers, RefreshCw, DownloadCloud, CircleDot, Ruler } from 'lucide-react'
 import V2ElevationContourLayer from './components/V2ElevationContourLayer'
 import V2GreenContourLayer from './components/V2GreenContourLayer'
 import V2OSMFeaturePanel from './components/V2OSMFeaturePanel'
@@ -39,13 +39,144 @@ export default function CourseCanvasV2() {
   const { clubs } = useClubs(profile?.id)
 
   const courseState = useMapCourse(id)
-  const holesState = useHoles(courseState.course?.id)
+  const [mapInstance, setMapInstance] = useState(null)
+  const [gridData, setGridData] = useState(null)
+
+  const getLocalElevation = useCallback((lat, lng) => {
+    console.log('[getLocalElevation] Querying elevation for coordinates:', { lat, lng })
+    // 1. Try MapLibre terrain first
+    if (mapInstance && typeof mapInstance.queryTerrainElevation === 'function') {
+      const elevationMeters = mapInstance.queryTerrainElevation([lng, lat])
+      if (elevationMeters !== null && !isNaN(elevationMeters)) {
+        const elevationYards = Math.round(elevationMeters * 1.09361 * 100) / 100
+        console.log('[getLocalElevation] MapLibre query successful:', { elevationMeters, elevationYards })
+        return elevationYards
+      }
+    }
+
+    // 2. Fall back to loaded local gridData
+    if (gridData && gridData.grid && gridData.grid.length > 0) {
+      const { width, height, grid, extent } = gridData
+      const { minLon, minLat, maxLon, maxLat } = extent
+      const px = ((lng - minLon) / (maxLon - minLon)) * (width - 1)
+      const py = ((maxLat - lat) / (maxLat - minLat)) * (height - 1)
+      
+      // Clamp coordinates to grid boundaries to support nearest-neighbor extrapolation
+      const x = Math.max(0, Math.min(width - 1, Math.round(px)))
+      const y = Math.max(0, Math.min(height - 1, Math.round(py)))
+      
+      const isClamped = x !== Math.round(px) || y !== Math.round(py)
+      console.log('[getLocalElevation] Grid bounds:', { minLon, maxLon, minLat, maxLat, width, height })
+      console.log('[getLocalElevation] Computed pixel coords:', { px, py, x, y, isClamped })
+      
+      if (x >= 0 && x < width && y >= 0 && y < height) {
+        const val = grid[y][x]
+        console.log('[getLocalElevation] Grid lookup successful:', { val })
+        return val
+      } else {
+        console.warn('[getLocalElevation] Coordinates out of grid bounds.')
+      }
+    } else {
+      console.warn('[getLocalElevation] Grid data not loaded or empty.', { hasGridData: !!gridData })
+    }
+    console.log('[getLocalElevation] Elevation lookup returned null.')
+    return null
+  }, [mapInstance, gridData])
+
+  const holesState = useHoles(courseState.course?.id, { getLocalElevation })
+
+  // Fetch elevation grid for local lookup fallback
+  useEffect(() => {
+    const selectedHole = holesState.holes[holesState.selectedHoleIndex]
+    const holeId = selectedHole?.id
+    if (!holeId) {
+      console.log('[CourseCanvasV2] No selected hole ID found, clearing gridData.')
+      setGridData(null)
+      return
+    }
+
+    console.log('[CourseCanvasV2] selectedHole changed, fetching gridData for holeId:', holeId)
+    let active = true
+    const loadGridData = async () => {
+      try {
+        console.log('[CourseCanvasV2] Querying hole_elevation_grids resolution_meters=1')
+        let { data, error: err } = await supabase
+          .from('hole_elevation_grids')
+          .select('grid_data')
+          .eq('hole_id', holeId)
+          .eq('resolution_meters', 1)
+          .maybeSingle()
+
+        if (err) {
+          console.error('[CourseCanvasV2] Error fetching resolution_meters=1:', err)
+        }
+
+        if (!data?.grid_data) {
+          console.log('[CourseCanvasV2] Resolution 1 not found. Querying resolution_meters=3')
+          const { data: data3, error: err3 } = await supabase
+            .from('hole_elevation_grids')
+            .select('grid_data')
+            .eq('hole_id', holeId)
+            .eq('resolution_meters', 3)
+            .maybeSingle()
+          
+          if (err3) {
+            console.error('[CourseCanvasV2] Error fetching resolution_meters=3:', err3)
+          }
+          data = data3
+        }
+
+        if (active) {
+          if (data?.grid_data) {
+            console.log('[CourseCanvasV2] Successfully loaded gridData. Extent:', data.grid_data.extent)
+            setGridData(data.grid_data)
+          } else {
+            console.log('[CourseCanvasV2] No cached grid found. Triggering generate-elevation-grid Edge Function.')
+            const { data: edgeData, error: edgeErr } = await supabase.functions.invoke('generate-elevation-grid', {
+              body: { hole_id: holeId, resolution: 1 }
+            })
+            
+            let finalData = edgeData
+            if (edgeErr) {
+              console.error('[CourseCanvasV2] Edge function for resolution 1 failed:', edgeErr)
+              console.log('[CourseCanvasV2] Triggering generate-elevation-grid Edge Function with resolution 3.')
+              const { data: edgeData3, error: edgeErr3 } = await supabase.functions.invoke('generate-elevation-grid', {
+                body: { hole_id: holeId, resolution: 3 }
+              })
+              if (edgeErr3) throw edgeErr3
+              finalData = edgeData3
+            }
+
+            if (active && finalData) {
+              console.log('[CourseCanvasV2] Successfully generated and loaded gridData via Edge Function.')
+              setGridData(finalData)
+            } else if (active) {
+              console.warn('[CourseCanvasV2] Elevation grid generation returned empty response.')
+            }
+          }
+        }
+      } catch (err) {
+        console.error('[CourseCanvasV2] Failed to load local elevation grid:', err)
+      }
+    }
+
+    loadGridData()
+    return () => {
+      console.log('[CourseCanvasV2] Cleaning up gridData fetch effect.')
+      active = false
+    }
+  }, [holesState.holes, holesState.selectedHoleIndex])
+
   const terrainState = useMapTerrainOverlays(courseState.course?.id)
 
   // ── Workspace State ───────────────────────────────────────
   const [workspaceMode, setWorkspaceMode] = useState('planning')
   const [showLidar, setShowLidar] = useState(false)
   const [recalibrating, setRecalibrating] = useState(false)
+  const [showGreenCircle, setShowGreenCircle] = useState(false)
+  const [greenCircleRadius, setGreenCircleRadius] = useState(20)
+  const [showDistanceCircle, setShowDistanceCircle] = useState(false)
+  const [distanceCircleRadius, setDistanceCircleRadius] = useState(100)
 
   // ── OSM Tool State ─────────────────────────────────────────
   const [osmToolActive, setOsmToolActive] = useState(false)
@@ -130,7 +261,6 @@ export default function CourseCanvasV2() {
   }, [course])
 
   // ── Workspace State Hooks (unconditional) ─────────────────
-  const [mapInstance, setMapInstance] = useState(null)
   const [activePointTool, setActivePointTool] = useState(null)
   const [drawMode, setDrawMode] = useState(null)
   const [drawCoordinates, setDrawCoordinates] = useState([])
@@ -266,6 +396,8 @@ export default function CourseCanvasV2() {
           setRegionDraft(null)
           setOsmToolActive(false)
           setOsmFeaturesData(null)
+          setShowGreenCircle(false)
+          setShowDistanceCircle(false)
         }}
         isMappingAdmin={isMappingAdmin}
         overlaysLoading={terrainState.loading}
@@ -478,6 +610,64 @@ export default function CourseCanvasV2() {
                       <span>{showLidar ? 'Hide Contours' : 'Show Contours'}</span>
                     </button>
                     
+                    <div className="w-full h-px bg-slate-800/50 my-1" />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowGreenCircle(!showGreenCircle)}
+                      className={`v2-tool-btn ${showGreenCircle ? 'v2-tool-btn--active' : ''}`}
+                      disabled={!selectedHole}
+                    >
+                      <CircleDot className="w-4 h-4 text-emerald-400" />
+                      <span>{showGreenCircle ? 'Hide Circle on Green' : 'Circle on Green'}</span>
+                    </button>
+                    {showGreenCircle && (
+                      <div className="flex flex-col gap-1 px-3 py-2 bg-slate-950/60 border border-slate-800/60 rounded-lg my-1">
+                        <div className="flex justify-between text-[11px] text-slate-400">
+                          <span>Radius</span>
+                          <span className="font-semibold text-emerald-400">{greenCircleRadius} ft</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="5"
+                          max="120"
+                          step="1"
+                          value={greenCircleRadius}
+                          onChange={(e) => setGreenCircleRadius(parseInt(e.target.value))}
+                          className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                        />
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => setShowDistanceCircle(!showDistanceCircle)}
+                      className={`v2-tool-btn ${showDistanceCircle ? 'v2-tool-btn--active' : ''}`}
+                      disabled={!selectedHole}
+                    >
+                      <Ruler className="w-4 h-4 text-sky-400" />
+                      <span>{showDistanceCircle ? 'Hide Distance Ring' : 'Distance Ring'}</span>
+                    </button>
+                    {showDistanceCircle && (
+                      <div className="flex flex-col gap-1 px-3 py-2 bg-slate-950/60 border border-slate-800/60 rounded-lg my-1">
+                        <div className="flex justify-between text-[11px] text-slate-400">
+                          <span>Distance</span>
+                          <span className="font-semibold text-sky-400">{distanceCircleRadius} yd</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="50"
+                          max="150"
+                          step="5"
+                          value={distanceCircleRadius}
+                          onChange={(e) => setDistanceCircleRadius(parseInt(e.target.value))}
+                          className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-sky-500"
+                        />
+                      </div>
+                    )}
+
+                    <div className="w-full h-px bg-slate-800/50 my-1" />
+
                     <button
                       type="button"
                       onClick={handleRecalibrateHole}
@@ -515,6 +705,11 @@ export default function CourseCanvasV2() {
           clubs={clubs}
           profile={profile}
           selectedTerrainOverlayId={workspaceMode === 'mapping' ? terrainState.selectedTerrainOverlayId : null}
+          selectedTerrainOverlayIds={workspaceMode === 'mapping' ? terrainState.selectedTerrainOverlayIds : []}
+          showGreenCircle={showGreenCircle}
+          greenCircleRadius={greenCircleRadius}
+          showDistanceCircle={showDistanceCircle}
+          distanceCircleRadius={distanceCircleRadius}
           onSelectTerrainOverlayId={terrainState.selectOverlay}
           activePointTool={activePointTool}
           onPick={handleMarkerPick}
@@ -537,6 +732,8 @@ export default function CourseCanvasV2() {
               setOsmFeaturesData(null)
             }
           }}
+          autoRotateHoleView={holesState.autoRotateHoleView}
+          setAutoRotateHoleView={holesState.setAutoRotateHoleView}
         />
         
         <V2ElevationContourLayer
@@ -559,6 +756,8 @@ export default function CourseCanvasV2() {
               hole={selectedHole}
               onRemoveMarker={holesState.removePlanningMarker}
               onInsertPlanningMarker={holesState.insertPlanningMarkerMidpoint}
+              onMarkerMove={holesState.movePlanningMarker}
+              getLocalElevation={getLocalElevation}
               removing={holesState.removePlanningSaving}
               message={holesState.removePlanningMessage}
               clubs={clubs}
@@ -568,6 +767,7 @@ export default function CourseCanvasV2() {
             <RegionPropertiesForm
               key={regionPropsFormKey}
               overlay={selectedRegionOverlay}
+              selectedCount={terrainState.selectedTerrainOverlayIds.length}
               holes={holesState.holes}
               onSave={terrainState.updateRegionProperties}
               onDelete={terrainState.deleteRegion}

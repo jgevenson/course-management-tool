@@ -15,6 +15,7 @@ export function useMapTerrainOverlays(courseId) {
   const terrain = useTerrainOverlays(courseId)
 
   const [selectedTerrainOverlayId, setSelectedTerrainOverlayId] = useState(null)
+  const [selectedTerrainOverlayIds, setSelectedTerrainOverlayIds] = useState([])
   const [regionSaving, setRegionSaving] = useState(false)
   const [regionMessage, setRegionMessage] = useState(null)
   const [regionUpdateSaving, setRegionUpdateSaving] = useState(false)
@@ -25,6 +26,17 @@ export function useMapTerrainOverlays(courseId) {
     if (!selectedTerrainOverlayId) return null
     return terrain.terrainOverlays.find((o) => o.id === selectedTerrainOverlayId) ?? null
   }, [terrain.terrainOverlays, selectedTerrainOverlayId])
+
+  // Sync selectedTerrainOverlayIds when overlays are loaded or removed
+  useEffect(() => {
+    setSelectedTerrainOverlayIds((prev) => {
+      const existing = prev.filter((id) => terrain.terrainOverlays.some((o) => o.id === id))
+      if (existing.length !== prev.length) {
+        return existing
+      }
+      return prev
+    })
+  }, [terrain.terrainOverlays])
 
   // Clear selection if the overlay disappears
   useEffect(() => {
@@ -141,23 +153,32 @@ export function useMapTerrainOverlays(courseId) {
    * Hard delete the selected region.
    */
   const deleteRegion = useCallback(async () => {
-    const id = selectedTerrainOverlayId
-    if (!id) return
-    const confirmed = window.confirm('Hard delete this region? This cannot be undone.')
+    const ids = selectedTerrainOverlayIds.length > 0 ? selectedTerrainOverlayIds : (selectedTerrainOverlayId ? [selectedTerrainOverlayId] : [])
+    if (ids.length === 0) return
+    const message = ids.length === 1
+      ? 'Hard delete this region? This cannot be undone.'
+      : `Hard delete all ${ids.length} selected regions? This cannot be undone.`
+    const confirmed = window.confirm(message)
     if (!confirmed) return
 
     setRegionUpdateSaving(true)
     setRegionUpdateMessage(null)
 
-    const result = await terrain.removeOverlay(id)
-
-    if (result.success) {
-      setSelectedTerrainOverlayId(null)
-    } else {
-      setRegionUpdateMessage(result.error)
+    try {
+      const results = await Promise.all(ids.map((id) => terrain.removeOverlay(id)))
+      const failed = results.find((r) => !r.success)
+      if (failed) {
+        setRegionUpdateMessage(failed.error)
+      } else {
+        setSelectedTerrainOverlayIds([])
+        setSelectedTerrainOverlayId(null)
+      }
+    } catch (err) {
+      setRegionUpdateMessage(err.message)
+    } finally {
+      setRegionUpdateSaving(false)
     }
-    setRegionUpdateSaving(false)
-  }, [selectedTerrainOverlayId, terrain])
+  }, [selectedTerrainOverlayIds, selectedTerrainOverlayId, terrain])
 
   /**
    * Commit a geometry change (drag/reshape) for an overlay.
@@ -197,11 +218,33 @@ export function useMapTerrainOverlays(courseId) {
     [courseId, terrain],
   )
 
-  const selectOverlay = useCallback((id) => {
-    setSelectedTerrainOverlayId(id)
+  const selectOverlay = useCallback((id, isMultiSelect = false) => {
+    if (id === null) {
+      setSelectedTerrainOverlayIds([])
+      setSelectedTerrainOverlayId(null)
+      return
+    }
+
+    setSelectedTerrainOverlayIds((prev) => {
+      if (isMultiSelect) {
+        if (prev.includes(id)) {
+          const next = prev.filter((x) => x !== id)
+          setSelectedTerrainOverlayId(next[next.length - 1] || null)
+          return next
+        } else {
+          const next = [...prev, id]
+          setSelectedTerrainOverlayId(id)
+          return next
+        }
+      } else {
+        setSelectedTerrainOverlayId(id)
+        return [id]
+      }
+    })
   }, [])
 
   const clearSelection = useCallback(() => {
+    setSelectedTerrainOverlayIds([])
     setSelectedTerrainOverlayId(null)
     setRegionUpdateMessage(null)
   }, [])
@@ -209,6 +252,7 @@ export function useMapTerrainOverlays(courseId) {
   return {
     terrainOverlays: terrain.terrainOverlays,
     selectedTerrainOverlayId,
+    selectedTerrainOverlayIds,
     selectedRegionOverlay,
     regionSaving,
     regionMessage,

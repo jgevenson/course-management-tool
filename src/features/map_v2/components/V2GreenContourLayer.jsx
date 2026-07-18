@@ -8,12 +8,12 @@ import { fetchGreenElevationMatrix } from '../../../services/api/greenElevationA
 // --- Styling Configuration ---
 const CONTOUR_STYLES = {
   fillColor: '#0f172a',
-  lineColor: '#1e293b', // Slightly darker/tighter for green to pop more
-  lineWidth: 0.2,
+  lineColor: '#262d3a70', // Slightly darker/tighter for green to pop more
+  lineWidth: 0.4,
   lineOpacity: 0.29,
   baseFillOpacity: 0.003,
-  maxAdditionalFillOpacity: 0.016,
-  intervalInches: 2, // 2 inches per contour line for high-density
+  maxAdditionalFillOpacity: 0.08,
+  intervalInches: 1, // 2 inches per contour line for high-density
 }
 
 const LAYER_ID_FILLS = 'green-contour-fills'

@@ -1,11 +1,146 @@
 import { useMemo } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
-import { Box, Typography, Paper, IconButton, Stack, Tooltip } from '@mui/material'
+import { Box, Typography, Paper, IconButton, Stack, Tooltip, Button } from '@mui/material'
 import { buildPlanningView } from '../../utils/planningSegments'
 import { getRecommendedClub } from '../../../bag/utils/dispersion'
+import { computeDestination, getBearing } from '../../utils/geoDistance'
 
-export default function PlanningDistancesPanel({ hole, onRemoveMarker, onInsertPlanningMarker, removing, message, clubs = [] }) {
+export default function PlanningDistancesPanel({
+  hole,
+  onRemoveMarker,
+  onInsertPlanningMarker,
+  onMarkerMove,
+  getLocalElevation,
+  removing,
+  message,
+  clubs = []
+}) {
   const { segments } = useMemo(() => buildPlanningView(hole), [hole])
+
+  const handleMaxClick = (segment, targetMarker, recommendedClub) => {
+    console.log('[handleMaxClick] Triggered.', {
+      targetMarker,
+      recommendedClub,
+      hasOnMarkerMove: typeof onMarkerMove === 'function',
+      hasGetLocalElevation: typeof getLocalElevation === 'function',
+    })
+    
+    if (!targetMarker || !recommendedClub?.total_distance || !onMarkerMove) {
+      console.warn('[handleMaxClick] Missing required props/state. Aborting.')
+      return
+    }
+    
+    const startLat = Number(segment.start.lat)
+    const startLng = Number(segment.start.long ?? segment.start.lng)
+    const endLat = Number(segment.end.lat)
+    const endLng = Number(segment.end.long ?? segment.end.lng)
+
+    let referenceLat, referenceLng, referenceBearing
+    const isMovingEnd = segment.end.marker_type === 'landing_area'
+    const isMovingStart = segment.start.marker_type === 'landing_area'
+    
+    if (isMovingEnd) {
+      referenceLat = startLat
+      referenceLng = startLng
+      referenceBearing = getBearing(startLat, startLng, endLat, endLng)
+      console.log('[handleMaxClick] Moving end marker.', { referenceLat, referenceLng, referenceBearing })
+    } else if (isMovingStart) {
+      referenceLat = endLat
+      referenceLng = endLng
+      referenceBearing = getBearing(endLat, endLng, startLat, startLng)
+      console.log('[handleMaxClick] Moving start marker.', { referenceLat, referenceLng, referenceBearing })
+    } else {
+      console.warn('[handleMaxClick] Neither start nor end is landing_area. Aborting.')
+      return
+    }
+
+    let finalLat, finalLng
+
+    if (getLocalElevation) {
+      const targetDistance = recommendedClub.total_distance
+      const startElevationYards = Number(segment.start.elevation || 0)
+      const endElevationYards = Number(segment.end.elevation || 0)
+      console.log('[handleMaxClick] Starting binary search for target playsLike distance:', targetDistance, {
+        startElevationYards,
+        endElevationYards,
+      })
+
+      let low = 0
+      let high = targetDistance * 2
+      let bestLat = null
+      let bestLng = null
+      let iterations = 0
+      const maxIterations = 20
+      const tolerance = 0.5 // half a yard
+
+      while (iterations < maxIterations && (high - low) > tolerance) {
+        iterations++
+        const mid = (low + high) / 2
+        const candidate = computeDestination(referenceLat, referenceLng, mid, referenceBearing)
+        const elev = getLocalElevation(candidate.lat, candidate.lng)
+
+        let playsLike
+        if (elev !== null && !isNaN(elev)) {
+          const elevationDiffYards = isMovingEnd
+            ? elev - startElevationYards
+            : endElevationYards - elev
+          playsLike = mid + elevationDiffYards
+          console.log(`[handleMaxClick] Iteration ${iterations}:`, {
+            midPhysicalYards: mid,
+            candidateElevationYards: elev,
+            elevationDiffYards,
+            computedPlaysLikeYards: playsLike,
+            low,
+            high,
+          })
+        } else {
+          playsLike = mid
+          console.log(`[handleMaxClick] Iteration ${iterations} (NO ELEVATION fallback):`, {
+            midPhysicalYards: mid,
+            computedPlaysLikeYards: playsLike,
+            low,
+            high,
+          })
+        }
+
+        if (Math.abs(playsLike - targetDistance) < tolerance) {
+          bestLat = candidate.lat
+          bestLng = candidate.lng
+          console.log('[handleMaxClick] Binary search reached tolerance limit. Break.', { bestLat, bestLng })
+          break
+        }
+
+        if (playsLike < targetDistance) {
+          low = mid
+        } else {
+          high = mid
+        }
+      }
+
+      if (bestLat !== null && bestLng !== null) {
+        finalLat = bestLat
+        finalLng = bestLng
+      } else {
+        const mid = (low + high) / 2
+        const finalCandidate = computeDestination(referenceLat, referenceLng, mid, referenceBearing)
+        finalLat = finalCandidate.lat
+        finalLng = finalCandidate.lng
+        console.log('[handleMaxClick] Binary search finished iterations without exact match. Using final mid-point.', { finalLat, finalLng })
+      }
+    } else {
+      console.log('[handleMaxClick] getLocalElevation not provided. Falling back to flat distance calculation.')
+      const flatDest = computeDestination(referenceLat, referenceLng, recommendedClub.total_distance, referenceBearing)
+      finalLat = flatDest.lat
+      finalLng = flatDest.lng
+    }
+
+    console.log('[handleMaxClick] Executing onMarkerMove with:', {
+      markerId: targetMarker.id,
+      finalLat,
+      finalLng,
+    })
+    onMarkerMove(targetMarker.id, finalLat, finalLng)
+  }
 
   return (
     <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 1, flex: 1, minHeight: 0, overflowY: 'auto' }}>
@@ -19,9 +154,10 @@ export default function PlanningDistancesPanel({ hole, onRemoveMarker, onInsertP
             const recommendedClub = getRecommendedClub(s.playsLike, clubs)
             const clubLabel = recommendedClub ? recommendedClub.short_name : '--'
 
+            let pct = null
             let percentage = null
             if (recommendedClub && recommendedClub.total_distance) {
-              const pct = Math.round((s.playsLike / recommendedClub.total_distance) * 100)
+              pct = Math.round((s.playsLike / recommendedClub.total_distance) * 100)
               percentage = `${pct}%`
             }
 
@@ -77,6 +213,31 @@ export default function PlanningDistancesPanel({ hole, onRemoveMarker, onInsertP
                         </Typography>
                       )}
                     </Box>
+                    {pct !== null && pct !== 100 && markerToRemove && onMarkerMove && (
+                      <Tooltip title="Max Club Distance">
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={() => handleMaxClick(s, markerToRemove, recommendedClub)}
+                          disabled={removing}
+                          sx={{
+                            minWidth: 0,
+                            p: '2px 6px',
+                            height: 24,
+                            fontSize: '0.65rem',
+                            fontWeight: 600,
+                            color: 'primary.main',
+                            borderColor: 'primary.main',
+                            '&:hover': {
+                              bgcolor: 'primary.main',
+                              color: '#fff'
+                            }
+                          }}
+                        >
+                          MAX
+                        </Button>
+                      </Tooltip>
+                    )}
                     {markerToRemove && (
                       <IconButton
                         onClick={() => onRemoveMarker && onRemoveMarker(markerToRemove.id)}
@@ -93,7 +254,7 @@ export default function PlanningDistancesPanel({ hole, onRemoveMarker, onInsertP
                   </Box>
                 </Paper>
 
-                {/* + button to split this segment */}
+                {/* Add a marker btn between segments (only if not last segment) */}
                 <Box sx={{ display: 'flex', justifyContent: 'center', mt: -1.5, mb: -1.5, zIndex: 10, position: 'relative', py: 1.5 }}>
                   <Tooltip title="Split this shot" placement="right">
                     <IconButton

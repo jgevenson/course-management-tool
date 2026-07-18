@@ -1,5 +1,5 @@
 // AI assisted development
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { mapApi } from '../services/api/mapApi'
 import { HOLE_MARKER_KIND } from '../features/map/utils/holeMarkers'
 import { fetchElevation } from '../features/map/utils/fetchElevation'
@@ -43,7 +43,13 @@ function generateTempId() {
  *          `selectHoleIndex` function, marker-related state and functions, statistics state and functions,
  *          and the `autoRotateHoleView` flag.
  */
-export function useHoles(courseId) {
+export function useHoles(courseId, options = {}) {
+  const { getLocalElevation } = options
+  const getLocalElevationRef = useRef(getLocalElevation)
+  useEffect(() => {
+    getLocalElevationRef.current = getLocalElevation
+  }, [getLocalElevation])
+
   const [holes, setHoles] = useState([])
   const [holesLoading, setHolesLoading] = useState(false)
   const [selectedHoleIndex, setSelectedHoleIndex] = useState(0)
@@ -52,7 +58,14 @@ export function useHoles(courseId) {
   const [markerMessage, setMarkerMessage] = useState(null)
   const [removePlanningSaving, setRemovePlanningSaving] = useState(false)
   const [removePlanningMessage, setRemovePlanningMessage] = useState(null)
-  const [autoRotateHoleView, setAutoRotateHoleView] = useState(true)
+  const [autoRotateHoleView, setAutoRotateHoleView] = useState(() => {
+    const saved = localStorage.getItem('autoRotateHoleView')
+    return saved !== null ? saved === 'true' : true
+  })
+
+  useEffect(() => {
+    localStorage.setItem('autoRotateHoleView', String(autoRotateHoleView))
+  }, [autoRotateHoleView])
 
   // Load holes + markers when courseId changes
   useEffect(() => {
@@ -128,6 +141,11 @@ export function useHoles(courseId) {
         const marker_kind =
           tool === 'green_center' ? HOLE_MARKER_KIND.GREEN_CENTER : HOLE_MARKER_KIND.TEE_BACK
 
+        let initialElevation = null
+        if (typeof getLocalElevationRef.current === 'function') {
+          initialElevation = getLocalElevationRef.current(lat, lng) ?? null
+        }
+
         setHoles((prev) =>
           prev.map((h) => {
             if (h.id !== hole.id) return h
@@ -139,7 +157,7 @@ export function useHoles(courseId) {
               lat,
               lng,
               is_active: true,
-              elevation: existing?.elevation ?? null,
+              elevation: initialElevation !== null ? initialElevation : (existing?.elevation ?? null),
             }
             return { ...h, mapMarkers: [...rest, optimistic] }
           }),
@@ -147,7 +165,7 @@ export function useHoles(courseId) {
 
         void (async () => {
           try {
-            const data = await mapApi.upsertHoleMarker(hole.id, marker_kind, lat, lng, null)
+            const data = await mapApi.upsertHoleMarker(hole.id, marker_kind, lat, lng, initialElevation)
             setHoles((prev) =>
               prev.map((h) => {
                 if (h.id !== hole.id) return h
@@ -155,28 +173,36 @@ export function useHoles(courseId) {
                 return { ...h, mapMarkers: [...rest, data] }
               }),
             )
-
-            const elevation = await fetchElevation(lat, lng)
-            if (elevation !== null) {
-              setHoles((prev) => {
-                const currentHole = prev.find((h) => h.id === hole.id)
-                const currentMarker = currentHole?.mapMarkers?.find((m) => m.marker_kind === marker_kind)
-
-                if (currentMarker && Number(currentMarker.lat) === lat && Number(currentMarker.lng) === lng) {
-                  void mapApi.upsertHoleMarker(hole.id, marker_kind, lat, lng, elevation)
-                  return prev.map((h) => {
-                    if (h.id !== hole.id) return h
-                    const rest = (h.mapMarkers ?? []).filter((m) => m.marker_kind !== marker_kind)
-                    return { ...h, mapMarkers: [...rest, { ...currentMarker, elevation }] }
-                  })
-                }
-                return prev
-              })
-            }
           } catch (err) {
             setMarkerMessage(err.message)
           }
         })()
+
+        if (initialElevation === null) {
+          void (async () => {
+            try {
+              const elevation = await fetchElevation(lat, lng)
+              if (elevation !== null) {
+                setHoles((prev) => {
+                  const currentHole = prev.find((h) => h.id === hole.id)
+                  const currentMarker = currentHole?.mapMarkers?.find((m) => m.marker_kind === marker_kind)
+
+                  if (currentMarker && Number(currentMarker.lat) === lat && Number(currentMarker.lng) === lng) {
+                    void mapApi.upsertHoleMarker(hole.id, marker_kind, lat, lng, elevation)
+                    return prev.map((h) => {
+                      if (h.id !== hole.id) return h
+                      const rest = (h.mapMarkers ?? []).filter((m) => m.marker_kind !== marker_kind)
+                      return { ...h, mapMarkers: [...rest, { ...currentMarker, elevation }] }
+                    })
+                  }
+                  return prev
+                })
+              }
+            } catch (err) {
+              // ignore elevation fetch error
+            }
+          })()
+        }
 
         return { ok: true }
       }
@@ -200,6 +226,11 @@ export function useHoles(courseId) {
         return null
       }
 
+      let initialElevation = null
+      if (typeof getLocalElevationRef.current === 'function') {
+        initialElevation = getLocalElevationRef.current(lat, lng) ?? null
+      }
+
       const tempId = `pending-${generateTempId()}`
       const optimistic = {
         id: tempId,
@@ -209,7 +240,7 @@ export function useHoles(courseId) {
         lat,
         lng,
         long: lng,
-        elevation: null,
+        elevation: initialElevation,
         created_at: new Date().toISOString(),
       }
 
@@ -238,7 +269,7 @@ export function useHoles(courseId) {
             sequenceOrder,
             lat,
             lng,
-            null,
+            initialElevation,
           )
           setHoles((prev) =>
             prev.map((h) => {
@@ -252,36 +283,6 @@ export function useHoles(courseId) {
               }
             }),
           )
-
-          const elevation = await fetchElevation(lat, lng)
-          if (elevation !== null) {
-            const dbId = data.id
-            setHoles((prev) => {
-              const currentHole = prev.find((h) => h.id === hole.id)
-              const currentMarker = currentHole?.planningMarkers?.find((m) => m.id === dbId)
-
-              if (currentMarker && Number(currentMarker.lat) === lat && Number(currentMarker.lng || currentMarker.long) === lng) {
-                void mapApi.upsertPlanningMarker(
-                  hole.id,
-                  markerType,
-                  sequenceOrder,
-                  lat,
-                  lng,
-                  elevation,
-                )
-                return prev.map((h) => {
-                  if (h.id !== hole.id) return h
-                  return {
-                    ...h,
-                    planningMarkers: (h.planningMarkers ?? []).map((m) =>
-                      m.id === dbId ? { ...m, elevation } : m
-                    ),
-                  }
-                })
-              }
-              return prev
-            })
-          }
         } catch (err) {
           setMarkerMessage(err.message)
           setHoles((prev) =>
@@ -295,6 +296,50 @@ export function useHoles(courseId) {
           )
         }
       })()
+
+      if (initialElevation === null) {
+        void (async () => {
+          try {
+            const elevation = await fetchElevation(lat, lng)
+            if (elevation !== null) {
+              setHoles((prev) => {
+                const currentHole = prev.find((h) => h.id === hole.id)
+                // Match by lat/lng because DB ID might not be back yet
+                const currentMarker = currentHole?.planningMarkers?.find((m) => 
+                  (m.id === tempId || m.clientKey === tempId || Number(m.lat) === lat) && 
+                  Number(m.lat) === lat && Number(m.lng || m.long) === lng
+                )
+
+                if (currentMarker) {
+                  // Only push to DB if we actually have the DB ID, otherwise it will be pushed next update
+                  if (!currentMarker.id.startsWith('pending-')) {
+                    void mapApi.upsertPlanningMarker(
+                      hole.id,
+                      markerType,
+                      sequenceOrder,
+                      lat,
+                      lng,
+                      elevation,
+                    )
+                  }
+                  return prev.map((h) => {
+                    if (h.id !== hole.id) return h
+                    return {
+                      ...h,
+                      planningMarkers: (h.planningMarkers ?? []).map((m) =>
+                        m.id === currentMarker.id ? { ...m, elevation } : m
+                      ),
+                    }
+                  })
+                }
+                return prev
+              })
+            }
+          } catch (err) {
+            // ignore
+          }
+        })()
+      }
 
       return { ok: true }
     },
@@ -326,6 +371,11 @@ export function useHoles(courseId) {
         sequenceOrder = (startMarker.sequence_order || 0) + 1
       }
 
+      let initialElevation = null
+      if (typeof getLocalElevationRef.current === 'function') {
+        initialElevation = getLocalElevationRef.current(lat, lng) ?? null
+      }
+
       const tempId = `pending-${generateTempId()}`
       const optimistic = {
         id: tempId,
@@ -335,7 +385,7 @@ export function useHoles(courseId) {
         lat,
         lng,
         long: lng,
-        elevation: null,
+        elevation: initialElevation,
         created_at: new Date().toISOString(),
       }
 
@@ -364,7 +414,7 @@ export function useHoles(courseId) {
             sequenceOrder,
             lat,
             lng,
-            null,
+            initialElevation,
           )
           setHoles((prev) =>
             prev.map((h) => {
@@ -378,29 +428,6 @@ export function useHoles(courseId) {
               }
             }),
           )
-
-          const elevation = await fetchElevation(lat, lng)
-          if (elevation !== null) {
-            const dbId = data.id
-            setHoles((prev) => {
-              const currentHole = prev.find((h) => h.id === hole.id)
-              const currentMarker = currentHole?.planningMarkers?.find((m) => m.id === dbId)
-
-              if (currentMarker && Number(currentMarker.lat) === lat && Number(currentMarker.lng || currentMarker.long) === lng) {
-                void mapApi.movePlanningMarker(dbId, lat, lng, elevation)
-                return prev.map((h) => {
-                  if (h.id !== hole.id) return h
-                  return {
-                    ...h,
-                    planningMarkers: (h.planningMarkers ?? []).map((m) =>
-                      m.id === dbId ? { ...m, elevation } : m
-                    ),
-                  }
-                })
-              }
-              return prev
-            })
-          }
         } catch (err) {
           setMarkerMessage(err.message)
           setHoles((prev) =>
@@ -414,9 +441,46 @@ export function useHoles(courseId) {
           )
         }
       })()
+
+      if (initialElevation === null) {
+        void (async () => {
+          try {
+            const elevation = await fetchElevation(lat, lng)
+            if (elevation !== null) {
+              setHoles((prev) => {
+                const currentHole = prev.find((h) => h.id === hole.id)
+                const currentMarker = currentHole?.planningMarkers?.find((m) => 
+                  (m.id === tempId || m.clientKey === tempId || Number(m.lat) === lat) && 
+                  Number(m.lat) === lat && Number(m.lng || m.long) === lng
+                )
+
+                if (currentMarker) {
+                  if (!currentMarker.id.startsWith('pending-')) {
+                    void mapApi.movePlanningMarker(currentMarker.id, lat, lng, elevation)
+                  }
+                  return prev.map((h) => {
+                    if (h.id !== hole.id) return h
+                    return {
+                      ...h,
+                      planningMarkers: (h.planningMarkers ?? []).map((m) =>
+                        m.id === currentMarker.id ? { ...m, elevation } : m
+                      ),
+                    }
+                  })
+                }
+                return prev
+              })
+            }
+          } catch (err) {
+            // ignore
+          }
+        })()
+      }
     },
     [holes, selectedHoleIndex]
   )
+
+  
 
   /**
    * Remove a planning marker by ID (hard delete).
@@ -457,16 +521,29 @@ export function useHoles(courseId) {
    */
   const movePlanningMarker = useCallback(
     (markerId, lat, lng) => {
+      console.log('[movePlanningMarker] Hook callback triggered.', { markerId, lat, lng })
       const hole = holes[selectedHoleIndex]
-      if (!hole?.id) return
+      if (!hole?.id) {
+        console.warn('[movePlanningMarker] Selected hole or hole ID not found. Aborting.')
+        return
+      }
 
+      let initialElevation = null
+      if (typeof getLocalElevationRef.current === 'function') {
+        initialElevation = getLocalElevationRef.current(lat, lng) ?? null
+        console.log('[movePlanningMarker] Resolved initial local elevation:', initialElevation)
+      } else {
+        console.log('[movePlanningMarker] getLocalElevation not available.')
+      }
+
+      console.log('[movePlanningMarker] Updating local state optimistically with:', { lat, lng, initialElevation })
       setHoles((prev) =>
         prev.map((h) => {
           if (h.id !== hole.id) return h
           return {
             ...h,
             planningMarkers: (h.planningMarkers ?? []).map((m) =>
-              m.id === markerId ? { ...m, lat, lng, long: lng } : m,
+              m.id === markerId ? { ...m, lat, lng, long: lng, ...(initialElevation !== null && { elevation: initialElevation }) } : m,
             ),
           }
         }),
@@ -474,7 +551,9 @@ export function useHoles(courseId) {
 
       void (async () => {
         try {
-          const data = await mapApi.movePlanningMarker(markerId, lat, lng, null)
+          console.log('[movePlanningMarker] Triggering mapApi.movePlanningMarker DB sync.')
+          const data = await mapApi.movePlanningMarker(markerId, lat, lng, initialElevation)
+          console.log('[movePlanningMarker] DB sync completed. Returned data:', data)
           setHoles((prev) =>
             prev.map((h) => {
               if (h.id !== hole.id) return h
@@ -486,35 +565,51 @@ export function useHoles(courseId) {
               }
             }),
           )
-
-          const elevation = await fetchElevation(lat, lng)
-          if (elevation !== null) {
-            setHoles((prev) => {
-              const currentHole = prev.find((h) => h.id === hole.id)
-              const currentMarker = currentHole?.planningMarkers?.find((m) => m.id === markerId)
-
-              if (currentMarker && Number(currentMarker.lat) === lat && Number(currentMarker.lng || currentMarker.long) === lng) {
-                void mapApi.movePlanningMarker(markerId, lat, lng, elevation)
-                return prev.map((h) => {
-                  if (h.id !== hole.id) return h
-                  return {
-                    ...h,
-                    planningMarkers: (h.planningMarkers ?? []).map((m) =>
-                      m.id === markerId ? { ...m, elevation } : m
-                    ),
-                  }
-                })
-              }
-              return prev
-            })
-          }
         } catch (err) {
+          console.error('[movePlanningMarker] Error during DB sync:', err)
           setMarkerMessage(err.message)
         }
       })()
+
+      if (initialElevation === null) {
+        console.log('[movePlanningMarker] Initial elevation was null, attempting fetchElevation from API.')
+        void (async () => {
+          try {
+            const elevation = await fetchElevation(lat, lng)
+            console.log('[movePlanningMarker] fetchElevation result:', elevation)
+            if (elevation !== null) {
+              setHoles((prev) => {
+                const currentHole = prev.find((h) => h.id === hole.id)
+                const currentMarker = currentHole?.planningMarkers?.find((m) => m.id === markerId)
+
+                if (currentMarker && Number(currentMarker.lat) === lat && Number(currentMarker.lng || currentMarker.long) === lng) {
+                  console.log('[movePlanningMarker] Marker coordinates match original, updating DB & state with fetched elevation:', elevation)
+                  void mapApi.movePlanningMarker(markerId, lat, lng, elevation)
+                  return prev.map((h) => {
+                    if (h.id !== hole.id) return h
+                    return {
+                      ...h,
+                      planningMarkers: (h.planningMarkers ?? []).map((m) =>
+                        m.id === markerId ? { ...m, elevation } : m
+                      ),
+                    }
+                  })
+                } else {
+                  console.log('[movePlanningMarker] Coordinates have changed since fetch, discarding elevation update.')
+                }
+                return prev
+              })
+            }
+          } catch (err) {
+            console.error('[movePlanningMarker] Error fetching elevation from API:', err)
+          }
+        })()
+      }
     },
     [holes, selectedHoleIndex],
   )
+
+  
 
   /**
    * Move a map marker (reference point). Optimistic UI; sync in background.
@@ -524,13 +619,18 @@ export function useHoles(courseId) {
       const hole = holes[selectedHoleIndex]
       if (!hole?.id) return
 
+      let initialElevation = null
+      if (typeof getLocalElevationRef.current === 'function') {
+        initialElevation = getLocalElevationRef.current(lat, lng) ?? null
+      }
+
       setHoles((prev) =>
         prev.map((h) => {
           if (h.id !== hole.id) return h
           return {
             ...h,
             mapMarkers: (h.mapMarkers ?? []).map((m) =>
-              m.marker_kind === markerKind ? { ...m, lat, lng } : m,
+              m.marker_kind === markerKind ? { ...m, lat, lng, ...(initialElevation !== null && { elevation: initialElevation }) } : m,
             ),
           }
         }),
@@ -538,7 +638,7 @@ export function useHoles(courseId) {
 
       void (async () => {
         try {
-          const data = await mapApi.upsertHoleMarker(hole.id, markerKind, lat, lng, null)
+          const data = await mapApi.upsertHoleMarker(hole.id, markerKind, lat, lng, initialElevation)
           setHoles((prev) =>
             prev.map((h) => {
               if (h.id !== hole.id) return h
@@ -546,28 +646,36 @@ export function useHoles(courseId) {
               return { ...h, mapMarkers: [...rest, data] }
             }),
           )
-
-          const elevation = await fetchElevation(lat, lng)
-          if (elevation !== null) {
-            setHoles((prev) => {
-              const currentHole = prev.find((h) => h.id === hole.id)
-              const currentMarker = currentHole?.mapMarkers?.find((m) => m.marker_kind === markerKind)
-
-              if (currentMarker && Number(currentMarker.lat) === lat && Number(currentMarker.lng) === lng) {
-                void mapApi.upsertHoleMarker(hole.id, markerKind, lat, lng, elevation)
-                return prev.map((h) => {
-                  if (h.id !== hole.id) return h
-                  const rest = (h.mapMarkers ?? []).filter((m) => m.marker_kind !== markerKind)
-                  return { ...h, mapMarkers: [...rest, { ...currentMarker, elevation }] }
-                })
-              }
-              return prev
-            })
-          }
         } catch (err) {
           setMarkerMessage(err.message)
         }
       })()
+
+      if (initialElevation === null) {
+        void (async () => {
+          try {
+            const elevation = await fetchElevation(lat, lng)
+            if (elevation !== null) {
+              setHoles((prev) => {
+                const currentHole = prev.find((h) => h.id === hole.id)
+                const currentMarker = currentHole?.mapMarkers?.find((m) => m.marker_kind === markerKind)
+
+                if (currentMarker && Number(currentMarker.lat) === lat && Number(currentMarker.lng) === lng) {
+                  void mapApi.upsertHoleMarker(hole.id, markerKind, lat, lng, elevation)
+                  return prev.map((h) => {
+                    if (h.id !== hole.id) return h
+                    const rest = (h.mapMarkers ?? []).filter((m) => m.marker_kind !== markerKind)
+                    return { ...h, mapMarkers: [...rest, { ...currentMarker, elevation }] }
+                  })
+                }
+                return prev
+              })
+            }
+          } catch (err) {
+            // ignore
+          }
+        })()
+      }
     },
     [holes, selectedHoleIndex],
   )

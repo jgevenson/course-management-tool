@@ -32,6 +32,9 @@ const mockMapInstance = {
   getCanvas: vi.fn().mockReturnValue({ style: {} }),
   fitBounds: vi.fn(),
   flyTo: vi.fn(),
+  setBearing: vi.fn(),
+  cameraForBounds: vi.fn().mockReturnValue({ center: [-91.5, 41.5], zoom: 17 }),
+  project: vi.fn().mockReturnValue({ x: 0, y: 0 }),
 }
 
 const mockMarkerInstance = {
@@ -480,6 +483,56 @@ describe('V2MapArea', () => {
     const nextCoords = lastCall[1].geometry.coordinates[0]
     // Poly is closed, so nextCoords length should be 4 (3 unique + 1 closed)
     expect(nextCoords.length).toBe(4)
+  })
+
+  it('updates green and distance circle sources when showGreenCircle or showDistanceCircle is true', () => {
+    const course = { id: 'c1', name: 'Blue Top Ridge', course_lat: 41.5, course_lng: -91.5 }
+    const selectedHole = {
+      id: 'h1',
+      hole_number: 1,
+      mapMarkers: [
+        { marker_kind: 'green_center', lat: 41.501, lng: -91.501, is_active: true },
+        { marker_kind: 'tee_back', lat: 41.5, lng: -91.5, is_active: true }
+      ],
+      planningMarkers: [
+        { marker_type: 'tee_shot_location', lat: 41.5, lng: -91.5, is_active: true },
+        { marker_type: 'pin_location', lat: 41.501, lng: -91.501, is_active: true }
+      ]
+    }
+
+    addedSources.add('planning-lines')
+    addedSources.add('planning-dispersions')
+    addedSources.add('planning-green-circle')
+    addedSources.add('planning-distance-circle')
+
+    render(
+      <V2MapArea
+        course={course}
+        selectedHole={selectedHole}
+        workspaceMode="planning"
+        showGreenCircle={true}
+        greenCircleRadius={20}
+        showDistanceCircle={true}
+        distanceCircleRadius={100}
+      />
+    )
+
+    expect(mockMapInstance.getSource).toHaveBeenCalledWith('planning-green-circle')
+    expect(mockMapInstance.getSource).toHaveBeenCalledWith('planning-distance-circle')
+
+    const greenCircleSource = mockMapInstance.getSource('planning-green-circle')
+    expect(greenCircleSource.setData).toHaveBeenCalled()
+    const greenCallArg = greenCircleSource.setData.mock.calls[0][0]
+    expect(greenCallArg.type).toBe('FeatureCollection')
+    expect(greenCallArg.features.length).toBe(1)
+    expect(greenCallArg.features[0].geometry.type).toBe('Polygon')
+
+    const distanceCircleSource = mockMapInstance.getSource('planning-distance-circle')
+    expect(distanceCircleSource.setData).toHaveBeenCalled()
+    const distanceCallArg = distanceCircleSource.setData.mock.calls[0][0]
+    expect(distanceCallArg.type).toBe('FeatureCollection')
+    expect(distanceCallArg.features.length).toBe(1)
+    expect(distanceCallArg.features[0].geometry.type).toBe('Polygon')
   })
 })
 
